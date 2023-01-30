@@ -50,10 +50,10 @@ export class ARInvoicePage extends PageBase {
     }
 
     preLoadData(event) {
-        this.query.Status = 'ARInvoiceApproved';
-        
+        this.query.Status = "['ARInvoiceApproved','ARInvoiceRejected','ARInvoicePending']";
+
         this.sortToggle('InvoiceDate', true);
-        this.sort.Id = 'Id';
+        //this.sort.Id = 'Id';
         this.sortToggle('Id', true);
 
         Promise.all([
@@ -62,7 +62,7 @@ export class ARInvoicePage extends PageBase {
         ]).then((values: any) => {
             this.statusList = values[0];
 
-            
+
             super.preLoadData(event);
         });
         // this.statusProvider.read({ IDParent: 11 }).then(response => {
@@ -80,14 +80,7 @@ export class ARInvoicePage extends PageBase {
     loadedData(event) {
 
         this.items.forEach(i => {
-
-            i.InvoiceDateText = i.InvoiceDate ? lib.dateFormat(i.InvoiceDate, 'dd/mm/yy') : '';
-            i.SignedDateText = i.SignedDate ? lib.dateFormat(i.SignedDate, 'dd/mm/yy') : '';
-            //i.Query = i.InvoiceDate ? lib.dateFormat(i.InvoiceDate, 'yyyy-mm-dd') : '';
-            i.TotalText = lib.currencyFormat(i.TotalAfterTax);
-
             i._Status = this.statusList.find(d => d.Code == i.Status);
-
         });
         super.loadedData(event);
     }
@@ -440,15 +433,15 @@ export class ARInvoicePage extends PageBase {
                             this.EInvoiceService.AutoMergeARAndCreateEInvoice(this.query.InvoiceDate)
                                 .then((resp: any) => {
                                     if (resp == 'empty') {
-                                        this.env.showTranslateMessage('erp.app.pages.accountant.ar-invoice.issue-einvoice-message-empty', 'warning');      
+                                        this.env.showTranslateMessage('erp.app.pages.accountant.ar-invoice.issue-einvoice-message-empty', 'warning');
                                     }
                                     else if (resp == '') {
-                                        this.env.showTranslateMessage('erp.app.pages.accountant.ar-invoice.issue-einvoice-message-success', 'success');      
+                                        this.env.showTranslateMessage('erp.app.pages.accountant.ar-invoice.issue-einvoice-message-success', 'success');
                                     }
-                                    else{
-                                        this.env.showTranslateMessage(resp, 'error');  
+                                    else {
+                                        this.env.showTranslateMessage(resp, 'error');
                                     }
-                                    
+
                                     this.submitAttempt = false;
                                     this.refresh();
                                 }).finally(() => {
@@ -473,287 +466,115 @@ export class ARInvoicePage extends PageBase {
 
                 this.selectedItems = this.selectedItems.filter(i => (i.Status == 'ARInvoiceApproved'));
 
-                let IsSubmitAllBPEInvoice = true;
-                let hasConfigValue = false;
-                let branch: any;
-                branch = this.env.branchList.filter(f => f.Id == this.env.selectedBranch);
-
-                for (let index = 0; index < 10; index++) {
-                    this.sysConfigProvider.search({ Code: 'IsSubmitAllBPEInvoice', IDBranch: branch[0].Id }).toPromise().then((response: any) => {
-
-                        if (response.length > 0 && !hasConfigValue) {
-                            IsSubmitAllBPEInvoice = response[0].Value;
-                            hasConfigValue = true;
-                            index = 10;
-                        }
-                    }).finally(() => {
-
-                        if (branch.length == 0) {
-                            index = 10;
-                        }
-                        else {
-                            branch = this.env.branchList.filter(f => f.Id == branch[0].IDParent);
-                        }
-                    })
-
-
-                }
-
-
-                let ids = [];
-                for (let index = 0; index < this.selectedItems.length; index++) {
-                    const item = this.selectedItems[index];
-                    if (item.BuyerTaxCode == null || (item.BuyerUnitName == null && item.BuyerName == null) || item.BuyerAddress == null) {
-                        ids.push(item.Id);
-                    }
-                }
-
-                if (!IsSubmitAllBPEInvoice && ids.length > 0) {
-                    this.env.showMessage('Các hóa đơn #(' + ids.join(",") + ') không có thông tin xuất hóa đơn. Vui lòng kiểm tra lại!', 'warning');
-                    return;
-                }
-
-                let latestInvoiceDate = new Date();
-                this.EInvoiceService.GetLatestEInvoice()
-                    .then((resp: any) => {
-                        latestInvoiceDate = resp;
-                    }).finally(() => {
-                        let arLowerDate = [];
-                        let arLowerDateIds = []
-                        for (let index = 0; index < this.selectedItems.length; index++) {
-                            let ar = this.selectedItems[index];
-                            console.log(new Date(ar.InvoiceDate));
-                            
-                            if (new Date(ar.InvoiceDate) < latestInvoiceDate) {
-                                arLowerDate.push(ar);
-                                arLowerDateIds.push(ar.Id);
-                            }
-                        }
-
-                        if (arLowerDateIds.length > 0) {
-                            this.alertCtrl.create({
-                                header: 'Xuất hóa đơn điện tử',
-                                //subHeader: '---',
-                                message: 'Các hóa đơn số #(' + arLowerDateIds.toString() + ') có ngày xuất hóa đơn nhỏ hơn ngày xuất HĐĐT gần nhất(' + lib.dateFormat(latestInvoiceDate, 'dd/mm/yyyy') + '). Bạn có muốn cập nhật ngày hóa đơn đến ngày gần nhất?',
-                                buttons: [
-                                    {
-                                        text: 'Không',
-                                        role: 'cancel',
-                                        handler: () => {
-                                            //this.selectedItems = this.selectedItems.filter(i => (i.Status == 'ARInvoiceApproved'));
-                                        }
-                                    },
-                                    {
-                                        text: 'Cập nhật',
-                                        cssClass: 'success-btn',
-                                        handler: () => {
-                                            for (let index = 0; index < arLowerDateIds.length; index++) {
-                                                const ar = arLowerDate[index];
-                                                ar.InvoiceDate = latestInvoiceDate;
-                                                this.pageProvider.save(ar);
-                                            }
-                                            this.env.showMessage('Đã cập nhật ngày hóa đơn thành công!', 'success');
-                                            this.submitAttempt = false;
-                                            this.showCreateEInvoicePopup();
-                                        }
-                                    }
-                                ]
-                            }).then(alert => {
-                                alert.present();
-                            })
-                        }
-                        else {
-                            this.showCreateEInvoicePopup();
-                        }
-
-                    })
-                    .catch(err => {
-                        console.log(err);
-
-                    })
+                this.showCreateEInvoicePopup();
             }
         }
     }
 
     updateEInvoice() {
-        if (!this.pageConfig.canCreateEInvoice) {
+        if (this.submitAttempt) return;
+        
+        this.selectedItems = this.selectedItems.filter(i => (i.Status == 'EInvoiceNew'));
+        if (!this.selectedItems.length) {
+            this.env.showMessage('Vui lòng chọn hóa đơn cần cập nhật dữ liệu');
             return;
         }
+        this.submitAttempt = true;
 
-        let itemsCanNotProcess = this.selectedItems.filter(i => (i.Status != 'EInvoiceNew'));
-        if (itemsCanNotProcess.length == this.selectedItems.length) {
-            this.env.showMessage('Không thể cập nhật. Vui lòng chỉ chọn các hóa đơn đã tạo hóa đơn điện tử.', 'warning')
-        }
-        else {
-            itemsCanNotProcess.forEach(i => {
-                i.checked = false;
-            });
-
-            this.selectedItems = this.selectedItems.filter(i => (i.Status == 'EInvoiceNew'));
-
-            this.alertCtrl.create({
-                header: 'Cập nhật hóa đơn điện tử',
-                //subHeader: '---',
-                message: 'Bạn chắc muốn cập nhật hóa đơn điện tử cho các hóa đơn này?',
-                buttons: [
-                    {
-                        text: 'Không',
-                        role: 'cancel',
-                        handler: () => {
-                            //this.selectedItems = this.selectedItems.filter(i => (i.Status == 'ARInvoiceApproved'));
-                        }
-                    },
-                    {
-                        text: 'Cập nhật',
-                        cssClass: 'success-btn',
-                        handler: () => {
-                            this.selectedItems.forEach(i => {
-                                this.EInvoiceService.UpdateEInvoice(i.Id, i.InvoiceGUID, i.IDBranch)
-                                    .then((resp: any) => {
-                                        if (resp != '') {
-                                            this.env.showMessage(resp, 'warning');
-                                            this.submitAttempt = false;
-                                        }
-                                        else {
-
-                                            this.env.showMessage('Đã cập nhật hóa đơn điện tử thành công!', 'success');
-                                            this.submitAttempt = false;
-                                        }
-                                    })
-                                    .catch(err => {
-                                        console.log(err);
-
-                                    })
-                            })
-                        }
-                    }
-                ]
-            }).then(alert => {
-                alert.present();
-            })
-
-        }
+        this.env.showLoading('Vui lòng chờ cập nhật hóa đơn...', this.EInvoiceService.UpdateEInvoice(this.selectedItems.map(i => i.Id)).toPromise())
+        .then((resp: any) => {
+            this.submitAttempt = false;
+            this.env.showMessage('Đã cập nhật hóa đơn điện tử thành công!', 'success');
+            this.refresh();
+        })
+        .catch(err => {
+            console.log(err);
+            if (err?.error?.ExceptionMessage) {
+                this.env.showMessage(err.error.ExceptionMessage, 'danger');
+            }
+            else if (err.message) {
+                this.env.showMessage(err.message, 'danger');
+            }
+            else{
+                this.env.showMessage('Có lỗi khi cập nhật, xin vui lòng thử lại sau', 'danger');
+            }
+            
+            this.submitAttempt = false;
+        });
     }
 
     syncEInvoice() {
-        if (!this.pageConfig.canCreateEInvoice) {
+        if (this.submitAttempt) return;
+        
+        this.selectedItems = this.selectedItems.filter(i => (i.Status == 'EInvoiceNew'));
+        if (!this.selectedItems.length) {
+            this.env.showMessage('Vui lòng chọn hóa đơn cần đồng bộ dữ liệu');
             return;
         }
+        this.submitAttempt = true;
 
-        let itemsCanNotProcess = this.selectedItems.filter(i => (i.Status == 'EInvoiceRelease' || i.Status == 'EInvoiceCancel' || i.Status == 'ARInvoiceApproved' || i.Status == 'ARInvoicePending' || i.Status == 'ARInvoiceCanceled' || i.Status == 'ARInvoiceSplited' || i.Status == 'ARInvoiceMerged'));
-        if (itemsCanNotProcess.length == this.selectedItems.length) {
-            this.env.showMessage('Không thể đồng bộ dữ liệu với Ehoadon. Vui lòng chỉ chọn các hóa đơn đã tạo hóa đơn điện tử.', 'warning')
-        }
-        else {
-            itemsCanNotProcess.forEach(i => {
-                i.checked = false;
-            });
-
-            this.selectedItems = this.selectedItems.filter(i => (i.Status == 'EInvoiceNew' || i.Status == 'EInvoiceEmpty'));
-
-            this.alertCtrl.create({
-                header: 'Đồng bộ hóa đơn điện tử',
-                //subHeader: '---',
-                message: 'Bạn chắc muốn đồng bộ dữ liệu từ Ehoadon cho các hóa đơn này?',
-                buttons: [
-                    {
-                        text: 'Không',
-                        role: 'cancel',
-                        handler: () => {
-                            //this.selectedItems = this.selectedItems.filter(i => (i.Status == 'ARInvoiceApproved'));
-                        }
-                    },
-                    {
-                        text: 'Đồng bộ',
-                        cssClass: 'success-btn',
-                        handler: () => {
-                            this.selectedItems.forEach(i => {
-                                this.EInvoiceService.SyncEInvoice(i.InvoiceGUID, i.IDBranch)
-                                    .then((resp: any) => {
-
-                                        if (resp != '') {
-                                            var json = JSON.parse(resp);
-                                            this.env.showMessage(json[0].MessLog, 'warning');
-                                            this.submitAttempt = false;
-                                        }
-                                        else {
-
-                                            this.env.showMessage('Đã đồng bộ dữ liệu thành công!', 'success');
-                                            this.submitAttempt = false;
-
-                                            this.refresh();
-                                        }
-                                    })
-                                    .catch(err => {
-                                        console.log(err);
-
-                                    })
-                            })
-                        }
-                    }
-                ]
-            }).then(alert => {
-                alert.present();
+        this.env.showLoading('Vui lòng chờ đồng bộ hóa đơn...', this.EInvoiceService.SyncEInvoice(this.selectedItems.map(i => i.Id)).toPromise())
+            .then((resp: any) => {
+                this.submitAttempt = false;
+                this.refresh();
             })
-
-        }
+            .catch(err => {
+                console.log(err);
+                this.submitAttempt = false;
+            });
     }
 
     showCreateEInvoicePopup() {
         this.alertCtrl.create({
             header: 'Xuất hóa đơn điện tử',
             //subHeader: '---',
-            message: 'Bạn chắc muốn xác nhận xuất hóa đơn điện tử cho các hóa đơn này?',
+            message: 'Bạn có chắc muốn xuất hóa đơn điện tử cho các hóa đơn này?',
             buttons: [
                 {
                     text: 'Không',
                     role: 'cancel',
-                    handler: () => {
-                        //console.log('Không xóa');
-                    }
+                    handler: () => { }
                 },
                 {
-                    text: 'Xuất',
+                    text: 'Có',
                     cssClass: 'success-btn',
                     handler: () => {
+                        this.loadingController.create({
+                            cssClass: 'my-custom-class',
+                            message: 'Vui lòng chờ cấp số hóa đơn...'
+                        }).then((loading) => {
+                            loading.present();
+                            this.EInvoiceService.CreateEInvoice(this.selectedItems.map(i => i.Id)).toPromise()
+                                .then((resp: any) => {
+                                    this.selectedItems = [];
+                                    if (loading) loading.dismiss();
+                                    this.submitAttempt = false;
 
-                        if (this.submitAttempt == false) {
-                            this.submitAttempt = true;
+                                    let errors = resp.filter(d => d.Status == 1);
+                                    let message = '';
 
-                            this.selectedItems.forEach(i => {
-                                this.EInvoiceService.CreateEInvoice(i.Id, i.IDBranch)
-                                    .then((resp: any) => {
-                                        
-                                        var json = JSON.parse(resp);
-
-                                        if (json.MessLog != '') {
-                                            this.env.showMessage(json.MessLog, 'warning');
-                                            this.submitAttempt = false;
-                                        }
+                                    for (let i = 0; i < errors.length && i <= 5; i++)
+                                        if (i == 5) message += '<br> Còn nữa...';
                                         else {
-                                            i.InvoiceNo = json.InvoiceNo;
-                                            i.InvoiceGUID = json.InvoiceGUID;
-                                            //i.OriginalInvoiceIdentify = json[0].OriginalInvoiceIdentify;
-                                            i.InvoiceCode = json.MTC;
-                                            //i.InvoiceDate = new Date();
-                                            i.Status = 'EInvoiceNew';
-                                            i._Status = this.statusList.find(d => d.Code == 'EInvoiceNew');
-
-                                            //this.pageProvider.save(i);
-
-                                            this.env.showMessage('Đã xuất hóa đơn điện tử thành công!', 'success');
-                                            this.submitAttempt = false;
-                                            this.refresh();
+                                            const e = errors[i];
+                                            message += '<br> #' + e.PartnerInvoiceID + ' lỗi: ' + e.MessLog;
                                         }
-                                    })
-                                    .catch(err => {
-                                        console.log(err);
-
-                                    })
-                            })
-
-                        }
-
+                                    if (message != '') {
+                                        this.env.showAlert(message, 'Có ' + errors.length + ' hóa đơn lỗi, vui lòng kiểm tra lại ghi chú của các hóa đơn không được duyệt.', 'Xuất hóa đơn');
+                                        this.refresh();
+                                    }
+                                    else {
+                                        this.env.showMessage('Đã xuất hóa đơn điện tử!', 'success');
+                                        this.submitAttempt = false;
+                                        this.refresh();
+                                    }
+                                })
+                                .catch(err => {
+                                    console.log(err);
+                                    this.submitAttempt = false;
+                                    if (loading) loading.dismiss();
+                                })
+                        })
                     }
                 }
             ]

@@ -588,7 +588,7 @@ export class ARInvoiceDetailPage extends PageBase {
 							if (this.submitAttempt == false) {
 								this.submitAttempt = true;
 
-								this.EInvoiceService.CreateEInvoice(this.item.Id, this.item.IDBranch)
+								this.EInvoiceService.CreateEInvoice([this.item.Id]).toPromise()
 									.then((resp: any) => {
 										var json = JSON.parse(resp);
 
@@ -597,23 +597,12 @@ export class ARInvoiceDetailPage extends PageBase {
 											this.submitAttempt = false;
 										}
 										else {
-											this.item.InvoiceNo = json[0].InvoiceNo;
-											this.item.InvoiceGUID = json[0].InvoiceGUID;
-											this.item.OriginalInvoiceIdentify = json[0].OriginalInvoiceIdentify;
-											this.item.InvoiceCode = json[0].MTC;
-											//this.item.InvoiceDate = new Date();
-											this.item.Status = 'EInvoiceNew';
-
-											this.formGroup.patchValue(this.item);
-											this.pageProvider.save(this.item);
-
 											this.env.showTranslateMessage('erp.app.pages.accountant.ar-invoice.message.einvoice-success', 'success');
 											this.submitAttempt = false;
 										}
 									})
 									.catch(err => {
 										console.log(err);
-
 									})
 							}
 
