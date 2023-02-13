@@ -12,7 +12,6 @@ import { ARInvoiceMergeModalPage } from '../arinvoice-merge-modal/arinvoice-merg
 
 import { EInvoiceService } from 'src/app/services/einvoice.service';
 import { __makeTemplateObject } from 'tslib';
-import { isNumber } from '@amcharts/amcharts5/.internal/core/util/Type';
 
 @Component({
     selector: 'app-arinvoice',
