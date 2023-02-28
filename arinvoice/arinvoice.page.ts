@@ -1,17 +1,14 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component } from '@angular/core';
 import { NavController, ModalController, AlertController, LoadingController, PopoverController } from '@ionic/angular';
 import { EnvService } from 'src/app/services/core/env.service';
 import { PageBase } from 'src/app/page-base';
-import { BRA_BranchProvider, SALE_OrderProvider, SYS_StatusProvider, AC_ARInvoiceProvider, CRM_ContactProvider, SYS_ConfigProvider } from 'src/app/services/static/services.service';
+import { BRA_BranchProvider, SALE_OrderProvider, SYS_StatusProvider, AC_ARInvoiceProvider, CRM_ContactProvider } from 'src/app/services/static/services.service';
 import { Location } from '@angular/common';
 import { ApiSetting } from 'src/app/services/static/api-setting';
-import { lib } from 'src/app/services/static/global-functions';
 
 import { ARInvoiceSplitModalPage } from '../arinvoice-split-modal/arinvoice-split-modal.page';
 import { ARInvoiceMergeModalPage } from '../arinvoice-merge-modal/arinvoice-merge-modal.page';
-
 import { EInvoiceService } from 'src/app/services/einvoice.service';
-import { __makeTemplateObject } from 'tslib';
 
 @Component({
     selector: 'app-arinvoice',
@@ -29,9 +26,7 @@ export class ARInvoicePage extends PageBase {
         public statusProvider: SYS_StatusProvider,
         public orderProvider: SALE_OrderProvider,
         public contactProvider: CRM_ContactProvider,
-        public sysConfigProvider: SYS_ConfigProvider,
         public EInvoiceService: EInvoiceService,
-
         public modalController: ModalController,
         public popoverCtrl: PopoverController,
         public alertCtrl: AlertController,

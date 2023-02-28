@@ -149,7 +149,7 @@
                         </div>
 
                         <div class="col-qty cell">
-                            <input [readonly]="!pageConfig.canEdit || submitAttempt" (focus)="$event.target.select()" *ngIf="i._itemData && i._itemData.UoMs.length && i.IDUoM" (change)="changedItemUoM(i)" class="c-input" type="number" [min]="i._UoM?i._UoM.MinQuantity:1" [max]="i._UoM?i._UoM.MaxQuantity:999" [(ngModel)]="i.Quantity" onkeydown="return event.keyCode !== 190">
+                            <input [readonly]="!pageConfig.canEdit || submitAttempt" (focus)="$event.target.select()" *ngIf="i._itemData && i._itemData.UoMs.length && i.IDUoM" (change)="changedItemUoM(i)" class="c-input" type="number" [min]="i._UoM?i._UoM.MinQuantity:0.000000001" [max]="i._UoM?i._UoM.MaxQuantity:999999999999999999" step="1" [(ngModel)]="i.Quantity" onkeydown="return event.keyCode !== 190">
                             <!-- <input class="c-input" type="number" onkeydown="return event.keyCode !== 190"> -->
                         </div>
 
