@@ -135,7 +135,7 @@
 							</span>
 							<div *ngIf="i.Remark">
 								<ion-text color="warning">
-									{{i.Remark}}
+									<i [innerHtml]="i.Remark"></i>
 								</ion-text>
 							</div>
 						</div>

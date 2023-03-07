@@ -123,7 +123,7 @@
 
                         <div class="col-id cell">{{idx+1}}</div>
                         <div class="col-name cell">
-                            <ng-select [disabled]="!pageConfig.canEdit || submitAttempt" class="c-input" [(ngModel)]="i.IDItem" (change)="changedIDItem($event, i)" [labelForId]="'IDItem'+idx" [items]="itemList$ | async" [typeahead]="itemListInput$" [virtualScroll]="true" bindLabel="Name" bindValue="Id" placeholder="{{'erp.app.pages.accountant.ar-invoice-detail.ar-invoice-placeholder' | translate}}">
+                            <ng-select [disabled]="!pageConfig.canEdit || submitAttempt" [clearable]="false" class="c-input" [(ngModel)]="i.IDItem" (change)="changedIDItem($event, i)" [labelForId]="'IDItem'+idx" [items]="itemList$ | async" [typeahead]="itemListInput$" [virtualScroll]="true" bindLabel="Name" bindValue="Id" placeholder="{{'erp.app.pages.accountant.ar-invoice-detail.ar-invoice-placeholder' | translate}}">
                                 <ng-template ng-option-tmp let-i="item" let-search="searchTerm">
                                     <div *ngIf="i">
                                         <div><span [ngOptionHighlight]="search">{{i.Name}}</span></div>
