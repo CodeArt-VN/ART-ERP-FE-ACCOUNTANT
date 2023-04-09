@@ -331,7 +331,7 @@ export class ARInvoiceDetailPage extends PageBase {
 			this.resetLine(line);
 
 			line._itemData = selectedItem;
-			line.TaxRate = selectedItem.Tax; //Tax by Item
+			line.TaxRate = selectedItem.SalesTaxInPercent; //Tax by Item
 
 			this.changedItemUoM(line);
 
