@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { NavController, ModalController, AlertController, LoadingController, PopoverController } from '@ionic/angular';
 import { EnvService } from 'src/app/services/core/env.service';
 import { PageBase } from 'src/app/page-base';
-import { BRA_BranchProvider, SALE_OrderProvider, SYS_StatusProvider, AC_ARInvoiceProvider, CRM_ContactProvider } from 'src/app/services/static/services.service';
+import { BRA_BranchProvider, SALE_OrderProvider, AC_ARInvoiceProvider, CRM_ContactProvider } from 'src/app/services/static/services.service';
 import { Location } from '@angular/common';
 import { ApiSetting } from 'src/app/services/static/api-setting';
 
@@ -23,7 +23,6 @@ export class ARInvoicePage extends PageBase {
     constructor(
         public pageProvider: AC_ARInvoiceProvider,
         public branchProvider: BRA_BranchProvider,
-        public statusProvider: SYS_StatusProvider,
         public orderProvider: SALE_OrderProvider,
         public contactProvider: CRM_ContactProvider,
         public EInvoiceService: EInvoiceService,

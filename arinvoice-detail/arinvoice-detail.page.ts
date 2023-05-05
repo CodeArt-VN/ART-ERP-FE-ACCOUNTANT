@@ -3,7 +3,7 @@ import { NavController, ModalController, LoadingController, AlertController } fr
 import { PageBase } from 'src/app/page-base';
 import { ActivatedRoute } from '@angular/router';
 import { EnvService } from 'src/app/services/core/env.service';
-import { SALE_OrderProvider, BRA_BranchProvider, HRM_StaffProvider, CRM_ContactProvider, SALE_OrderDetailProvider, AC_ARInvoiceProvider, AC_ARInvoiceDetailProvider, AC_ARInvoiceSODetailProvider, WMS_ItemProvider, SYS_StatusProvider, SYS_TypeProvider } from 'src/app/services/static/services.service';
+import { BRA_BranchProvider, CRM_ContactProvider, AC_ARInvoiceProvider, AC_ARInvoiceDetailProvider, WMS_ItemProvider } from 'src/app/services/static/services.service';
 import { FormBuilder, Validators, FormControl, FormArray } from '@angular/forms';
 import { CommonService } from 'src/app/services/core/common.service';
 import { NgSelectConfig } from '@ng-select/ng-select';
@@ -36,20 +36,9 @@ export class ARInvoiceDetailPage extends PageBase {
 	constructor(
 		public pageProvider: AC_ARInvoiceProvider,
 		public arInvoiceDetailProvider: AC_ARInvoiceDetailProvider,
-		public arInvoiceSODetailProvider: AC_ARInvoiceSODetailProvider,
-		public orderProvider: SALE_OrderProvider,
-		public orderDetailProvider: SALE_OrderDetailProvider,
 		public branchProvider: BRA_BranchProvider,
 		public contactProvider: CRM_ContactProvider,
 		public itemProvider: WMS_ItemProvider,
-		public statusProvider: SYS_StatusProvider,
-		public typeProvider: SYS_TypeProvider,
-		public paymentMethodProvider: SYS_TypeProvider,
-		public receiveTypeProvider: SYS_TypeProvider,
-		public invoiceFormProvider: SYS_TypeProvider,
-		public invoiceSerialProvider: SYS_TypeProvider,
-		public typeCreateInvoiceProvider: SYS_TypeProvider,
-		public staffPovider: HRM_StaffProvider,
 
 		public EInvoiceService: EInvoiceService,
 
