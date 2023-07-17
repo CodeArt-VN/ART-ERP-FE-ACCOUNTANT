@@ -5,16 +5,13 @@ import { Routes, RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { ShareModule } from 'src/app/share.module';
 import { FileUploadModule } from 'ng2-file-upload';
-import { NgSelectModule } from '@ng-select/ng-select';
-import { NgOptionHighlightModule } from '@ng-select/ng-option-highlight';
-import { NgxMaskModule, IConfig } from 'ngx-mask'
 
-import { ARInvoiceDetailPage } from './arinvoice-detail.page';
+import { ARInvoiceDetailPage_ } from './arinvoice-detail.page';
 
 const routes: Routes = [
   {
     path: '',
-    component: ARInvoiceDetailPage
+    component: ARInvoiceDetailPage_
   }
 ];
 
@@ -25,12 +22,9 @@ const routes: Routes = [
     IonicModule,
     ReactiveFormsModule,
     FileUploadModule,
-    NgSelectModule,
-    NgOptionHighlightModule,
     ShareModule,
-    NgxMaskModule.forRoot(),
     RouterModule.forChild(routes)
   ],
-  declarations: [ARInvoiceDetailPage]
+  declarations: [ARInvoiceDetailPage_]
 })
-export class ARInvoiceDetailPageModule {}
+export class ARInvoiceDetailPageModule_ {}

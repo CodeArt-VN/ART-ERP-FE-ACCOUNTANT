@@ -1,0 +1,7 @@
+.full-screen{
+    min-height: calc(100vh - 97px);
+
+    @media screen and (max-width: calc(1164px + 0px)) {
+        background-color: transparent;
+    }
+}

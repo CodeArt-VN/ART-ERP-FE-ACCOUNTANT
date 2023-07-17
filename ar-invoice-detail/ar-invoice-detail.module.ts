@@ -4,26 +4,23 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Routes, RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { ShareModule } from 'src/app/share.module';
-import { APInvoiceDetailPage } from './ap-invoice-detail.page';
-import { FileUploadModule } from 'ng2-file-upload';
+import { ARInvoiceDetailPage } from './ar-invoice-detail.page';
+
+import { ARInvoiceComponentsModule } from './components/ar-invoice-components.module';
 
 const routes: Routes = [
   {
     path: '',
-    component: APInvoiceDetailPage
+    component: ARInvoiceDetailPage
   }
 ];
 
 @NgModule({
   imports: [
-    CommonModule,
-    FormsModule,
-    IonicModule,
-    ReactiveFormsModule,
-    FileUploadModule,
+    ARInvoiceComponentsModule,
     ShareModule,
     RouterModule.forChild(routes)
   ],
-  declarations: [APInvoiceDetailPage]
+  declarations: [ARInvoiceDetailPage]
 })
-export class APInvoiceDetailPageModule { }
+export class ARInvoiceDetailPageModule { }

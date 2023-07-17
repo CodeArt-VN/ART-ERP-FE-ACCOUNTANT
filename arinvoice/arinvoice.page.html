@@ -1,5 +1,7 @@
 <ion-header>
-	<app-list-toolbar selectedTitle="{{selectedItems.length}} {{'erp.app.pages.accountant.ar-invoice.selected-title' | translate}}" pageTitle="{{'erp.app.pages.accountant.ar-invoice.page-title' | translate}}" [pageConfig]="pageConfig" [selectedItems]="selectedItems" [query]="query" (add)="add()" (refresh)="refresh()" (export)="export()" (import)="import($event)" (help)="help()" (unselect)="unselect()" (archiveItems)="archiveItems()" (deleteItems)="deleteItems()" (approveInvoices)="approveInvoices()" (disapproveInvoices)="disapproveInvoices()" (cancelInvoices)="cancelInvoices()" (submitInvoicesForApproval)="submitInvoicesForApproval()" (createEInvoice)="createEInvoice()" (updateEInvoice)="updateEInvoice()" (syncEInvoice)="syncEInvoice()" (splitARInvoice)="splitARInvoice()" (mergeARInvoice)="mergeARInvoice()" (changeBranch)="changeBranch($event)"></app-list-toolbar>
+	<app-list-toolbar selectedTitle="{{selectedItems.length}} {{'erp.app.pages.accountant.ar-invoice.selected-title' | translate}}" pageTitle="{{'erp.app.pages.accountant.ar-invoice.page-title' | translate}}" [pageConfig]="pageConfig" [selectedItems]="selectedItems" [query]="query" (add)="add()" (refresh)="refresh()" (export)="export()" (import)="import($event)" (help)="help()" (unselect)="unselect()" (archiveItems)="archiveItems()" (deleteItems)="deleteItems()" (approveInvoices)="approveInvoices()" (disapproveInvoices)="disapproveInvoices()" (cancelInvoices)="cancelInvoices()" (submitInvoicesForApproval)="submitInvoicesForApproval()" (createEInvoice)="createEInvoice()" (updateEInvoice)="updateEInvoice()" (syncEInvoice)="syncEInvoice()" (signEInvoice)="signARInvoice()" (splitARInvoice)="splitARInvoice()" (mergeARInvoice)="mergeARInvoice()" (changeBranch)="changeBranch($event)">
+
+	</app-list-toolbar>
 </ion-header>
 
 <ion-content appScrollbarTheme class="header-table">
@@ -39,13 +41,13 @@
 				<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.InvoiceDate" name="search" color="primary"></ion-icon>
 			</div>
 			<div class="col-name cell" (click)="sortToggle('CustomerName')">
-				
+
 				{{'erp.app.pages.accountant.ar-invoice.customer-name' | translate}}
 				<small class="taxid">{{'erp.app.pages.accountant.ar-invoice.taxid' | translate}}</small>
 				<ion-icon class="min-btn" *ngIf="sort.CustomerName" [name]="sort.CustomerName == 'CustomerName'?'arrow-down': 'arrow-up'"></ion-icon>
 				<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.CustomerName" name="search" color="primary"></ion-icon>
 			</div>
-			
+
 			<div class="col-number cell" (click)="sortToggle('TotalAfterTax')">
 				{{'erp.app.pages.accountant.ar-invoice.original-total-after-tax' | translate}}
 				<ion-icon class="min-btn" *ngIf="sort.TotalAfterTax" [name]="sort.TotalAfterTax == 'TotalAfterTax'?'arrow-down': 'arrow-up'"></ion-icon>
@@ -53,9 +55,8 @@
 			</div>
 			<div class="col-code cell" (click)="sortToggle('InvoiceNo')">
 				#{{'erp.app.pages.accountant.ar-invoice.e-invoice' | translate}}
-				<small>{{'erp.app.pages.accountant.ar-invoice.signed-date' | translate}}</small>
 				<ion-icon class="min-btn" *ngIf="sort.InvoiceNo" [name]="sort.InvoiceNo == 'InvoiceNo'?'arrow-down': 'arrow-up'"></ion-icon>
-				<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.Code" name="search" color="primary"></ion-icon>
+				<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.InvoiceNo" name="search" color="primary"></ion-icon>
 			</div>
 		</header>
 		<form (keydown.enter)="refresh()" (submit)="refresh()" action="#">
@@ -83,8 +84,8 @@
 					<ion-icon class="min-btn" (click)="query.InvoiceDate=''; refresh()" *ngIf="query.InvoiceDate" name="close-circle-outline"></ion-icon>
 				</div>
 				<div class="col-name cell">
-					<input placeholder="{{'erp.app.pages.accountant.ar-invoice.customer-name' | translate}}" [ngModelOptions]="{standalone: true}" [(ngModel)]="query.BuyerName" class="c-input" [ngClass]="{active: query.BuyerName}" type="text">
-					<ion-icon class="min-btn" (click)="query.BuyerName=''; refresh()" *ngIf="query.BuyerName" name="close-circle-outline"></ion-icon>
+					<input placeholder="{{'erp.app.pages.accountant.ar-invoice.customer-name' | translate}}" [ngModelOptions]="{standalone: true}" [(ngModel)]="query.CustomerName" class="c-input" [ngClass]="{active: query.CustomerName}" type="text">
+					<ion-icon class="min-btn" (click)="query.CustomerName=''; refresh()" *ngIf="query.CustomerName" name="close-circle-outline"></ion-icon>
 				</div>
 				<div class="col-number cell">
 					<input placeholder="{{'erp.app.pages.accountant.ar-invoice.original-total-after-tax' | translate}}" [ngModelOptions]="{standalone: true}" [(ngModel)]="query.TotalAfterTax" class="c-input" [ngClass]="{active: query.TotalAfterTax}" type="text">
@@ -114,12 +115,13 @@
 					<div class="col-status cell">
 						<ion-badge [color]="i._Status.Color" [title]="i._Status.Name">
 							{{i._Status.Name}}
+							<abbr class="clickable" (click)="query.Id=i.IDParent; refresh()" *ngIf="i.IDParent">
+								>{{i.IDParent}}
+							</abbr>
 						</ion-badge>
-						<a [href]="'#/'+'arinvoice/'+i.IDParent" (click)="nav('arinvoice/'+i.IDParent,'forward')" *ngIf="i.IDParent">
-							<small>{{i.IDParent}}</small>
-						</a>
+
 					</div>
-					<div class="col-date cell" (click)="query.InvoiceDate=i.Query; pageConfig.isShowSearch=true; refresh()">
+					<div class="col-date cell" (click)="query.InvoiceDate=i._QueryDate; pageConfig.isShowSearch=true; refresh()">
 						{{i.InvoiceDate | date:'yyyy-MM-dd'}}
 					</div>
 					<div class="col-seperator"></div>
@@ -143,12 +145,12 @@
 					<div class="col-number cell"><span>{{i.TotalAfterTax | number: '1.0-0'}}</span></div>
 					<div class="col-code cell">
 						<span *ngIf="i.InvoiceNo">
-							<a  [href]="'http://tracuu.ehoadon.vn/'+i.InvoiceCode" target="_blank" title="{{'erp.app.pages.accountant.ar-invoice.view-hddt' | translate}}">
-								<i class="show-small-inline">eHĐ: </i> {{i.InvoiceNo}}
+							<a [href]="'http://tracuu.ehoadon.vn/'+i.InvoiceCode" target="_blank" title="{{'erp.app.pages.accountant.ar-invoice.view-hddt' | translate}}">
+								<i class="show-small-inline">eHĐ: </i> {{i.InvoiceForm}}{{i.InvoiceSerial}}-{{i.InvoiceNo}}
 							</a>
-							
+
 						</span>
-						<span *ngIf="i.SignedDateText">{{i.SignedDate | date:'yyyy-MM-dd'}}</span>
+						<!-- <span *ngIf="i.SignedDateText">{{i.SignedDate | date:'yyyy-MM-dd'}}</span> -->
 					</div>
 
 				</div>

@@ -1,0 +1,268 @@
+<ion-header>
+	<app-detail-toolbar [page]="this"></app-detail-toolbar>
+</ion-header>
+
+<ion-content appScrollbarTheme class="ion-padding">
+	<div id="order-detail-page" style="position: absolute;"></div>
+	<div class="main-view" *ngIf="item && pageConfig.showSpinner==false">
+		<ion-grid fixed>
+			<form [formGroup]="formGroup">
+				<ion-row class="hr-group">
+					<ion-col size="12" size-sm="12" size-md="12" size-xl="3">
+						<ion-list-header class="ion-no-padding">
+							<ion-label color="primary">{{'A/R Invoice' | translate}}</ion-label>
+						</ion-list-header>
+					</ion-col>
+					<ion-col size="12" size-sm size-xl="4">
+						<app-form-control [field]="{id:'Id', label: 'Id', type : 'number', form : formGroup }" (change)="saveChange()">
+							<small label *ngIf="item.IDSaleOrder"><a [routerLink]="['/sale-order/'+item.IDSaleOrder]">{{'From' | translate}} SO: {{item.IDSaleOrder}}</a></small>
+						</app-form-control>
+						<app-form-control [field]="{id:'IDBusinessPartner', label: 'Customer', type : 'ng-select-bp', form : formGroup,  dataSource: IDBusinessPartnerDataSource,  bindValue: 'Id' }" (onChange)="IDBusinessPartnerChange($event);" (onNav)="nav($event)"></app-form-control>
+						<app-form-control [field]="{id:'TypeCreateInvoice', label: 'A/R content type', type : 'select', form : formGroup,  dataSource: contentTypeList,  bindLabel: 'Name',  bindValue: 'Code' }" (change)="saveChange()"></app-form-control>
+						<app-form-control [field]="{id:'InvoiceDate', label: 'Invoice date', type : 'date', placeholder: 'yyyy-MM-dd', form : formGroup }" (change)="saveChange()"></app-form-control>
+
+					</ion-col>
+					<ion-col size="12" size-sm size-xl="4">
+						<app-form-control [field]="{id:'Status', label: 'Status', type : 'ng-select-status', form : formGroup,  dataSource: statusList,  bindValue: 'Code' }" (change)="saveChange()"></app-form-control>
+						<app-form-control [field]="{id:'InvoiceNo', label: 'Invoice No.', type : 'text', form : formGroup }" (change)="saveChange()"></app-form-control>
+						<app-form-control [field]="{id:'PaymentMethod', label: 'Payment method', type : 'select', form : formGroup,  dataSource: paymentMethodList,  bindLabel: 'Name',  bindValue: 'Code' }" (change)="saveChange()"></app-form-control>
+						<app-form-control [field]="{id:'TotalAfterTax', label: 'Total after tax', type : 'span-number', form : formGroup }"></app-form-control>
+					</ion-col>
+				</ion-row>
+
+			</form>
+		</ion-grid>
+
+		<div class="row-full shadow full-screen">
+			<ion-toolbar color="primary">
+				<ion-segment scrollable="true" (ionChange)="segmentChanged($event)" [value]="segmentView">
+					<ion-segment-button value="s1" *ngIf="!item.IDSaleOrder">
+						<ion-label>{{'A/R invoice list' | translate}}</ion-label>
+					</ion-segment-button>
+					<ion-segment-button value="s2">
+						<ion-label>{{'Items' | translate}}</ion-label>
+					</ion-segment-button>
+					<ion-segment-button value="s4" *ngIf="item?.TypeCreateInvoice == 'DescriptionOfContent'">
+						<ion-label>{{'Content' | translate}}</ion-label>
+					</ion-segment-button>
+
+					<ion-segment-button value="s3">
+						<ion-label>{{'Other information' | translate}}</ion-label>
+					</ion-segment-button>
+				</ion-segment>
+			</ion-toolbar>
+			<!-- Invoice list -->
+			<div *ngIf="segmentView == 's1'" style="max-width: 1250px; margin: auto;">
+				<app-child-invoice [canEdit]="pageConfig.canEdit" [IDParent]="item?.Id" (onUpdate)="refresh()"></app-child-invoice>
+			</div>
+			<!-- Items list -->
+			<div *ngIf="segmentView == 's2'" class="table-contain" style="max-width: 1250px;">
+				<form [formGroup]="formGroup">
+					<ng-container formArrayName="Lines">
+						<section class="table" style="min-width: 1100px;">
+							<header class="bold">
+								<div class="col-id cell">{{'No.' | translate}}</div>
+								<div class="col-name cell">{{'Name' | translate}}</div>
+								<div class="col-number cell">{{'Unit' | translate}}</div>
+								<div class="col-number cell">{{'Quantity' | translate}}</div>
+								<div class="col-checkbox cell">{{'Promotion' | translate}}</div>
+								<div class="col-money cell">{{'Unit price' | translate}}</div>
+								<div class="col-money cell">{{'Discount' | translate}}</div>
+								<div class="col-number cell">{{'Tax rate' | translate}}</div>
+								<div class="col-money cell">{{'Total' | translate}}</div>
+								<a class="col-icon cell clickable" *ngIf="pageConfig.canEdit && !this.item.IDSaleOrder && !this.item._HasChild" (click)="addNewLine()">
+									<ion-icon color="success" class="min-btn" name="add-outline"></ion-icon>
+								</a>
+							</header>
+							<div class="row" *ngFor="let g of formGroup.get('Lines')['controls']; let idx = index;">
+								<ng-container [formGroup]="g">
+									<div class="col-id cell">{{idx+1}}</div>
+									<div class="col-name cell">
+										<ng-select appendTo="#order-detail-page" class="c-input" (change)="IDItemChange($event, g);" labelForId="IDItem" formControlName="IDItem" [items]="g.get('_IDItemDataSource').value.items$ | async" [typeahead]="g.get('_IDItemDataSource').value.input$" [loading]="g.get('_IDItemDataSource').value.loading" [clearable]="true" bindValue="Id" placeholder="{{'Type to search...' | translate}}">
+											<ng-template ng-label-tmp let-i="item">
+												<div *ngIf="i.Id">
+													<a [routerLink]="['/item/'+i.Id]" (mousedown)="$event.stopPropagation()">#{{i.Id}} <ion-icon name="open-outline"></ion-icon></a>
+													<span [title]="i.Name"> <b *ngIf="i.Code" (mousedown)="$event.stopPropagation()">{{i.Code}}</b> {{i.Name}}</span>
+
+												</div>
+											</ng-template>
+											<ng-template ng-option-tmp let-i="item" let-search="searchTerm">
+												<div *ngIf="i">
+													<div><span [ngOptionHighlight]="search">{{i.Name}}</span></div>
+													<small>#<b><span class="important" [ngOptionHighlight]="search">{{i.Id}} - {{i.Code}}</span></b></small>
+												</div>
+											</ng-template>
+										</ng-select>
+									</div>
+									<div class="col-number cell">
+										<select formControlName="IDUoM" class="c-input c-dropdown" (change)="IDUoMChange(g)">
+											<option [disabled]="t.Flag" *ngFor="let t of g.controls._IDUoMDataSource.value" [value]="t.Id">{{t.Name}}</option>
+										</select>
+									</div>
+									<div class="col-number cell"><input formControlName="Quantity" (focus)="$event.target.select()" (change)="saveChange()" class="c-input" mask="separator.2" thousandSeparator=","></div>
+									<div class="col-checkbox cell"><input formControlName="IsPromotionItem" class="c-checkbox" (change)="IsPromotionItemChange(g)" type="checkbox"></div>
+									<div class="col-money cell"><input formControlName="UoMPrice" (focus)="$event.target.select()" (change)="UoMPriceChange(g)" class="c-input" mask="separator.2" thousandSeparator=","></div>
+									<div class="col-money cell"><input formControlName="TotalDiscount" (focus)="$event.target.select()" (change)="TotalDiscountChange(g)" class="c-input" mask="separator.2" thousandSeparator=","></div>
+									<div class="col-number cell">
+										<select class="c-input c-dropdown" (change)="saveChange()" formControlName="TaxRate">
+											<option [value]="0">0%</option>
+											<option [value]="5">5%</option>
+											<option [value]="8">8%</option>
+											<option [value]="10">10%</option>
+											<option [value]="-1">Không chịu thuế</option>
+											<option [value]="-2">Không kê khai thuế</option>
+										</select>
+									</div>
+									<div class="col-money cell"><span class="c-input disable">{{ (g.controls.Quantity.value * g.controls.UoMPrice.value - g.controls.TotalDiscount.value ) * (1+(g.controls.TaxRate.value < 0 ? 0 : g.controls.TaxRate.value)/100) | number: '1.0-0' }}</span>
+									</div>
+									<a class="col-icon cell clickable" *ngIf="pageConfig.canEdit && !this.item.IDSaleOrder && !this.item._HasChild" (click)="removeLine(g, idx)">
+										<ion-icon color="danger" class="min-btn" name="trash-outline"></ion-icon>
+									</a>
+								</ng-container>
+							</div>
+							<div class="row">
+								<div class="col-name cell text-right bold">{{'Total' | translate}}</div>
+								<div class="col-money cell"><span class="c-input disable bold">{{ item.TotalAfterTax | number: '1.0-0'}}</span></div>
+								<a class="col-icon cell" *ngIf="pageConfig.canEdit && !this.item.IDSaleOrder && !this.item._HasChild">
+
+								</a>
+							</div>
+						</section>
+					</ng-container>
+				</form>
+
+			</div>
+			<!-- Content list -->
+			<div *ngIf="segmentView == 's4'" class="table-contain" style="max-width: 1250px;">
+				<form [formGroup]="formGroup">
+					<ng-container formArrayName="Contents">
+						<section class="table" style="min-width: 1100px;">
+							<header class="bold">
+								<div class="col-id cell">{{'No.' | translate}}</div>
+								<div class="col-name cell">{{'Description' | translate}}</div>
+								<div class="col-number cell">{{'Unit' | translate}}</div>
+								<div class="col-number cell">{{'Quantity' | translate}}</div>
+								<div class="col-money cell">{{'Unit price' | translate}}</div>
+								<div class="col-number cell">{{'Tax rate' | translate}}</div>
+								<div class="col-money cell">{{'Total' | translate}}</div>
+								<a class="col-icon cell clickable" *ngIf="pageConfig.canEdit" (click)="addNewContent()">
+									<ion-icon color="success" class="min-btn" name="add-outline"></ion-icon>
+								</a>
+							</header>
+							<div class="row" *ngFor="let g of formGroup.get('Contents')['controls']; let idx = index;">
+								<ng-container [formGroup]="g">
+									<div class="col-id cell">{{idx+1}}</div>
+									<div class="col-name cell"><input class="c-input" id="ItemName" (change)="saveChange();" formControlName="ItemName" type="text"></div>
+									<div class="col-number cell"><input class="c-input" id="UnitName" (change)="saveChange();" formControlName="UnitName" type="text"></div>
+									<div class="col-number cell"><input formControlName="Quantity" (focus)="$event.target.select()" (change)="saveChange()" class="c-input" mask="separator.2" thousandSeparator=","></div>
+									<div class="col-money cell"><input formControlName="UoMPrice" (focus)="$event.target.select()" (change)="saveChange()" class="c-input" mask="separator.2" thousandSeparator=","></div>
+
+
+									<div class="col-number cell">
+										<select class="c-input c-dropdown" (change)="saveChange()" formControlName="TaxRate">
+											<option [value]="0">0%</option>
+											<option [value]="5">5%</option>
+											<option [value]="8">8%</option>
+											<option [value]="10">10%</option>
+											<option [value]="-1">Không chịu thuế</option>
+											<option [value]="-2">Không kê khai thuế</option>
+										</select>
+									</div>
+
+									<div class="col-money cell"><span class="c-input disable">{{ (g.controls.Quantity.value * g.controls.UoMPrice.value ) * (1+(g.controls.TaxRate.value < 0? 0: g.controls.TaxRate.value)/100) | number: '1.0-0' }}</span>
+									</div>
+									<a class="col-icon cell clickable" *ngIf="pageConfig.canEdit" (click)="removeContent(g, idx)">
+										<ion-icon color="danger" class="min-btn" name="trash-outline"></ion-icon>
+									</a>
+								</ng-container>
+							</div>
+							<div class="row">
+								<div class="col-name cell text-right bold">
+									<span *ngIf="item._ContentsTotal >= item.TotalAfterTax">{{'Total' | translate}}</span>
+									<ion-text color="warning" *ngIf="item._ContentsTotal < item.TotalAfterTax">
+										{{'Please check the total!' | translate}}
+									</ion-text>
+								</div>
+								<div class="col-money cell"><span class="c-input disable bold"> {{ item._ContentsTotal | number: '1.0-0'}}</span></div>
+								<a class="col-icon cell" *ngIf="pageConfig.canEdit">
+								</a>
+							</div>
+						</section>
+					</ng-container>
+				</form>
+
+			</div>
+			<!-- Order information -->
+			<div class="ion-padding" *ngIf="segmentView == 's3'">
+				<ion-grid fixed>
+					<form [formGroup]="formGroup">
+						<!-- Invoice information -->
+						<ion-row class="hr-group">
+							<ion-col size="12" size-sm="12" size-md="12" size-xl="3">
+								<ion-list-header class="ion-no-padding">
+									<ion-label color="primary">{{'Invoice information' | translate}}</ion-label>
+								</ion-list-header>
+							</ion-col>
+							<ion-col size="12" size-sm size-xl="4">
+								<app-form-control [field]="{id:'Type', label: 'Type', type : 'select', form : formGroup,  dataSource: typeList,  bindLabel: 'Name',  bindValue: 'Code' }" (change)="saveChange()"></app-form-control>
+								<app-form-control [field]="{id:'TypeCreateInvoice', label: 'A/R content type', type : 'select', form : formGroup,  dataSource: contentTypeList,  bindLabel: 'Name',  bindValue: 'Code' }" (change)="saveChange()"></app-form-control>
+								<app-form-control [field]="{id:'PaymentMethod', label: 'Payment method', type : 'select', form : formGroup,  dataSource: paymentMethodList,  bindLabel: 'Name',  bindValue: 'Code' }" (change)="saveChange()"></app-form-control>
+								<app-form-control [field]="{id:'InvoiceDate', label: 'Invoice date', type : 'date', placeholder: 'yyyy-MM-dd', form : formGroup }" (change)="saveChange()"></app-form-control>
+								<app-form-control [field]="{id:'InvoiceNote', label: 'Invoice note', type : 'textarea', form : formGroup }" (change)="saveChange()"></app-form-control>
+
+							</ion-col>
+							<ion-col size="12" size-sm size-xl="4">
+								<app-form-control [field]="{id:'Id', label: 'Id', type : 'number', form : formGroup }" (change)="saveChange()"></app-form-control>
+								<app-form-control [field]="{id:'InvoiceForm', label: 'Invoice form', type : 'text', form : formGroup }" (change)="saveChange()"></app-form-control>
+								<app-form-control [field]="{id:'InvoiceSerial', label: 'Invoice serial', type : 'text', form : formGroup }" (change)="saveChange()"></app-form-control>
+								<app-form-control [field]="{id:'InvoiceNo', label: 'Invoice No.', type : 'text', form : formGroup }" (change)="saveChange()"></app-form-control>
+								<app-form-control [field]="{id:'InvoiceCode', label: 'Invoice code', type : 'text', form : formGroup }" (change)="saveChange()"></app-form-control>
+								<app-form-control [field]="{id:'Name', label: 'Name', type : 'text', form : formGroup }" (change)="saveChange()"></app-form-control>
+							</ion-col>
+						</ion-row>
+						<!-- Buyer information -->
+						<ion-row class="hr-group">
+							<ion-col size="12" size-sm="12" size-md="12" size-xl="3">
+								<ion-list-header class="ion-no-padding">
+									<ion-label color="primary">{{'Buyer information' | translate}}</ion-label>
+								</ion-list-header>
+							</ion-col>
+							<ion-col size="12" size-sm size-xl="4">
+								<app-form-control [field]="{id:'BuyerName', label: 'Guest name', type : 'text', form : formGroup }" (change)="saveChange()"></app-form-control>
+								<app-form-control [field]="{id:'BuyerUnitName', label: 'Company', type : 'text', form : formGroup }" (change)="saveChange()"></app-form-control>
+								<app-form-control [field]="{id:'BuyerTaxCode', label: 'Tax code', type : 'text', form : formGroup }" (change)="saveChange()"></app-form-control>
+								<app-form-control [field]="{id:'ReceiveType', label: 'Types of invoice delivery', type : 'select', form : formGroup,  dataSource: receiveTypeList,  bindLabel: 'Name',  bindValue: 'Code' }" (change)="saveChange()"></app-form-control>
+
+							</ion-col>
+							<ion-col size="12" size-sm size-xl="4">
+								<app-form-control [field]="{id:'ReceiverEmail', label: 'Receiver email', type : 'email', form : formGroup }" (change)="saveChange()"></app-form-control>
+								<app-form-control [field]="{id:'ReceiverMobile', label: 'Receiver mobile', type : 'text', form : formGroup }" (change)="saveChange()"></app-form-control>
+								<app-form-control [field]="{id:'BuyerAddress', label: 'Address', type : 'textarea', form : formGroup }" (change)="saveChange()"></app-form-control>
+							</ion-col>
+						</ion-row>
+						<!-- Other information -->
+						<ion-row class="hr-group" *ngIf="item.Id">
+							<ion-col size="12" size-sm="12" size-md="12" size-xl="3">
+								<ion-list-header class="ion-no-padding">
+									<ion-label color="primary">{{'Other information' | translate}}</ion-label>
+								</ion-list-header>
+							</ion-col>
+							<ion-col size="12" size-sm size-xl="4">
+								<app-form-control [field]="{id:'CreatedBy', type : 'text', label: 'Created by', form : formGroup }"></app-form-control>
+								<app-form-control [field]="{id:'CreatedDate', type : 'span-datetime', label: 'Created date', form : formGroup }"></app-form-control>
+								<app-form-control [field]="{id:'ModifiedBy', type : 'text', label: 'Last modified by', form : formGroup }"></app-form-control>
+								<app-form-control [field]="{id:'ModifiedDate', type : 'span-datetime', label: 'Last modified date', form : formGroup }"></app-form-control>
+							</ion-col>
+							<ion-col size="12" size-sm size-xl="4">
+								<app-form-control [field]="{id:'IDBranch', type : 'branch-breadcrumbs', label: 'Branch', form : formGroup, dataSource:env.branchList }"></app-form-control>
+								<app-form-control [field]="{id:'Remark', type : 'textarea', label: 'Remark', form : formGroup }" (change)="saveChange()"></app-form-control>
+							</ion-col>
+						</ion-row>
+					</form>
+				</ion-grid>
+			</div>
+
+		</div>
+	</div>
+	<app-page-message [itemsLength]="item? 1: 0" [showSpinner]="pageConfig.showSpinner"></app-page-message>
+</ion-content>

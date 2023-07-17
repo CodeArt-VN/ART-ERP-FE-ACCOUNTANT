@@ -20,7 +20,7 @@ import { SaleOrderMobileAddContactModalPage } from 'src/app/pages/SALE/sale-orde
 	templateUrl: './arinvoice-detail.page.html',
 	styleUrls: ['./arinvoice-detail.page.scss'],
 })
-export class ARInvoiceDetailPage extends PageBase {
+export class ARInvoiceDetailPage_ extends PageBase {
 	statusList = [];
 	statusEInvoiceList = [];
 	typeList = [];
@@ -76,7 +76,7 @@ export class ARInvoiceDetailPage extends PageBase {
 			, BuyerUnitName: ['', Validators.required]
 			, BuyerBankAccount: new FormControl({ value: '', disabled: false })
 			, PaymentMethod: new FormControl({ value: 'InCash/WireTransfer', disabled: false })
-			, ReceiveType: new FormControl({ value: 'EInvoiceReceiveTypeEmail' , disabled: false })
+			, ReceiveType: new FormControl({ value: 'EInvoiceReceiveTypeEmail', disabled: false })
 			, ReceiverEmail: new FormControl()
 			, ReceiverMobile: new FormControl()
 			, ReceiverAddress: new FormControl()
@@ -342,7 +342,7 @@ export class ARInvoiceDetailPage extends PageBase {
 			this.contactListInput$.pipe(
 				distinctUntilChanged(),
 				tap(() => this.contactListLoading = true),
-				switchMap(term => this.contactProvider.search({ Take: 20, Skip: 0, SkipMCP: true, Term: term ? term : 'BP:'+  this.item.IDContact }).pipe(
+				switchMap(term => this.contactProvider.search({ Take: 20, Skip: 0, SkipMCP: true, Term: term ? term : 'BP:' + this.item.IDContact }).pipe(
 					catchError(() => of([])), // empty list on error
 					tap(() => this.contactListLoading = false)
 				))
@@ -874,70 +874,70 @@ export class ARInvoiceDetailPage extends PageBase {
 		}
 	}
 
-  sortToggle(field) {
-    if (!this.sort[field]) {
-        this.sort[field] = field
-    } else if (this.sort[field] == field) {
-        this.sort[field] = field + '_desc'
-    }
-    else {
-        delete this.sort[field];
-    }
+	sortToggle(field) {
+		if (!this.sort[field]) {
+			this.sort[field] = field
+		} else if (this.sort[field] == field) {
+			this.sort[field] = field + '_desc'
+		}
+		else {
+			delete this.sort[field];
+		}
 
-    let sortTerms = this.sort;
+		let sortTerms = this.sort;
 
-    let s = Object.keys(sortTerms).reduce(function (res, v) {
-        return res.concat(sortTerms[v]);
-    }, []);
+		let s = Object.keys(sortTerms).reduce(function (res, v) {
+			return res.concat(sortTerms[v]);
+		}, []);
 
-    if (s.length) {
-        this.query.SortBy = '[' + s.join(',') + ']';
-    }
-    else {
-        delete this.query.SortBy;
-    }
+		if (s.length) {
+			this.query.SortBy = '[' + s.join(',') + ']';
+		}
+		else {
+			delete this.query.SortBy;
+		}
 
-    this.reInitRelatedARs();
-}
+		this.reInitRelatedARs();
+	}
 
-async addContact() {
-  const modal = await this.modalController.create({
-      component: SaleOrderMobileAddContactModalPage,
-      swipeToClose: true,
-      cssClass: 'my-custom-class',
-      componentProps: {
-          'firstName': 'Douglas',
-          'lastName': 'Adams',
-          'middleInitial': 'N'
-      }
-  });
-  await modal.present();
-  const { data } = await modal.onWillDismiss();
-  
-  let newContact = data[0];
-  let andApply = data[1];
+	async addContact() {
+		const modal = await this.modalController.create({
+			component: SaleOrderMobileAddContactModalPage,
+			swipeToClose: true,
+			cssClass: 'my-custom-class',
+			componentProps: {
+				'firstName': 'Douglas',
+				'lastName': 'Adams',
+				'middleInitial': 'N'
+			}
+		});
+		await modal.present();
+		const { data } = await modal.onWillDismiss();
 
-  if (andApply) {
-      this.changedIDAddress(newContact);
-  }
-}
+		let newContact = data[0];
+		let andApply = data[1];
 
-changedIDAddress(i) {
-  if (i) {
-      this.contactSelected = i;
-      this.item.IDContact = i.Id;
-      this.item.IDAddress = i.Id;
-      this.formGroup.controls.IDContact.setValue(i.Id);
-      this.formGroup.controls.IDContact.markAsDirty();
-      this.formGroup.controls.IDAddress.setValue(i.IDAddress);
-      this.formGroup.controls.IDAddress.markAsDirty();
-      if (this.contactListSelected.findIndex(d => d.Id == i.Id) == -1) {
-          this.contactListSelected.push(i);
-          this.contactSearch();
-      }
-      this.saveChange();
-  }
+		if (andApply) {
+			this.changedIDAddress(newContact);
+		}
+	}
 
-}
+	changedIDAddress(i) {
+		if (i) {
+			this.contactSelected = i;
+			this.item.IDContact = i.Id;
+			this.item.IDAddress = i.Id;
+			this.formGroup.controls.IDContact.setValue(i.Id);
+			this.formGroup.controls.IDContact.markAsDirty();
+			this.formGroup.controls.IDAddress.setValue(i.IDAddress);
+			this.formGroup.controls.IDAddress.markAsDirty();
+			if (this.contactListSelected.findIndex(d => d.Id == i.Id) == -1) {
+				this.contactListSelected.push(i);
+				this.contactSearch();
+			}
+			this.saveChange();
+		}
+
+	}
 
 }

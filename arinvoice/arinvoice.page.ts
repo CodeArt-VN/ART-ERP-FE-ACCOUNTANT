@@ -9,6 +9,7 @@ import { ApiSetting } from 'src/app/services/static/api-setting';
 import { ARInvoiceSplitModalPage } from '../arinvoice-split-modal/arinvoice-split-modal.page';
 import { ARInvoiceMergeModalPage } from '../arinvoice-merge-modal/arinvoice-merge-modal.page';
 import { EInvoiceService } from 'src/app/services/einvoice.service';
+import { lib } from 'src/app/services/static/global-functions';
 
 @Component({
     selector: 'app-arinvoice',
@@ -65,15 +66,13 @@ export class ARInvoicePage extends PageBase {
         // });
     }
 
-    loadData(event) {
-        this.pageProvider.apiPath.getList.url = function () { return ApiSetting.apiDomain("AC/ARInvoice/") };
-        super.loadData(event);
-    }
+   
 
     loadedData(event) {
 
         this.items.forEach(i => {
             i._Status = this.statusList.find(d => d.Code == i.Status);
+            i._QueryDate = lib.dateFormat(i.InvoiceDate);
         });
         super.loadedData(event);
     }
@@ -494,6 +493,26 @@ export class ARInvoicePage extends PageBase {
             
             this.submitAttempt = false;
         });
+    }
+
+    signARInvoice(){
+        if (this.submitAttempt) return;
+        this.selectedItems = this.selectedItems.filter(i => (i.Status == 'EInvoiceNew'));
+        if (!this.selectedItems.length) {
+            this.env.showMessage('Vui lòng chọn hóa đơn cần ký');
+            return;
+        }
+        this.submitAttempt = true;
+
+        this.env.showLoading('Vui lòng chờ ký số hóa đơn...', this.EInvoiceService.SignEInvoice(this.selectedItems.map(i => i.Id)).toPromise())
+            .then((resp: any) => {
+                this.submitAttempt = false;
+                this.refresh();
+            })
+            .catch(err => {
+                console.log(err);
+                this.submitAttempt = false;
+            });
     }
 
     syncEInvoice() {
