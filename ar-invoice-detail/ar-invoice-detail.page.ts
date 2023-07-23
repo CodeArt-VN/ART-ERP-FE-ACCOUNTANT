@@ -117,9 +117,9 @@ export class ARInvoiceDetailPage extends PageBase {
     IDBusinessPartnerChange(i) {
 
         this.formGroup.get('BuyerName').setValue(i.IsPersonal ? i.Name : '');
-        this.formGroup.get('BuyerUnitName').setValue(i.IsPersonal ? '' : i.CompanyName);
-        this.formGroup.get('BuyerTaxCode').setValue(i.IsPersonal ? '' : i.TaxCode);
-        this.formGroup.get('BuyerAddress').setValue(i.IsPersonal ? '' : i.BillingAddress);
+        this.formGroup.get('BuyerUnitName').setValue(i.CompanyName);
+        this.formGroup.get('BuyerTaxCode').setValue(i.TaxCode);
+        this.formGroup.get('BuyerAddress').setValue(i.BillingAddress);
         this.formGroup.get('ReceiverEmail').setValue(i.Email);
         this.formGroup.get('ReceiverMobile').setValue(i.BillingPhone || i.WorkPhone);
 
@@ -130,6 +130,11 @@ export class ARInvoiceDetailPage extends PageBase {
         this.formGroup.get('ReceiverEmail').markAsDirty();
         this.formGroup.get('ReceiverMobile').markAsDirty();
 
+        this.saveChange();
+    }
+
+    TypeCreateInvoiceChange(i){
+        this.segmentView = i?.Code == 'DescriptionOfContent' ? 's4' : 's3';
         this.saveChange();
     }
 

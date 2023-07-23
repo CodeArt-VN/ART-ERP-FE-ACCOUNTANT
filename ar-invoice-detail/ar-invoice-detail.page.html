@@ -18,7 +18,7 @@
 							<small label *ngIf="item.IDSaleOrder"><a [routerLink]="['/sale-order/'+item.IDSaleOrder]">{{'From' | translate}} SO: {{item.IDSaleOrder}}</a></small>
 						</app-form-control>
 						<app-form-control [field]="{id:'IDBusinessPartner', label: 'Customer', type : 'ng-select-bp', form : formGroup,  dataSource: IDBusinessPartnerDataSource,  bindValue: 'Id' }" (onChange)="IDBusinessPartnerChange($event);" (onNav)="nav($event)"></app-form-control>
-						<app-form-control [field]="{id:'TypeCreateInvoice', label: 'A/R content type', type : 'select', form : formGroup,  dataSource: contentTypeList,  bindLabel: 'Name',  bindValue: 'Code' }" (change)="saveChange()"></app-form-control>
+						<app-form-control [field]="{id:'TypeCreateInvoice', label: 'A/R content type', type : 'ng-select', form : formGroup,  dataSource: contentTypeList,  bindLabel: 'Name',  bindValue: 'Code' }" (onChange)="TypeCreateInvoiceChange($event)"></app-form-control>
 						<app-form-control [field]="{id:'InvoiceDate', label: 'Invoice date', type : 'date', placeholder: 'yyyy-MM-dd', form : formGroup }" (change)="saveChange()"></app-form-control>
 
 					</ion-col>
@@ -42,7 +42,7 @@
 					<ion-segment-button value="s2">
 						<ion-label>{{'Items' | translate}}</ion-label>
 					</ion-segment-button>
-					<ion-segment-button value="s4" *ngIf="item?.TypeCreateInvoice == 'DescriptionOfContent'">
+					<ion-segment-button value="s4" *ngIf="formGroup.get('TypeCreateInvoice').value == 'DescriptionOfContent'">
 						<ion-label>{{'Content' | translate}}</ion-label>
 					</ion-segment-button>
 
@@ -205,7 +205,7 @@
 							</ion-col>
 							<ion-col size="12" size-sm size-xl="4">
 								<app-form-control [field]="{id:'Type', label: 'Type', type : 'select', form : formGroup,  dataSource: typeList,  bindLabel: 'Name',  bindValue: 'Code' }" (change)="saveChange()"></app-form-control>
-								<app-form-control [field]="{id:'TypeCreateInvoice', label: 'A/R content type', type : 'select', form : formGroup,  dataSource: contentTypeList,  bindLabel: 'Name',  bindValue: 'Code' }" (change)="saveChange()"></app-form-control>
+								<app-form-control [field]="{id:'TypeCreateInvoice', label: 'A/R content type', type : 'ng-select', form : formGroup,  dataSource: contentTypeList,  bindLabel: 'Name',  bindValue: 'Code' }" (onChange)="TypeCreateInvoiceChange($event)"></app-form-control>
 								<app-form-control [field]="{id:'PaymentMethod', label: 'Payment method', type : 'select', form : formGroup,  dataSource: paymentMethodList,  bindLabel: 'Name',  bindValue: 'Code' }" (change)="saveChange()"></app-form-control>
 								<app-form-control [field]="{id:'InvoiceDate', label: 'Invoice date', type : 'date', placeholder: 'yyyy-MM-dd', form : formGroup }" (change)="saveChange()"></app-form-control>
 								<app-form-control [field]="{id:'InvoiceNote', label: 'Invoice note', type : 'textarea', form : formGroup }" (change)="saveChange()"></app-form-control>

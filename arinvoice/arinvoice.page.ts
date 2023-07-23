@@ -66,7 +66,7 @@ export class ARInvoicePage extends PageBase {
         // });
     }
 
-   
+
 
     loadedData(event) {
 
@@ -405,67 +405,23 @@ export class ARInvoicePage extends PageBase {
             return;
         }
 
-        if (this.selectedItems.length == 0) {
-            this.alertCtrl.create({
-                header: 'Xuất hóa đơn điện tử',
-                //subHeader: '---',
-                message: 'Bạn chưa chọn hoá đơn nào, bạn có muốn hệ thống tự tạo hóa đơn gộp và xuất HĐĐT cho các KHÁCH HÀNG KHÔNG LẤY HÓA ĐƠN hay không?',
-                buttons: [
-                    {
-                        text: 'Không',
-                        role: 'cancel',
-                        handler: () => {
-
-                        }
-                    },
-                    {
-                        text: 'Đồng ý',
-                        cssClass: 'success-btn',
-                        handler: () => {
-                            this.EInvoiceService.AutoMergeARAndCreateEInvoice(this.query.InvoiceDate)
-                                .then((resp: any) => {
-                                    if (resp == 'empty') {
-                                        this.env.showTranslateMessage('erp.app.pages.accountant.ar-invoice.issue-einvoice-message-empty', 'warning');
-                                    }
-                                    else if (resp == '') {
-                                        this.env.showTranslateMessage('erp.app.pages.accountant.ar-invoice.issue-einvoice-message-success', 'success');
-                                    }
-                                    else {
-                                        this.env.showTranslateMessage(resp, 'error');
-                                    }
-
-                                    this.submitAttempt = false;
-                                    this.refresh();
-                                }).finally(() => {
-
-                                })
-                        }
-                    }
-                ]
-            }).then(alert => {
-                alert.present();
-            })
+        let itemsCanNotProcess = this.selectedItems.filter(i => (i.Status != 'ARInvoiceApproved'));
+        if (itemsCanNotProcess.length == this.selectedItems.length) {
+            this.env.showTranslateMessage('erp.app.pages.accountant.ar-invoice.message.can-not-create-einvoice-approved-only', 'warning');
         }
         else {
-            let itemsCanNotProcess = this.selectedItems.filter(i => (i.Status != 'ARInvoiceApproved'));
-            if (itemsCanNotProcess.length == this.selectedItems.length) {
-                this.env.showTranslateMessage('erp.app.pages.accountant.ar-invoice.message.can-not-create-einvoice-approved-only', 'warning');
-            }
-            else {
-                itemsCanNotProcess.forEach(i => {
-                    i.checked = false;
-                });
-
-                this.selectedItems = this.selectedItems.filter(i => (i.Status == 'ARInvoiceApproved'));
-
-                this.showCreateEInvoicePopup();
-            }
+            itemsCanNotProcess.forEach(i => {
+                i.checked = false;
+            });
+            this.selectedItems = this.selectedItems.filter(i => (i.Status == 'ARInvoiceApproved'));
+            this.showCreateEInvoicePopup();
         }
+
     }
 
     updateEInvoice() {
         if (this.submitAttempt) return;
-        
+
         this.selectedItems = this.selectedItems.filter(i => (i.Status == 'EInvoiceNew'));
         if (!this.selectedItems.length) {
             this.env.showMessage('Vui lòng chọn hóa đơn cần cập nhật dữ liệu');
@@ -474,28 +430,28 @@ export class ARInvoicePage extends PageBase {
         this.submitAttempt = true;
 
         this.env.showLoading('Vui lòng chờ cập nhật hóa đơn...', this.EInvoiceService.UpdateEInvoice(this.selectedItems.map(i => i.Id)).toPromise())
-        .then((resp: any) => {
-            this.submitAttempt = false;
-            this.env.showMessage('Đã cập nhật hóa đơn điện tử thành công!', 'success');
-            this.refresh();
-        })
-        .catch(err => {
-            console.log(err);
-            if (err?.error?.ExceptionMessage) {
-                this.env.showMessage(err.error.ExceptionMessage, 'danger');
-            }
-            else if (err.message) {
-                this.env.showMessage(err.message, 'danger');
-            }
-            else{
-                this.env.showMessage('Có lỗi khi cập nhật, xin vui lòng thử lại sau', 'danger');
-            }
-            
-            this.submitAttempt = false;
-        });
+            .then((resp: any) => {
+                this.submitAttempt = false;
+                this.env.showMessage('Đã cập nhật hóa đơn điện tử thành công!', 'success');
+                this.refresh();
+            })
+            .catch(err => {
+                console.log(err);
+                if (err?.error?.ExceptionMessage) {
+                    this.env.showMessage(err.error.ExceptionMessage, 'danger');
+                }
+                else if (err.message) {
+                    this.env.showMessage(err.message, 'danger');
+                }
+                else {
+                    this.env.showMessage('Có lỗi khi cập nhật, xin vui lòng thử lại sau', 'danger');
+                }
+
+                this.submitAttempt = false;
+            });
     }
 
-    signARInvoice(){
+    signARInvoice() {
         if (this.submitAttempt) return;
         this.selectedItems = this.selectedItems.filter(i => (i.Status == 'EInvoiceNew'));
         if (!this.selectedItems.length) {
@@ -517,7 +473,7 @@ export class ARInvoicePage extends PageBase {
 
     syncEInvoice() {
         if (this.submitAttempt) return;
-        
+
         this.selectedItems = this.selectedItems.filter(i => (i.Status == 'EInvoiceNew'));
         if (!this.selectedItems.length) {
             this.env.showMessage('Vui lòng chọn hóa đơn cần đồng bộ dữ liệu');
@@ -581,7 +537,8 @@ export class ARInvoicePage extends PageBase {
                                         this.refresh();
                                     }
                                 })
-                                .catch(err => {
+                                .catch((err:any) => {
+                                    this.env.showMessage('Không xuất hóa đơn được, xin vui lòng kiểm tra lại! \n'  + err?.error?.ExceptionMessage, 'danger');
                                     console.log(err);
                                     this.submitAttempt = false;
                                     if (loading) loading.dismiss();
