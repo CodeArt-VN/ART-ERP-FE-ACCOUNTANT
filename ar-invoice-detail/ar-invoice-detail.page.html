@@ -78,7 +78,9 @@
 								<ng-container [formGroup]="g">
 									<div class="col-id cell">{{idx+1}}</div>
 									<div class="col-name cell">
-										<ng-select appendTo="#order-detail-page" class="c-input" (change)="IDItemChange($event, g);" labelForId="IDItem" formControlName="IDItem" [items]="g.get('_IDItemDataSource').value.items$ | async" [typeahead]="g.get('_IDItemDataSource').value.input$" [loading]="g.get('_IDItemDataSource').value.loading" [clearable]="true" bindValue="Id" placeholder="{{'Type to search...' | translate}}">
+										<app-input-control [field]="{id:'IDItem', label: 'Item', type : 'ng-select-item', form : g,  dataSource: g.get('_IDItemDataSource').value,  bindValue: 'Id', clearable: true, placeholder: 'Type to search...' }" (onChange)="IDItemChange($event, g);" (onNav)="nav($event)"></app-input-control>
+
+										<!-- <ng-select appendTo="#order-detail-page" class="c-input" (change)="IDItemChange($event, g);" labelForId="IDItem" formControlName="IDItem" [items]="g.get('_IDItemDataSource').value.items$ | async" [typeahead]="g.get('_IDItemDataSource').value.input$" [loading]="g.get('_IDItemDataSource').value.loading" [clearable]="true" bindValue="Id" placeholder="{{'Type to search...' | translate}}">
 											<ng-template ng-label-tmp let-i="item">
 												<div *ngIf="i.Id">
 													<a [routerLink]="['/item/'+i.Id]" (mousedown)="$event.stopPropagation()">#{{i.Id}} <ion-icon name="open-outline"></ion-icon></a>
@@ -92,7 +94,7 @@
 													<small>#<b><span class="important" [ngOptionHighlight]="search">{{i.Id}} - {{i.Code}}</span></b></small>
 												</div>
 											</ng-template>
-										</ng-select>
+										</ng-select> -->
 									</div>
 									<div class="col-number cell">
 										<select formControlName="IDUoM" class="c-input c-dropdown" (change)="IDUoMChange(g)">

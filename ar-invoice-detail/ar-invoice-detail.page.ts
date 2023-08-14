@@ -44,7 +44,7 @@ export class ARInvoiceDetailPage extends PageBase {
     ) {
         super();
         this.pageConfig.isDetailPage = true;
-
+        
         this.formGroup = formBuilder.group({
             IDBranch: new FormControl({ value: this.env.selectedBranch, disabled: false }),
             Id: new FormControl({ value: '', disabled: true }),
@@ -256,7 +256,7 @@ export class ARInvoiceDetailPage extends PageBase {
                         this.input$.pipe(
                             distinctUntilChanged(),
                             tap(() => this.loading = true),
-                            switchMap(term => this.searchProvider.search({ SortBy: ['Id_desc'], Take: 20, Skip: 0, Term: term }).pipe(
+                            switchMap(term => this.searchProvider.search({ ARSearch: true, SortBy: ['Id_desc'], Take: 20, Skip: 0, Term: term }).pipe(
                                 catchError(() => of([])), // empty list on error
                                 tap(() => this.loading = false)
                             ))
@@ -357,7 +357,8 @@ export class ARInvoiceDetailPage extends PageBase {
             let UoMs = group.controls._IDUoMDataSource.value;
             let u = UoMs.find(d => d.Id == idUoM);
             if (u && u.PriceList) {
-                let p = u.PriceList.find(d => d.Type == 'PriceListForCustomer');
+                let paymentMethod = this.formGroup.controls.PaymentMethod.value;
+                let p = u.PriceList.find(d => d.Type == (paymentMethod == 'GoodsReturn' ? 'PriceListForVendor' : 'PriceListForCustomer'));
                 let taxRate = group.controls.TaxRate.value;
                 if (p && taxRate != null) {
                     let priceBeforeTax = null;
