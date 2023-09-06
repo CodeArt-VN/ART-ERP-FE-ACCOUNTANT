@@ -115,7 +115,6 @@ export class ARInvoiceDetailPage extends PageBase {
     };
 
     IDBusinessPartnerChange(i) {
-
         this.formGroup.get('BuyerName').setValue(i.IsPersonal ? i.Name : '');
         this.formGroup.get('BuyerUnitName').setValue(i.CompanyName);
         this.formGroup.get('BuyerTaxCode').setValue(i.TaxCode);

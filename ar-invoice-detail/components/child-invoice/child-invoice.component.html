@@ -1,4 +1,3 @@
-
 <section class="table responsive">
 	<header class="bold">
 		<div class="col-checkbox cell">
@@ -20,20 +19,20 @@
 			<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.InvoiceDate" name="search" color="primary"></ion-icon>
 		</div>
 		<div class="col-name cell" (click)="sortToggle('CustomerName')">
-			
+
 			{{'Customer name' | translate}}
 			<small class="taxid">{{'erp.app.pages.accountant.ar-invoice.taxid' | translate}}</small>
 			<ion-icon class="min-btn" *ngIf="sort.CustomerName" [name]="sort.CustomerName == 'CustomerName'?'arrow-down': 'arrow-up'"></ion-icon>
 			<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.CustomerName" name="search" color="primary"></ion-icon>
 		</div>
-		
+
 		<div class="col-number cell" (click)="sortToggle('TotalAfterTax')">
 			{{'Total' | translate}}
 			<ion-icon class="min-btn" *ngIf="sort.TotalAfterTax" [name]="sort.TotalAfterTax == 'TotalAfterTax'?'arrow-down': 'arrow-up'"></ion-icon>
 			<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.TotalAfterTax" name="search" color="primary"></ion-icon>
 		</div>
 
-		<div class="col-icon cell clickable" title="{{'Search' | translate}}" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" >
+		<div class="col-icon cell clickable" title="{{'Search' | translate}}" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch">
 			<ion-icon class="min-btn" name="search-outline"></ion-icon>
 		</div>
 		<!-- <div class="col-icon cell clickable" *ngIf="pageConfig.canEdit" title="{{'Add A/R invoices' | translate}}" (click)="addARInvoice()">
@@ -54,7 +53,7 @@
 				<input placeholder="{{'SO Id' | translate}}" [ngModelOptions]="{standalone: true}" [(ngModel)]="query.IDSaleOrder" class="c-input" [ngClass]="{active: query.IDSaleOrder}" type="">
 				<ion-icon class="min-btn" (click)="query.IDSaleOrder=''; refresh()" *ngIf="query.IDSaleOrder" name="close-circle-outline"></ion-icon>
 			</div>
-			
+
 			<div class="col-date cell">
 				<input placeholder="{{'Invoice date' | translate}}" (change)="refresh()" [ngModelOptions]="{standalone: true}" [(ngModel)]="query.InvoiceDate" class="c-input" [ngClass]="{active: query.InvoiceDate}" type="date">
 				<ion-icon class="min-btn" (click)="query.InvoiceDate=''; refresh()" *ngIf="query.InvoiceDate" name="close-circle-outline"></ion-icon>
@@ -68,55 +67,52 @@
 				<ion-icon class="min-btn" (click)="query.TotalAfterTax=''; refresh()" *ngIf="query.TotalAfterTax" name="close-circle-outline"></ion-icon>
 			</div>
 			<div class="col-icon cell" *ngIf="pageConfig.canEdit">
-				
+
 			</div>
 
 			<button mat-raised-button type="submit" style="display:none">Search</button>
 		</header>
 	</form>
 	<app-page-message [itemsLength]="items.length" [showSpinner]="pageConfig.showSpinner"></app-page-message>
-	<ion-virtual-scroll [items]="items" approxItemHeight="27px" *ngIf="items.length && pageConfig.showSpinner==false">
-		<ng-container *virtualItem="let i; let itemBounds = bounds; let j = index;">
-			<div class="row" [ngClass]="{odd: j % 2 != 0}" [ngClass]="{selected: i.checked}">
-				<div class="col-checkbox cell">
-					<input (click)="changeSelection(i, $event)" class="c-checkbox" [(ngModel)]="i.checked" type="checkbox">
-				</div>
-				<div (click)="nav(this.pageConfig.pageName+'/'+i.Id,'forward')" class="col-id cell">
-					<a [routerLink]="['/'+pageConfig.pageName+'/'+i.Id]">{{i.Id}}</a>
-				</div>
-				<div (click)="nav('/sale-order-mobile-viewer/'+i.Id,'forward')" class="col-id cell">
-					<a *ngIf="i.IDSaleOrder" [routerLink]="['/sale-order-mobile-viewer/'+i.IDSaleOrder]" class="col-id cell"><span class="show-small-inline">SO: </span> {{i.IDSaleOrder}}</a>
-				</div>
-			
-				<div class="col-date cell" (click)="query.InvoiceDate=i.Query; pageConfig.isShowSearch=true; refresh()">
-					{{i.InvoiceDate | date:'yyyy-MM-dd'}}
-				</div>
-				<div class="col-seperator"></div>
-				<div class="col-name cell">
-					<div>
-						<span title="{{'erp.app.pages.accountant.ar-invoice.view-invoice-detail' | translate}}">{{i.CustomerName}}
-							<a [href]="'#/'+'business-partner/'+i.IDBusinessPartner" (click)="nav('business-partner/'+i.IDBusinessPartner,'forward')" title="{{'erp.app.pages.accountant.ar-invoice.view-business-partner' | translate}}">
-								<ion-icon name="open-outline"></ion-icon>
-							</a>
-							<small class="taxid" *ngIf="i.BuyerTaxCode">
-								{{i.BuyerTaxCode}}
-							</small>
-						</span>
-						<div *ngIf="i.Remark">
-							<ion-text color="warning">
-								<i [innerHtml]="i.Remark"></i>
-							</ion-text>
-						</div>
-					</div>
-				</div>
-				<div class="col-number cell"><span>{{i.TotalAfterTax | number: '1.0-0'}}</span></div>
-			
-				<div class="col-icon cell clickable" *ngIf="pageConfig.canEdit"> 
-					<ion-icon color="danger" slot="icon-only" name="trash-outline" (click)="removeRow(i)"></ion-icon>
+	<div *ngFor="let i of items; let j = index;" class="row" [ngClass]="{odd: j % 2 != 0}" [ngClass]="{selected: i.checked}">
+		<div class="col-checkbox cell">
+			<input (click)="changeSelection(i, $event)" class="c-checkbox" [(ngModel)]="i.checked" type="checkbox">
+		</div>
+		<div (click)="nav(this.pageConfig.pageName+'/'+i.Id,'forward')" class="col-id cell">
+			<a [routerLink]="['/'+pageConfig.pageName+'/'+i.Id]">{{i.Id}}</a>
+		</div>
+		<div (click)="nav('/sale-order-mobile-viewer/'+i.Id,'forward')" class="col-id cell">
+			<a *ngIf="i.IDSaleOrder" [routerLink]="['/sale-order-mobile-viewer/'+i.IDSaleOrder]" class="col-id cell"><span class="show-small-inline">SO: </span> {{i.IDSaleOrder}}</a>
+		</div>
+
+		<div class="col-date cell" (click)="query.InvoiceDate=i.Query; pageConfig.isShowSearch=true; refresh()">
+			{{i.InvoiceDate | date:'yyyy-MM-dd'}}
+		</div>
+		<div class="col-seperator"></div>
+		<div class="col-name cell">
+			<div>
+				<span title="{{'erp.app.pages.accountant.ar-invoice.view-invoice-detail' | translate}}">{{i.CustomerName}}
+					<a [href]="'#/'+'business-partner/'+i.IDBusinessPartner" (click)="nav('business-partner/'+i.IDBusinessPartner,'forward')" title="{{'erp.app.pages.accountant.ar-invoice.view-business-partner' | translate}}">
+						<ion-icon name="open-outline"></ion-icon>
+					</a>
+					<small class="taxid" *ngIf="i.BuyerTaxCode">
+						{{i.BuyerTaxCode}}
+					</small>
+				</span>
+				<div *ngIf="i.Remark">
+					<ion-text color="warning">
+						<i [innerHtml]="i.Remark"></i>
+					</ion-text>
 				</div>
 			</div>
-		</ng-container>
-	</ion-virtual-scroll>
+		</div>
+		<div class="col-number cell"><span>{{i.TotalAfterTax | number: '1.0-0'}}</span></div>
+
+		<div class="col-icon cell clickable" *ngIf="pageConfig.canEdit">
+			<ion-icon color="danger" slot="icon-only" name="trash-outline" (click)="removeRow(i)"></ion-icon>
+		</div>
+	</div>
+
 </section>
 
 <ion-infinite-scroll color="primary" threshold="20%" (ionInfinite)="loadData($event)" [disabled]="!pageConfig.infiniteScroll || pageConfig.isEndOfData">

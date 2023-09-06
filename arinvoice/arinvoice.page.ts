@@ -10,6 +10,7 @@ import { ARInvoiceSplitModalPage } from '../arinvoice-split-modal/arinvoice-spli
 import { ARInvoiceMergeModalPage } from '../arinvoice-merge-modal/arinvoice-merge-modal.page';
 import { EInvoiceService } from 'src/app/services/einvoice.service';
 import { lib } from 'src/app/services/static/global-functions';
+import { SortConfig } from 'src/app/models/options-interface';
 
 @Component({
     selector: 'app-arinvoice',
@@ -43,33 +44,27 @@ export class ARInvoicePage extends PageBase {
         today.setDate(today.getDate() + 1);
     }
 
+
+
     preLoadData(event) {
         this.query.Status = "['ARInvoiceApproved','ARInvoiceRejected','ARInvoicePending']";
-
-        this.sortToggle('InvoiceDate', true);
-        //this.sort.Id = 'Id';
-        this.sortToggle('Id', true);
-
+        let sorted: SortConfig[] = [
+            { Dimension: 'InvoiceDate', Order: 'DESC' },
+            { Dimension: 'Id', Order: 'DESC' }
+        ];
+        this.pageConfig.sort = sorted;
+    
         Promise.all([
             this.env.getStatus('ARInvoiceStatus'),
-
         ]).then((values: any) => {
             this.statusList = values[0];
-
-
+            this.statusList.unshift({ Code: "['ARInvoiceApproved','ARInvoiceRejected','ARInvoicePending']", Name: 'Cần xem' });
+            this.statusList.unshift({ Code: "", Name: 'All' })
             super.preLoadData(event);
         });
-        // this.statusProvider.read({ IDParent: 11 }).then(response => {
-        //   this.statusList = response['data'];
-        //   super.preLoadData(event);
-
-        // });
     }
 
-
-
     loadedData(event) {
-
         this.items.forEach(i => {
             i._Status = this.statusList.find(d => d.Code == i.Status);
             i._QueryDate = lib.dateFormat(i.InvoiceDate);
@@ -537,8 +532,8 @@ export class ARInvoicePage extends PageBase {
                                         this.refresh();
                                     }
                                 })
-                                .catch((err:any) => {
-                                    this.env.showMessage('Không xuất hóa đơn được, xin vui lòng kiểm tra lại! \n'  + err?.error?.ExceptionMessage, 'danger');
+                                .catch((err: any) => {
+                                    this.env.showMessage('Không xuất hóa đơn được, xin vui lòng kiểm tra lại! \n' + err?.error?.ExceptionMessage, 'danger');
                                     console.log(err);
                                     this.submitAttempt = false;
                                     if (loading) loading.dismiss();
@@ -559,9 +554,7 @@ export class ARInvoicePage extends PageBase {
             return;
         }
         const modal = await this.modalController.create({
-            component: ARInvoiceSplitModalPage,
-            swipeToClose: true,
-            cssClass: 'modal-merge-arinvoice',
+            component: ARInvoiceSplitModalPage, cssClass: 'modal-merge-arinvoice',
             componentProps: {
                 'selectedInvoice': this.selectedItems[0]
             }
@@ -593,9 +586,7 @@ export class ARInvoicePage extends PageBase {
         // }
 
         const modal = await this.modalController.create({
-            component: ARInvoiceMergeModalPage,
-            swipeToClose: true,
-            cssClass: 'modal-merge-arinvoice',
+            component: ARInvoiceMergeModalPage, cssClass: 'modal-merge-arinvoice',
             componentProps: {
                 'selectedInvoices': this.selectedItems
             }

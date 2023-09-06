@@ -17,8 +17,8 @@
 						<app-form-control [field]="{id:'Id', label: 'Id', type : 'number', form : formGroup }" (change)="saveChange()">
 							<small label *ngIf="item.IDSaleOrder"><a [routerLink]="['/sale-order/'+item.IDSaleOrder]">{{'From' | translate}} SO: {{item.IDSaleOrder}}</a></small>
 						</app-form-control>
-						<app-form-control [field]="{id:'IDBusinessPartner', label: 'Customer', type : 'ng-select-bp', form : formGroup,  dataSource: IDBusinessPartnerDataSource,  bindValue: 'Id' }" (onChange)="IDBusinessPartnerChange($event);" (onNav)="nav($event)"></app-form-control>
-						<app-form-control [field]="{id:'TypeCreateInvoice', label: 'A/R content type', type : 'ng-select', form : formGroup,  dataSource: contentTypeList,  bindLabel: 'Name',  bindValue: 'Code' }" (onChange)="TypeCreateInvoiceChange($event)"></app-form-control>
+						<app-form-control [field]="{id:'IDBusinessPartner', label: 'Customer', type : 'ng-select-bp', form : formGroup,  dataSource: IDBusinessPartnerDataSource,  bindValue: 'Id' }" (inputChange)="IDBusinessPartnerChange($event);" (nav)="nav($event)"></app-form-control>
+						<app-form-control [field]="{id:'TypeCreateInvoice', label: 'A/R content type', type : 'ng-select', form : formGroup,  dataSource: contentTypeList,  bindLabel: 'Name',  bindValue: 'Code' }" (inputChange)="TypeCreateInvoiceChange($event)"></app-form-control>
 						<app-form-control [field]="{id:'InvoiceDate', label: 'Invoice date', type : 'date', placeholder: 'yyyy-MM-dd', form : formGroup }" (change)="saveChange()"></app-form-control>
 
 					</ion-col>
@@ -78,7 +78,7 @@
 								<ng-container [formGroup]="g">
 									<div class="col-id cell">{{idx+1}}</div>
 									<div class="col-name cell">
-										<app-input-control [field]="{id:'IDItem', label: 'Item', type : 'ng-select-item', form : g,  dataSource: g.get('_IDItemDataSource').value,  bindValue: 'Id', clearable: true, placeholder: 'Type to search...' }" (onChange)="IDItemChange($event, g);" (onNav)="nav($event)"></app-input-control>
+										<app-input-control [field]="{id:'IDItem', label: 'Item', type : 'ng-select-item', form : g,  dataSource: g.get('_IDItemDataSource').value,  bindValue: 'Id', clearable: true, placeholder: 'Type to search...' }" (inputChange)="IDItemChange($event, g);" (nav)="nav($event)"></app-input-control>
 
 										<!-- <ng-select appendTo="#order-detail-page" class="c-input" (change)="IDItemChange($event, g);" labelForId="IDItem" formControlName="IDItem" [items]="g.get('_IDItemDataSource').value.items$ | async" [typeahead]="g.get('_IDItemDataSource').value.input$" [loading]="g.get('_IDItemDataSource').value.loading" [clearable]="true" bindValue="Id" placeholder="{{'Type to search...' | translate}}">
 											<ng-template ng-label-tmp let-i="item">
@@ -207,7 +207,7 @@
 							</ion-col>
 							<ion-col size="12" size-sm size-xl="4">
 								<app-form-control [field]="{id:'Type', label: 'Type', type : 'select', form : formGroup,  dataSource: typeList,  bindLabel: 'Name',  bindValue: 'Code' }" (change)="saveChange()"></app-form-control>
-								<app-form-control [field]="{id:'TypeCreateInvoice', label: 'A/R content type', type : 'ng-select', form : formGroup,  dataSource: contentTypeList,  bindLabel: 'Name',  bindValue: 'Code' }" (onChange)="TypeCreateInvoiceChange($event)"></app-form-control>
+								<app-form-control [field]="{id:'TypeCreateInvoice', label: 'A/R content type', type : 'ng-select', form : formGroup,  dataSource: contentTypeList,  bindLabel: 'Name',  bindValue: 'Code' }" (inputChange)="TypeCreateInvoiceChange($event)"></app-form-control>
 								<app-form-control [field]="{id:'PaymentMethod', label: 'Payment method', type : 'select', form : formGroup,  dataSource: paymentMethodList,  bindLabel: 'Name',  bindValue: 'Code' }" (change)="saveChange()"></app-form-control>
 								<app-form-control [field]="{id:'InvoiceDate', label: 'Invoice date', type : 'date', placeholder: 'yyyy-MM-dd', form : formGroup }" (change)="saveChange()"></app-form-control>
 								<app-form-control [field]="{id:'InvoiceNote', label: 'Invoice note', type : 'textarea', form : formGroup }" (change)="saveChange()"></app-form-control>

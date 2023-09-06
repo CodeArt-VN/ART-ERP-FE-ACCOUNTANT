@@ -1,5 +1,5 @@
 @media screen and (max-width: calc(1164px + 0px)) {
-    .table.responsive .row{
+    ::ng-deep .table.responsive .row{
         padding: 16px 170px 16px 35px !important;
 
         .col-name > div {
@@ -8,7 +8,7 @@
     }
 }
 
-.col-name > div {
+::ng-deep .col-name > div {
     max-width: 100%;
     & > div > ion-text {
         overflow: hidden;

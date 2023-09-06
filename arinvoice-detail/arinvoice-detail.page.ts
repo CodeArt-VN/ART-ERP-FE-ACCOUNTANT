@@ -903,7 +903,6 @@ export class ARInvoiceDetailPage_ extends PageBase {
 	async addContact() {
 		const modal = await this.modalController.create({
 			component: SaleOrderMobileAddContactModalPage,
-			swipeToClose: true,
 			cssClass: 'my-custom-class',
 			componentProps: {
 				'firstName': 'Douglas',
