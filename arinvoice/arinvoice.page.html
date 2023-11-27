@@ -25,7 +25,7 @@
 				<a [routerLink]="['/'+pageConfig.pageName+'/'+i.Id]">{{i.Id}}</a>
 			</ng-template>
 		</datatable-column>
-		<datatable-column class="col-id" name="SO Id" property="IDSaleOrder">
+		<datatable-column *ngIf="pageConfig.canViewSOId" class="col-id" name="SO Id" property="IDSaleOrder">
 			<ng-template let-i="row" datatable-cell-template>
 				<a *ngIf="i.IDSaleOrder" [routerLink]="['/sale-order-mobile-viewer/'+i.IDSaleOrder]" class="col-id cell"><span class="show-small-inline">SO: </span> {{i.IDSaleOrder}}</a>
 			</ng-template>
