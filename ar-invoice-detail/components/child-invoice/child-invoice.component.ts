@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { NavController, ModalController, AlertController, LoadingController, PopoverController } from '@ionic/angular';
 import { EnvService } from 'src/app/services/core/env.service';
 import { PageBase } from 'src/app/page-base';
-import { AC_ARInvoiceProvider } from 'src/app/services/static/services.service';
+import { AC_ARInvoiceProvider, SYS_ConfigProvider } from 'src/app/services/static/services.service';
 import { Location } from '@angular/common';
 import { EInvoiceService } from 'src/app/services/einvoice.service';
 
@@ -36,11 +36,24 @@ export class ChildInvoiceComponent extends PageBase {
         public env: EnvService,
         public navCtrl: NavController,
         public location: Location,
-    ) {
+		public sysConfigProvider: SYS_ConfigProvider,
+        ) {
         super();
     }
 
     loadData(event?: any): void {
+		let sysConfigQuery = ['IsShowSOCode'];
+        Promise.all([
+            this.sysConfigProvider.read({ Code_in: sysConfigQuery }),
+        ]).then((values: any) => {
+            values[0]['data'].forEach(e => {
+                if ((e.Value == null || e.Value == 'null') && e._InheritedConfig) {
+                    e.Value = e._InheritedConfig.Value;
+                }
+                this.pageConfig[e.Code] = JSON.parse(e.Value);
+            });
+        });
+
         this.pageConfig.canEdit = this.canEdit;
         if (this.query.IDParent) 
             super.loadData(event);
