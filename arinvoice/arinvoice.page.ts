@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { NavController, ModalController, AlertController, LoadingController, PopoverController } from '@ionic/angular';
 import { EnvService } from 'src/app/services/core/env.service';
 import { PageBase } from 'src/app/page-base';
-import { BRA_BranchProvider, SALE_OrderProvider, AC_ARInvoiceProvider, CRM_ContactProvider } from 'src/app/services/static/services.service';
+import { BRA_BranchProvider, SALE_OrderProvider, AC_ARInvoiceProvider, CRM_ContactProvider, SYS_ConfigProvider } from 'src/app/services/static/services.service';
 import { Location } from '@angular/common';
 import { ApiSetting } from 'src/app/services/static/api-setting';
 
@@ -33,7 +33,9 @@ export class ARInvoicePage extends PageBase {
         public alertCtrl: AlertController,
         public loadingController: LoadingController,
         public env: EnvService,
+        public sysConfigProvider: SYS_ConfigProvider,
         public navCtrl: NavController,
+        
         public location: Location) {
         super();
 
@@ -53,13 +55,20 @@ export class ARInvoicePage extends PageBase {
             { Dimension: 'Id', Order: 'DESC' }
         ];
         this.pageConfig.sort = sorted;
-    
+        let sysConfigQuery = ['IsShowSOCode'];
         Promise.all([
             this.env.getStatus('ARInvoiceStatus'),
+            this.sysConfigProvider.read({ Code_in: sysConfigQuery }),
         ]).then((values: any) => {
             this.statusList = values[0];
             this.statusList.unshift({ Code: "['ARInvoiceApproved','ARInvoiceRejected','ARInvoicePending']", Name: 'Cần xem' });
             this.statusList.unshift({ Code: "", Name: 'All' })
+            values[1]['data'].forEach(e => {
+                if ((e.Value == null || e.Value == 'null') && e._InheritedConfig) {
+                    e.Value = e._InheritedConfig.Value;
+                }
+                this.pageConfig[e.Code] = JSON.parse(e.Value);
+            });
             super.preLoadData(event);
         });
     }
@@ -70,6 +79,7 @@ export class ARInvoicePage extends PageBase {
             i._QueryDate = lib.dateFormat(i.InvoiceDate);
         });
         super.loadedData(event);
+        console.log(this.items)
     }
 
     showDetail(i) {

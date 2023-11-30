@@ -13,6 +13,11 @@
 			<ion-icon class="min-btn" *ngIf="sort.IDSaleOrder" [name]="sort.IDSaleOrder == 'IDSaleOrder'?'arrow-down': 'arrow-up'"></ion-icon>
 			<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.IDSaleOrder" name="search" color="primary"></ion-icon>
 		</div>
+		<div class="col-code cell" (click)="sortToggle('SaleOrderCode')" *ngIf="pageConfig.IsShowSOCode">
+			{{'SO Code' | translate}}
+			<ion-icon class="min-btn" *ngIf="sort.SaleOrderCode" [name]="sort.SaleOrderCode == 'SaleOrderCode'?'arrow-down': 'arrow-up'"></ion-icon>
+			<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.SaleOrderCode" name="search" color="primary"></ion-icon>
+		</div>
 		<div class="col-date cell" (click)="sortToggle('InvoiceDate')">
 			{{'Invoice date' | translate}}
 			<ion-icon class="min-btn" *ngIf="sort.InvoiceDate" [name]="sort.InvoiceDate == 'InvoiceDate'?'arrow-down': 'arrow-up'"></ion-icon>
@@ -53,7 +58,10 @@
 				<input placeholder="{{'SO Id' | translate}}" [ngModelOptions]="{standalone: true}" [(ngModel)]="query.IDSaleOrder" class="c-input" [ngClass]="{active: query.IDSaleOrder}" type="">
 				<ion-icon class="min-btn" (click)="query.IDSaleOrder=''; refresh()" *ngIf="query.IDSaleOrder" name="close-circle-outline"></ion-icon>
 			</div>
-
+			<div class="col-code cell" *ngIf="pageConfig.IsShowSOCode">
+				<input placeholder="{{'SO Code' | translate}}" [ngModelOptions]="{standalone: true}" [(ngModel)]="query.SaleOrderCode" class="c-input" [ngClass]="{active: query.SaleOrderCode}" type="">
+				<ion-icon class="min-btn" (click)="query.SaleOrderCode=''; refresh()" *ngIf="query.SaleOrderCode" name="close-circle-outline"></ion-icon>
+			</div>	
 			<div class="col-date cell">
 				<input placeholder="{{'Invoice date' | translate}}" (change)="refresh()" [ngModelOptions]="{standalone: true}" [(ngModel)]="query.InvoiceDate" class="c-input" [ngClass]="{active: query.InvoiceDate}" type="date">
 				<ion-icon class="min-btn" (click)="query.InvoiceDate=''; refresh()" *ngIf="query.InvoiceDate" name="close-circle-outline"></ion-icon>
@@ -84,7 +92,9 @@
 		<div (click)="nav('/sale-order-mobile-viewer/'+i.Id,'forward')" class="col-id cell">
 			<a *ngIf="i.IDSaleOrder" [routerLink]="['/sale-order-mobile-viewer/'+i.IDSaleOrder]" class="col-id cell"><span class="show-small-inline">SO: </span> {{i.IDSaleOrder}}</a>
 		</div>
-
+		<div class="col-code cell" *ngIf="pageConfig.IsShowSOCode">
+			{{i.SaleOrderCode}}
+		</div>	
 		<div class="col-date cell" (click)="query.InvoiceDate=i.Query; pageConfig.isShowSearch=true; refresh()">
 			{{i.InvoiceDate | date:'yyyy-MM-dd'}}
 		</div>
