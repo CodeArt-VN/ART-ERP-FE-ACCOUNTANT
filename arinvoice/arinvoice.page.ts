@@ -58,7 +58,7 @@ export class ARInvoicePage extends PageBase {
         let sysConfigQuery = ['IsShowSOCode'];
         Promise.all([
             this.env.getStatus('ARInvoiceStatus'),
-            this.sysConfigProvider.read({ Code_in: sysConfigQuery }),
+            this.sysConfigProvider.read({ Code_in: sysConfigQuery, IDBranch: this.env.selectedBranch }),
         ]).then((values: any) => {
             this.statusList = values[0];
             this.statusList.unshift({ Code: "['ARInvoiceApproved','ARInvoiceRejected','ARInvoicePending']", Name: 'Cần xem' });
