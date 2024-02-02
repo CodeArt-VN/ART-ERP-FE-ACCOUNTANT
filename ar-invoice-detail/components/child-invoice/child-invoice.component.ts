@@ -44,7 +44,7 @@ export class ChildInvoiceComponent extends PageBase {
     loadData(event?: any): void {
 		let sysConfigQuery = ['IsShowSOCode'];
         Promise.all([
-            this.sysConfigProvider.read({ Code_in: sysConfigQuery }),
+            this.sysConfigProvider.read({ Code_in: sysConfigQuery, IDBranch: this.env.selectedBranch }),
         ]).then((values: any) => {
             values[0]['data'].forEach(e => {
                 if ((e.Value == null || e.Value == 'null') && e._InheritedConfig) {
