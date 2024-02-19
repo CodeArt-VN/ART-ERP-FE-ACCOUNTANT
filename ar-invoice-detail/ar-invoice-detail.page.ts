@@ -58,10 +58,11 @@ export class ARInvoiceDetailPage extends PageBase {
 
             IDBusinessPartner: ['', Validators.required],
             BuyerName: new FormControl(),
-            BuyerUnitName: new FormControl(),
-            BuyerTaxCode: new FormControl(),
-            BuyerAddress: new FormControl(),
             ReceiveType: new FormControl({ value: 'EInvoiceReceiveTypeEmailSMS', disabled: false }),
+
+            BuyerTaxCode: new FormControl(),
+            BuyerUnitName: new FormControl(),
+            BuyerAddress: new FormControl(),
             ReceiverMobile: new FormControl(),
             ReceiverEmail: new FormControl('', Validators.compose([Validators.pattern('^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$')])),
 
@@ -114,21 +115,37 @@ export class ARInvoiceDetailPage extends PageBase {
         }
     };
 
-    IDBusinessPartnerChange(i) {
-        this.formGroup.get('BuyerName').setValue(i.IsPersonal ? i.Name : '');
+    TaxCodeDataSource = [];
+    LoadTaxCodeDataSource(i) {
+        this.TaxCodeDataSource = [];
+        if(i?.TaxAddresses){
+            this.TaxCodeDataSource = i.TaxAddresses;
+        }
+        this.TaxCodeDataSource.unshift({ TaxCode: null, CompanyName: 'Khách vãng lai', Email: '', BillingAddress: '', WorkPhone: ''});
+    }
+
+    onBuyerTaxCodeChange(){
+        let taxCode = this.formGroup.get('BuyerTaxCode').value;
+        let i = this.TaxCodeDataSource.find(d => d.TaxCode == taxCode);
+
         this.formGroup.get('BuyerUnitName').setValue(i.CompanyName);
-        this.formGroup.get('BuyerTaxCode').setValue(i.TaxCode);
         this.formGroup.get('BuyerAddress').setValue(i.BillingAddress);
         this.formGroup.get('ReceiverEmail').setValue(i.Email);
         this.formGroup.get('ReceiverMobile').setValue(i.BillingPhone || i.WorkPhone);
 
-        this.formGroup.get('BuyerName').markAsDirty();
+        
         this.formGroup.get('BuyerUnitName').markAsDirty();
-        this.formGroup.get('BuyerTaxCode').markAsDirty();
         this.formGroup.get('BuyerAddress').markAsDirty();
         this.formGroup.get('ReceiverEmail').markAsDirty();
         this.formGroup.get('ReceiverMobile').markAsDirty();
 
+        this.saveChange();
+    }
+
+    IDBusinessPartnerChange(i) {
+        this.LoadTaxCodeDataSource(i);
+        this.formGroup.get('BuyerName').setValue(i.IsPersonal ? i.Name : '');
+        this.formGroup.get('BuyerName').markAsDirty();
         this.saveChange();
     }
 
@@ -185,6 +202,7 @@ export class ARInvoiceDetailPage extends PageBase {
             if (this.item?._BusinessPartner) {
                 this.IDBusinessPartnerDataSource.selected.push(this.item?._BusinessPartner)
             }
+            this.LoadTaxCodeDataSource(this.item?._BusinessPartner);
         }
 
         super.loadedData(event, ignoredFromGroup);
