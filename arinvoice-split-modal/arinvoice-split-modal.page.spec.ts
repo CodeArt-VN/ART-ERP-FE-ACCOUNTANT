@@ -9,10 +9,9 @@ describe('ARInvoiceSplitModalPage', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ARInvoiceSplitModalPage ],
+      declarations: [ARInvoiceSplitModalPage],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
-    })
-    .compileComponents();
+    }).compileComponents();
   }));
 
   beforeEach(() => {

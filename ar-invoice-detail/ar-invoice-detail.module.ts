@@ -11,16 +11,12 @@ import { ARInvoiceComponentsModule } from './components/ar-invoice-components.mo
 const routes: Routes = [
   {
     path: '',
-    component: ARInvoiceDetailPage
-  }
+    component: ARInvoiceDetailPage,
+  },
 ];
 
 @NgModule({
-  imports: [
-    ARInvoiceComponentsModule,
-    ShareModule,
-    RouterModule.forChild(routes)
-  ],
-  declarations: [ARInvoiceDetailPage]
+  imports: [ARInvoiceComponentsModule, ShareModule, RouterModule.forChild(routes)],
+  declarations: [ARInvoiceDetailPage],
 })
-export class ARInvoiceDetailPageModule { }
+export class ARInvoiceDetailPageModule {}

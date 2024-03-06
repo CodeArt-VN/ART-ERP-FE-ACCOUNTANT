@@ -12,8 +12,8 @@ import { ShareModule } from 'src/app/share.module';
     CommonModule,
     FormsModule,
     ShareModule,
-    RouterModule.forChild([{ path: '', component: ARInvoicePage }])
+    RouterModule.forChild([{ path: '', component: ARInvoicePage }]),
   ],
-  declarations: [ARInvoicePage]
+  declarations: [ARInvoicePage],
 })
 export class ARInvoicePageModule {}

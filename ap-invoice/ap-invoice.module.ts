@@ -12,8 +12,8 @@ import { ShareModule } from 'src/app/share.module';
     CommonModule,
     FormsModule,
     ShareModule,
-    RouterModule.forChild([{ path: '', component: APInvoicePage }])
+    RouterModule.forChild([{ path: '', component: APInvoicePage }]),
   ],
-  declarations: [APInvoicePage]
+  declarations: [APInvoicePage],
 })
 export class APInvoicePageModule {}

@@ -1,158 +1,353 @@
 <ion-header>
-	<app-list-toolbar pageTitle="Danh sách" [pageConfig]="pageConfig" [selectedItems]="selectedItems" [query]="query" (add)="add()" (refresh)="refresh()" (export)="export()" (import)="import($event)" (help)="help()" (unselect)="unselect()" (archiveItems)="archiveItems()" (deleteItems)="deleteItems()" (changeBranch)="changeBranch($event)"></app-list-toolbar>
+  <app-list-toolbar
+    pageTitle="Danh sách"
+    [pageConfig]="pageConfig"
+    [selectedItems]="selectedItems"
+    [query]="query"
+    (add)="add()"
+    (refresh)="refresh()"
+    (export)="export()"
+    (import)="import($event)"
+    (help)="help()"
+    (unselect)="unselect()"
+    (archiveItems)="archiveItems()"
+    (deleteItems)="deleteItems()"
+    (changeBranch)="changeBranch($event)"
+  ></app-list-toolbar>
 </ion-header>
 
 <ion-content appScrollbarTheme class="scrollx">
-	<ion-refresher [disabled]="!pageConfig.refresher" [disabled]="!pageConfig.refresher" slot="fixed" (ionRefresh)="refresh($event)">
-		<ion-refresher-content></ion-refresher-content>
-	</ion-refresher>
-	<ion-fab *ngIf="pageConfig.isShowFeature" class="feature" vertical="top" horizontal="end" slot="fixed">
-		<div class="ion-padding">
+  <ion-refresher
+    [disabled]="!pageConfig.refresher"
+    [disabled]="!pageConfig.refresher"
+    slot="fixed"
+    (ionRefresh)="refresh($event)"
+  >
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+  <ion-fab *ngIf="pageConfig.isShowFeature" class="feature" vertical="top" horizontal="end" slot="fixed">
+    <div class="ion-padding"></div>
+  </ion-fab>
 
-		</div>
-	</ion-fab>
+  <section class="table responsive">
+    <header class="bold">
+      <div class="col-checkbox cell"></div>
+      <div class="col-id cell" (click)="sortToggle('Id')">
+        {{'Id' | translate}}
+        <ion-icon class="min-btn" *ngIf="sort.Id" [name]="sort.Id == 'Id'?'arrow-down': 'arrow-up'"></ion-icon>
+        <ion-icon
+          class="min-btn"
+          (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch"
+          *ngIf="query.Id"
+          name="search"
+          color="primary"
+        ></ion-icon>
+      </div>
+      <div class="col-id cell" (click)="sortToggle('IDPurchaseOrder')">
+        {{'PO' | translate}}
+        <ion-icon
+          class="min-btn"
+          *ngIf="sort.IDPurchaseOrder"
+          [name]="sort.IDPurchaseOrder == 'IDPurchaseOrder'?'arrow-down': 'arrow-up'"
+        ></ion-icon>
+        <ion-icon
+          class="min-btn"
+          (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch"
+          *ngIf="query.IDPurchaseOrder"
+          name="search"
+          color="primary"
+        ></ion-icon>
+      </div>
+      <div class="col-id cell" (click)="sortToggle('IDReceipt')">
+        {{'Receipt' | translate}}
+        <ion-icon
+          class="min-btn"
+          *ngIf="sort.IDReceipt"
+          [name]="sort.IDReceipt == 'IDReceipt'?'arrow-down': 'arrow-up'"
+        ></ion-icon>
+        <ion-icon
+          class="min-btn"
+          (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch"
+          *ngIf="query.IDReceipt"
+          name="search"
+          color="primary"
+        ></ion-icon>
+      </div>
+      <div class="col-id cell" (click)="sortToggle('InvoiceNo')">
+        {{'Số HĐ' | translate}}
+        <ion-icon
+          class="min-btn"
+          *ngIf="sort.InvoiceNo"
+          [name]="sort.InvoiceNo == 'InvoiceNo'?'arrow-down': 'arrow-up'"
+        ></ion-icon>
+        <ion-icon
+          class="min-btn"
+          (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch"
+          *ngIf="query.InvoiceNo"
+          name="search"
+          color="primary"
+        ></ion-icon>
+      </div>
+      <div class="col-date cell" (click)="sortToggle('InvoiceDate')">
+        {{'Ngày HĐ' | translate}}
+        <ion-icon
+          class="min-btn"
+          *ngIf="sort.InvoiceDate"
+          [name]="sort.InvoiceDate == 'InvoiceDate'?'arrow-down': 'arrow-up'"
+        ></ion-icon>
+        <ion-icon
+          class="min-btn"
+          (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch"
+          *ngIf="query.InvoiceDate"
+          name="search"
+          color="primary"
+        ></ion-icon>
+      </div>
+      <div class="col-name cell" (click)="sortToggle('SellerName')">
+        {{'Bên bán' | translate}}
+        <ion-icon
+          class="min-btn"
+          *ngIf="sort.SellerName"
+          [name]="sort.SellerName == 'SellerName'?'arrow-down': 'arrow-up'"
+        ></ion-icon>
+        <ion-icon
+          class="min-btn"
+          (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch"
+          *ngIf="query.SellerName"
+          name="search"
+          color="primary"
+        ></ion-icon>
+      </div>
+      <div class="col-remark cell" (click)="sortToggle('BuyerName')">
+        {{'Bên mua' | translate}}
+        <ion-icon
+          class="min-btn"
+          *ngIf="sort.BuyerName"
+          [name]="sort.BuyerName == 'BuyerName'?'arrow-down': 'arrow-up'"
+        ></ion-icon>
+        <ion-icon
+          class="min-btn"
+          (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch"
+          *ngIf="query.BuyerName"
+          name="search"
+          color="primary"
+        ></ion-icon>
+      </div>
 
-	<section class="table responsive">
-		<header class="bold">
-			<div class="col-checkbox cell"></div>
-			<div class="col-id cell" (click)="sortToggle('Id')">
-				{{'Id' | translate}}
-				<ion-icon class="min-btn" *ngIf="sort.Id" [name]="sort.Id == 'Id'?'arrow-down': 'arrow-up'"></ion-icon>
-				<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.Id" name="search" color="primary"></ion-icon>
-			</div>
-			<div class="col-id cell" (click)="sortToggle('IDPurchaseOrder')">
-				{{'PO' | translate}}
-				<ion-icon class="min-btn" *ngIf="sort.IDPurchaseOrder" [name]="sort.IDPurchaseOrder == 'IDPurchaseOrder'?'arrow-down': 'arrow-up'"></ion-icon>
-				<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.IDPurchaseOrder" name="search" color="primary"></ion-icon>
-			</div>
-			<div class="col-id cell" (click)="sortToggle('IDReceipt')">
-				{{'Receipt' | translate}}
-				<ion-icon class="min-btn" *ngIf="sort.IDReceipt" [name]="sort.IDReceipt == 'IDReceipt'?'arrow-down': 'arrow-up'"></ion-icon>
-				<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.IDReceipt" name="search" color="primary"></ion-icon>
-			</div>
-			<div class="col-id cell" (click)="sortToggle('InvoiceNo')">
-				{{'Số HĐ' | translate}}
-				<ion-icon class="min-btn" *ngIf="sort.InvoiceNo" [name]="sort.InvoiceNo == 'InvoiceNo'?'arrow-down': 'arrow-up'"></ion-icon>
-				<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.InvoiceNo" name="search" color="primary"></ion-icon>
-			</div>
-			<div class="col-date cell" (click)="sortToggle('InvoiceDate')">
-				{{'Ngày HĐ' | translate}}
-				<ion-icon class="min-btn" *ngIf="sort.InvoiceDate" [name]="sort.InvoiceDate == 'InvoiceDate'?'arrow-down': 'arrow-up'"></ion-icon>
-				<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.InvoiceDate" name="search" color="primary"></ion-icon>
-			</div>
-			<div class="col-name cell" (click)="sortToggle('SellerName')">
-				{{'Bên bán' | translate}}
-				<ion-icon class="min-btn" *ngIf="sort.SellerName" [name]="sort.SellerName == 'SellerName'?'arrow-down': 'arrow-up'"></ion-icon>
-				<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.SellerName" name="search" color="primary"></ion-icon>
-			</div>
-			<div class="col-remark cell" (click)="sortToggle('BuyerName')">
-				{{'Bên mua' | translate}}
-				<ion-icon class="min-btn" *ngIf="sort.BuyerName" [name]="sort.BuyerName == 'BuyerName'?'arrow-down': 'arrow-up'"></ion-icon>
-				<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.BuyerName" name="search" color="primary"></ion-icon>
-			</div>
+      <div class="col-number cell">Tổng tiền</div>
 
+      <div class="col-status cell" (click)="sortToggle('Status')">
+        {{'Tình trạng' | translate}}
+        <ion-icon
+          class="min-btn"
+          *ngIf="sort.Status"
+          [name]="sort.Status == 'Status'?'arrow-down': 'arrow-up'"
+        ></ion-icon>
+        <ion-icon
+          class="min-btn"
+          (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch"
+          *ngIf="query.Status"
+          name="search"
+          color="primary"
+        ></ion-icon>
+      </div>
 
+      <!-- <div class="col-remark cell">Ghi chú</div> -->
+    </header>
+    <form (keydown.enter)="refresh()" (submit)="refresh()" action="#">
+      <header class="filter" *ngIf="pageConfig.isShowSearch">
+        <div class="col-checkbox cell"></div>
+        <div class="col-id cell">
+          <input
+            (keydown.enter)="refresh()"
+            [ngModelOptions]="{standalone: true}"
+            [(ngModel)]="query.Id"
+            class="c-input"
+            [ngClass]="{active: query.Id}"
+            type="search"
+          />
+          <ion-icon
+            class="min-btn"
+            (click)="query.Id=''; refresh()"
+            *ngIf="query.Id"
+            name="close-circle-outline"
+          ></ion-icon>
+        </div>
+        <div class="col-id cell">
+          <input
+            (keydown.enter)="refresh()"
+            [ngModelOptions]="{standalone: true}"
+            [(ngModel)]="query.IDPurchaseOrder"
+            class="c-input"
+            [ngClass]="{active: query.IDPurchaseOrder}"
+            type="search"
+          />
+          <ion-icon
+            class="min-btn"
+            (click)="query.IDPurchaseOrder=''; refresh()"
+            *ngIf="query.IDPurchaseOrder"
+            name="close-circle-outline"
+          ></ion-icon>
+        </div>
+        <div class="col-id cell">
+          <input
+            (keydown.enter)="refresh()"
+            [ngModelOptions]="{standalone: true}"
+            [(ngModel)]="query.IDReceipt"
+            class="c-input"
+            [ngClass]="{active: query.IDReceipt}"
+            type="search"
+          />
+          <ion-icon
+            class="min-btn"
+            (click)="query.IDReceipt=''; refresh()"
+            *ngIf="query.IDReceipt"
+            name="close-circle-outline"
+          ></ion-icon>
+        </div>
+        <div class="col-id cell">
+          <input
+            (keydown.enter)="refresh()"
+            [ngModelOptions]="{standalone: true}"
+            [(ngModel)]="query.InvoiceNo"
+            class="c-input"
+            [ngClass]="{active: query.InvoiceNo}"
+            type="search"
+          />
+          <ion-icon
+            class="min-btn"
+            (click)="query.InvoiceNo=''; refresh()"
+            *ngIf="query.InvoiceNo"
+            name="close-circle-outline"
+          ></ion-icon>
+        </div>
+        <div class="col-date cell">
+          <input
+            (keydown.enter)="refresh()"
+            [ngModelOptions]="{standalone: true}"
+            [(ngModel)]="query.InvoiceDate"
+            class="c-input"
+            [ngClass]="{active: query.InvoiceDate}"
+            type="search"
+          />
+          <ion-icon
+            class="min-btn"
+            (click)="query.InvoiceDate=''; refresh()"
+            *ngIf="query.InvoiceDate"
+            name="close-circle-outline"
+          ></ion-icon>
+        </div>
+        <div class="col-name cell">
+          <input
+            (keydown.enter)="refresh()"
+            [ngModelOptions]="{standalone: true}"
+            [(ngModel)]="query.SellerName"
+            class="c-input"
+            [ngClass]="{active: query.SellerName}"
+            type="search"
+          />
+          <ion-icon
+            class="min-btn"
+            (click)="query.SellerName=''; refresh()"
+            *ngIf="query.SellerName"
+            name="close-circle-outline"
+          ></ion-icon>
+        </div>
+        <div class="col-remark cell">
+          <input
+            (keydown.enter)="refresh()"
+            [ngModelOptions]="{standalone: true}"
+            [(ngModel)]="query.BuyerName"
+            class="c-input"
+            [ngClass]="{active: query.BuyerName}"
+            type="search"
+          />
+          <ion-icon
+            class="min-btn"
+            (click)="query.BuyerName=''; refresh()"
+            *ngIf="query.BuyerName"
+            name="close-circle-outline"
+          ></ion-icon>
+        </div>
+        <div class="col-number cell"></div>
+        <div class="col-status cell">
+          <ion-text>{{'Status' | translate}}</ion-text>
+          <select
+            (change)="refresh()"
+            class="c-input c-dropdown no-check-dirty"
+            [ngModelOptions]="{standalone: true}"
+            [(ngModel)]="query.Status"
+            [ngClass]="{active: query.Status}"
+          >
+            <option value="">{{'Status' | translate}}</option>
+            <option *ngFor="let t of statusList" [value]="t.Code">{{t.Name}}</option>
+          </select>
+          <ion-icon class="min-btn" (click)="query.Status=''; refresh()" name="close-circle-outline"></ion-icon>
+        </div>
 
-			<div class="col-number cell">Tổng tiền</div>
+        <button mat-raised-button type="submit" style="display: none">Search</button>
+      </header>
+    </form>
 
-			<div class="col-status cell" (click)="sortToggle('Status')">
-				{{'Tình trạng' | translate}}
-				<ion-icon class="min-btn" *ngIf="sort.Status" [name]="sort.Status == 'Status'?'arrow-down': 'arrow-up'"></ion-icon>
-				<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.Status" name="search" color="primary"></ion-icon>
-			</div>
+    <app-page-message [itemsLength]="items.length" [showSpinner]="pageConfig.showSpinner"></app-page-message>
 
-			<!-- <div class="col-remark cell">Ghi chú</div> -->
-		</header>
-		<form (keydown.enter)="refresh()" (submit)="refresh()" action="#">
-			<header class="filter" *ngIf="pageConfig.isShowSearch">
-				<div class="col-checkbox cell"></div>
-				<div class="col-id cell">
-					<input (keydown.enter)="refresh()" [ngModelOptions]="{standalone: true}" [(ngModel)]="query.Id" class="c-input" [ngClass]="{active: query.Id}" type="search">
-					<ion-icon class="min-btn" (click)="query.Id=''; refresh()" *ngIf="query.Id" name="close-circle-outline"></ion-icon>
-				</div>
-				<div class="col-id cell">
-					<input (keydown.enter)="refresh()" [ngModelOptions]="{standalone: true}" [(ngModel)]="query.IDPurchaseOrder" class="c-input" [ngClass]="{active: query.IDPurchaseOrder}" type="search">
-					<ion-icon class="min-btn" (click)="query.IDPurchaseOrder=''; refresh()" *ngIf="query.IDPurchaseOrder" name="close-circle-outline"></ion-icon>
-				</div>
-				<div class="col-id cell">
-					<input (keydown.enter)="refresh()" [ngModelOptions]="{standalone: true}" [(ngModel)]="query.IDReceipt" class="c-input" [ngClass]="{active: query.IDReceipt}" type="search">
-					<ion-icon class="min-btn" (click)="query.IDReceipt=''; refresh()" *ngIf="query.IDReceipt" name="close-circle-outline"></ion-icon>
-				</div>
-				<div class="col-id cell">
-					<input (keydown.enter)="refresh()" [ngModelOptions]="{standalone: true}" [(ngModel)]="query.InvoiceNo" class="c-input" [ngClass]="{active: query.InvoiceNo}" type="search">
-					<ion-icon class="min-btn" (click)="query.InvoiceNo=''; refresh()" *ngIf="query.InvoiceNo" name="close-circle-outline"></ion-icon>
-				</div>
-				<div class="col-date cell">
-					<input (keydown.enter)="refresh()" [ngModelOptions]="{standalone: true}" [(ngModel)]="query.InvoiceDate" class="c-input" [ngClass]="{active: query.InvoiceDate}" type="search">
-					<ion-icon class="min-btn" (click)="query.InvoiceDate=''; refresh()" *ngIf="query.InvoiceDate" name="close-circle-outline"></ion-icon>
-				</div>
-				<div class="col-name cell">
-					<input (keydown.enter)="refresh()" [ngModelOptions]="{standalone: true}" [(ngModel)]="query.SellerName" class="c-input" [ngClass]="{active: query.SellerName}" type="search">
-					<ion-icon class="min-btn" (click)="query.SellerName=''; refresh()" *ngIf="query.SellerName" name="close-circle-outline"></ion-icon>
-				</div>
-				<div class="col-remark cell">
-					<input (keydown.enter)="refresh()" [ngModelOptions]="{standalone: true}" [(ngModel)]="query.BuyerName" class="c-input" [ngClass]="{active: query.BuyerName}" type="search">
-					<ion-icon class="min-btn" (click)="query.BuyerName=''; refresh()" *ngIf="query.BuyerName" name="close-circle-outline"></ion-icon>
-				</div>
-				<div class="col-number cell"></div>
-				<div class="col-status cell">
-					<ion-text>{{'erp.app.pages.crm.attendance-booking.status' | translate}}</ion-text>
-					<select (change)="refresh()" class="c-input c-dropdown no-check-dirty" [ngModelOptions]="{standalone: true}" [(ngModel)]="query.Status" [ngClass]="{active: query.Status}">
-						<option value="">{{'erp.app.pages.crm.attendance-booking.status' | translate}}</option>
-						<option *ngFor="let t of statusList" [value]="t.Code">{{t.Name}}</option>
-					</select>
-					<ion-icon class="min-btn" (click)="query.Status=''; refresh()" name="close-circle-outline"></ion-icon>
-				</div>
+    <div
+      *ngFor="let i of items; let j = index;"
+      class="row"
+      [ngClass]="{odd: j % 2 != 0}"
+      [ngClass]="{selected: i.checked}"
+    >
+      <div class="col-checkbox cell">
+        <input (click)="changeSelection(i, $event)" class="c-checkbox" [(ngModel)]="i.checked" type="checkbox" />
+      </div>
+      <div (click)="nav(this.pageConfig.pageName+'/'+i.Id,'forward')" class="col-id cell">
+        <a [routerLink]="['/'+pageConfig.pageName+'/'+i.Id]">{{i.Id}}</a>
+      </div>
+      <div (click)="nav(this.pageConfig.pageName+'/'+i.Id,'forward')" class="col-id cell">
+        <a [routerLink]="['/'+pageConfig.pageName+'/'+i.Id]"
+          ><span class="show-small-inline">PO: </span>{{i.IDPurchaseOrder}}</a
+        >
+      </div>
+      <div (click)="nav(this.pageConfig.pageName+'/'+i.Id,'forward')" class="col-id cell">
+        <a [routerLink]="['/'+pageConfig.pageName+'/'+i.Id]"
+          ><span class="show-small-inline">Receipt: </span>{{i.IDReceipt}}</a
+        >
+      </div>
+      <div class="col-id cell" (click)="nav(this.pageConfig.pageName+'/'+i.Id,'forward')">
+        <a [routerLink]="['/'+pageConfig.pageName+'/'+i.Id]"
+          ><span class="show-small-inline">SHĐ: </span>{{i.InvoiceNo}}</a
+        >
+      </div>
+      <div (click)="nav(this.pageConfig.pageName+'/'+i.Id,'forward')" class="col-date cell">
+        {{i.InvoiceDate | date: 'dd/MM/yyyy'}}
+      </div>
+      <hr />
+      <div (click)="nav(this.pageConfig.pageName+'/'+i.Id,'forward')" class="col-name cell">{{i.SellerName}}</div>
+      <div (click)="nav(this.pageConfig.pageName+'/'+i.Id,'forward')" class="col-remark cell">{{i.BuyerName}}</div>
+      <div class="col-number cell">{{i.CalcTotalAfterTax | number: '1.0-0'}}</div>
+      <div class="col-status cell">
+        <span class="bar-holder">
+          <ng-container *ngFor="let s of statusList">
+            <ion-text *ngIf="s.Code==i.Status" class="bar-title" [color]="s.Color">{{s.Name}}</ion-text>
+          </ng-container>
+          <span
+            class="bar"
+            [ngClass]="{active: s.Code==i.Status}"
+            [ngStyle]="{'background-color': 'var(--ion-color-'+s.Color+')'}"
+            *ngFor="let s of statusList"
+            [title]="s.Name"
+          ></span>
+        </span>
+      </div>
+    </div>
+  </section>
 
-
-				<button mat-raised-button type="submit" style="display:none">Search</button>
-			</header>
-		</form>
-
-		<app-page-message [itemsLength]="items.length" [showSpinner]="pageConfig.showSpinner"></app-page-message>
-		
-				<div *ngFor="let i of items; let j = index;" class="row" [ngClass]="{odd: j % 2 != 0}" [ngClass]="{selected: i.checked}">
-					<div class="col-checkbox cell">
-						<input (click)="changeSelection(i, $event)" class="c-checkbox" [(ngModel)]="i.checked" type="checkbox">
-					</div>
-					<div (click)="nav(this.pageConfig.pageName+'/'+i.Id,'forward')" class="col-id cell">
-						<a [routerLink]="['/'+pageConfig.pageName+'/'+i.Id]">{{i.Id}}</a>
-					</div>
-					<div (click)="nav(this.pageConfig.pageName+'/'+i.Id,'forward')" class="col-id cell">
-						<a [routerLink]="['/'+pageConfig.pageName+'/'+i.Id]"><span class="show-small-inline">PO: </span>{{i.IDPurchaseOrder}}</a>
-					</div>
-					<div (click)="nav(this.pageConfig.pageName+'/'+i.Id,'forward')" class="col-id cell">
-						<a [routerLink]="['/'+pageConfig.pageName+'/'+i.Id]"><span class="show-small-inline">Receipt: </span>{{i.IDReceipt}}</a>
-					</div>
-					<div class="col-id cell" (click)="nav(this.pageConfig.pageName+'/'+i.Id,'forward')">
-						<a [routerLink]="['/'+pageConfig.pageName+'/'+i.Id]"><span class="show-small-inline">SHĐ: </span>{{i.InvoiceNo}}</a>
-					</div>
-					<div (click)="nav(this.pageConfig.pageName+'/'+i.Id,'forward')" class="col-date cell">
-						{{i.InvoiceDate | date: 'dd/MM/yyyy'}}
-					</div>
-					<hr>
-					<div (click)="nav(this.pageConfig.pageName+'/'+i.Id,'forward')" class="col-name cell">
-						{{i.SellerName}}
-					</div>
-					<div (click)="nav(this.pageConfig.pageName+'/'+i.Id,'forward')" class="col-remark cell">
-						{{i.BuyerName}}
-					</div>
-					<div class="col-number cell">
-						{{i.CalcTotalAfterTax | number: '1.0-0'}}
-					</div>
-					<div class="col-status cell">
-						<span class="bar-holder">
-							<ng-container *ngFor="let s of statusList">
-								<ion-text *ngIf="s.Code==i.Status" class="bar-title" [color]="s.Color">{{s.Name}}</ion-text>
-							</ng-container>
-							<span class="bar" [ngClass]="{active: s.Code==i.Status}" [ngStyle]="{'background-color': 'var(--ion-color-'+s.Color+')'}" *ngFor="let s of statusList" [title]="s.Name"></span>
-						</span>
-					</div>
-				</div>
-			
-	</section>
-
-	<ion-infinite-scroll color="primary" threshold="20%" (ionInfinite)="loadData($event)" [disabled]="!pageConfig.infiniteScroll || pageConfig.isEndOfData">
-		<ion-infinite-scroll-content loadingSpinner="dots"></ion-infinite-scroll-content>
-	</ion-infinite-scroll>
+  <ion-infinite-scroll
+    color="primary"
+    threshold="20%"
+    (ionInfinite)="loadData($event)"
+    [disabled]="!pageConfig.infiniteScroll || pageConfig.isEndOfData"
+  >
+    <ion-infinite-scroll-content loadingSpinner="dots"></ion-infinite-scroll-content>
+  </ion-infinite-scroll>
 </ion-content>

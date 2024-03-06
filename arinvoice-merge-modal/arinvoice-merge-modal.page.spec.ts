@@ -9,10 +9,9 @@ describe('ARInvoiceMergeModalPage', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ARInvoiceMergeModalPage ],
+      declarations: [ARInvoiceMergeModalPage],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
-    })
-    .compileComponents();
+    }).compileComponents();
   }));
 
   beforeEach(() => {
