@@ -48,10 +48,6 @@ export class IncomingPaymentDetailPage extends PageBase {
             ModifiedBy: new FormControl({ value: '', disabled: false }),
             ModifiedDate: new FormControl({ value: '', disabled: false }),
         });
-        // this.formGroup.get('DocumentDate').markAsDirty();
-        // this.formGroup.get('Amount').markAsDirty();
-        // this.formGroup.get('Type').markAsDirty();
-        // this.formGroup.get('Status').markAsDirty();
     }
 
     
