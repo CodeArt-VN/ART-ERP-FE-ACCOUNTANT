@@ -4,7 +4,7 @@ import { PageBase } from 'src/app/page-base';
 import { ActivatedRoute } from '@angular/router';
 import { EnvService } from 'src/app/services/core/env.service';
 import { BANK_IncomingPaymentDetailProvider, BANK_IncomingPaymentProvider, BRA_BranchProvider,  } from 'src/app/services/static/services.service';
-import { FormBuilder, FormControl, FormArray } from '@angular/forms';
+import { FormBuilder, FormControl, FormArray, Validators } from '@angular/forms';
 import { CommonService } from 'src/app/services/core/common.service';
 
 @Component({
@@ -29,17 +29,17 @@ export class IncomingPaymentDetailPage extends PageBase {
     ) {
         super();
         this.pageConfig.isDetailPage = true;
-
+        this.pageConfig.canEdit = true;
         this.formGroup = formBuilder.group({
             IDBranch: [this.env.selectedBranch],
             Id: new FormControl({ value: '', disabled: true }),
-            DocumentDate: [''],
-            Type: [''],
+            Name: ['', Validators.required],
+            DocumentDate: ['', Validators.required],
+            Type: ['', Validators.required],
             SubType: [''],
             Remark: [''],
-            Amount: [''],
-            Status: [''],
-            Sort: [''],
+            Amount: ['', Validators.required],
+            Status: ['', Validators.required],
             InComingPaymentDetails: this.formBuilder.array([]),
             IsDisabled: new FormControl({ value: '', disabled: true }),
             IsDeleted: new FormControl({ value: '', disabled: true }),
@@ -81,6 +81,9 @@ export class IncomingPaymentDetailPage extends PageBase {
     }
 
     loadedData(event?: any, ignoredFromGroup?: boolean): void {
+        if (this.item?.Status == 'Success') {
+            this.pageConfig.canEdit = false;
+        }
         super.loadedData(event, ignoredFromGroup);
         this.query.IDIncomingPayment = this.item.Id;
         this.query.Id = undefined;
@@ -92,7 +95,6 @@ export class IncomingPaymentDetailPage extends PageBase {
                 this.patchFieldsValue();
             }
         })
-     
     }
 
     sortDetail: any = {};

@@ -16,18 +16,18 @@
 					<ion-col size="12" size-sm size-xl="4">
 						<app-form-control [field]="{id:'Id', label: 'Id', type : 'number', form : formGroup }">
 						</app-form-control>
-						<app-form-control [field]="{id:'DocumentDate', label: 'Document date', type : 'span-date', form : formGroup }">
+						<app-form-control [field]="{id:'DocumentDate', label: 'Document date', type : 'date', form : formGroup }" (change)="saveChange()">
 						</app-form-control>
-						<app-form-control [field]="{id:'Type', label: 'Type', type : 'ng-select', dataSource: typeDataSource, bindValue:'Code', bindLabel:'Name', form : formGroup }" (change)="changType($event)"> 
+						<app-form-control [field]="{id:'Type', label: 'Type', type : 'ng-select', dataSource: typeDataSource, bindValue:'Code', bindLabel:'Name', form : formGroup }" (change)="changeType($event)"> 
 						</app-form-control>
 						<app-form-control [field]="{id:'SubType', label: 'Sub type', type : 'text', form : formGroup }" (change)="saveChange()">
 						</app-form-control>
 						
 					</ion-col>
 					<ion-col size="12" size-sm size-xl="4">
-						<app-form-control [field]="{id:'Status', type : 'ng-select-status', form : formGroup,  dataSource: statusList,  bindValue: 'Code' }"></app-form-control>
-						<app-form-control [field]="{id:'Amount', label: 'Amount', type : 'span-number', form : formGroup }" (change)="saveChange()"></app-form-control>
-						<app-form-control [field]="{id:'Remark', label: 'Remark', type : 'textarea', form : formGroup }" (change)="saveChange()"></app-form-control>
+						<app-form-control [field]="{id:'Name', label: 'Name', type : 'text', form : formGroup }" (change)="saveChange()"></app-form-control>
+						<app-form-control [field]="{id:'Status', type : 'ng-select-status', form : formGroup,  dataSource: statusList,  bindValue: 'Code' }" (change)="saveChange()"></app-form-control>
+						<app-form-control [field]="{id:'Amount', label: 'Amount', type : 'number', form : formGroup }" (change)="saveChange()"></app-form-control>
 
 					</ion-col>
 				</ion-row>

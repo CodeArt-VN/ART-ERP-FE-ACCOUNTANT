@@ -24,6 +24,8 @@ export class IncomingPaymentPage extends PageBase {
         public location: Location,
     ) {
         super();
+        this.pageConfig.canDelete = true;
+        this.pageConfig.canAdd = true;
     }
     statusList: [];
 
