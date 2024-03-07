@@ -13,4 +13,7 @@ export const ACCOUNTTANTRoutes: Routes = [
   { path: 'ap-invoice', loadChildren: () => import('./ap-invoice/ap-invoice.module').then(m => m.APInvoicePageModule), canActivate: [AuthGuard] },
   { path: 'ap-invoice/:id', loadChildren: () => import('./ap-invoice-detail/ap-invoice-detail.module').then(m => m.APInvoiceDetailPageModule), canActivate: [AuthGuard] },
 
+  { path: 'incoming-payment', loadChildren: () => import('./incoming-payment/incoming-payment.module').then(m => m.IncomingPaymentPageModule), canActivate: [AuthGuard] },
+  { path: 'incoming-payment/:id', loadChildren: () => import('./incoming-payment-detail/incoming-payment-detail.module').then(m => m.IncomingPaymentDetailPageModule), canActivate: [AuthGuard] },
+
 ];
