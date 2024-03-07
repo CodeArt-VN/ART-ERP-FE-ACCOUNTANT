@@ -57,14 +57,7 @@ export class IncomingPaymentDetailPage extends PageBase {
     }
 
     async saveChange() {
-        this.formGroup.get('DocumentDate').markAsDirty();
-        this.formGroup.get('Amount').markAsDirty();
-        this.formGroup.get('Type').markAsDirty();
-        this.formGroup.get('Status').markAsDirty();
         super.saveChange2();
-        if (this.item?.Status == 'Success') {
-            this.pageConfig.canEdit = false;
-        }
     }
 
     typeDataSource: any;
