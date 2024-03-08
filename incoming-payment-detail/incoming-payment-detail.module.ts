@@ -1,3 +1,4 @@
+import { IncomingPaymentSaleOrderModalPage } from '../incoming-payment-sale-order-modal/incoming-payment-sale-order-modal.page';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -22,6 +23,6 @@ const routes: Routes = [
     ShareModule,
     RouterModule.forChild(routes)
   ],
-  declarations: [IncomingPaymentDetailPage]
+  declarations: [IncomingPaymentDetailPage, IncomingPaymentSaleOrderModalPage]
 })
 export class IncomingPaymentDetailPageModule { }

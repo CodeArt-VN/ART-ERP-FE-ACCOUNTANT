@@ -1,11 +1,15 @@
+
 import { Component, ChangeDetectorRef } from '@angular/core';
-import { NavController, LoadingController, AlertController } from '@ionic/angular';
+import { NavController, ModalController, LoadingController, AlertController } from '@ionic/angular';
 import { PageBase } from 'src/app/page-base';
 import { ActivatedRoute } from '@angular/router';
 import { EnvService } from 'src/app/services/core/env.service';
-import { BANK_IncomingPaymentDetailProvider, BANK_IncomingPaymentProvider, BRA_BranchProvider,  } from 'src/app/services/static/services.service';
+import { BANK_IncomingPaymentDetailProvider, BANK_IncomingPaymentProvider, BRA_BranchProvider, CRM_ContactProvider,  } from 'src/app/services/static/services.service';
 import { FormBuilder, FormControl, FormArray, Validators } from '@angular/forms';
 import { CommonService } from 'src/app/services/core/common.service';
+import { Subject, catchError, concat, distinctUntilChanged, of, switchMap, tap } from 'rxjs';
+import { IncomingPaymentSaleOrderModalPage } from '../incoming-payment-sale-order-modal/incoming-payment-sale-order-modal.page';
+
 
 @Component({
     selector: 'app-incoming-payment-detail',
@@ -14,6 +18,7 @@ import { CommonService } from 'src/app/services/core/common.service';
 })
 export class IncomingPaymentDetailPage extends PageBase {
     statusList: [];
+    SelectedOrderList = [];
     constructor(
         public pageProvider: BANK_IncomingPaymentProvider,
         public incomingPaymentDetailService: BANK_IncomingPaymentDetailProvider,
@@ -21,6 +26,8 @@ export class IncomingPaymentDetailPage extends PageBase {
         public env: EnvService,
         public navCtrl: NavController,
         public route: ActivatedRoute,
+        public modalController: ModalController,
+        public contactProvider: CRM_ContactProvider,
         public alertCtrl: AlertController,
         public formBuilder: FormBuilder,
         public cdr: ChangeDetectorRef,
@@ -33,13 +40,15 @@ export class IncomingPaymentDetailPage extends PageBase {
         this.formGroup = formBuilder.group({
             IDBranch: [this.env.selectedBranch],
             Id: new FormControl({ value: '', disabled: true }),
-            Name: ['', Validators.required],
-            DocumentDate: ['', Validators.required],
-            Type: ['', Validators.required],
+            Name: [''],
+            Code: [''],
+            DocumentDate: [''],
+            Type: ['Cash', Validators.required],
             SubType: [''],
             Remark: [''],
             Amount: ['', Validators.required],
-            Status: ['', Validators.required],
+            Status: new FormControl({ value: 'Success', disabled: true }),
+            IDCustomer: [''],
             InComingPaymentDetails: this.formBuilder.array([]),
             IsDisabled: new FormControl({ value: '', disabled: true }),
             IsDeleted: new FormControl({ value: '', disabled: true }),
@@ -57,24 +66,28 @@ export class IncomingPaymentDetailPage extends PageBase {
     }
 
     async saveChange() {
-        super.saveChange2();
+        let groups = <FormArray>this.formGroup.controls.InComingPaymentDetails;
+        if(groups.controls.length > 0) {
+            this.formGroup.get('Type').markAsDirty();
+            this.formGroup.get('Status').markAsDirty();
+            super.saveChange2();
+        }else {
+            this.env.showTranslateMessage('Please select at least 1 order','warning');
+        }
+       
     }
 
     typeDataSource: any;
     preLoadData(event?: any): void {
-        this.typeDataSource = [
-            { Name: 'Cash', Code: 'Cash' },
-            { Name: 'Card', Code: 'Card' },
-            { Name: 'Transfer', Code: 'Transfer' },
-        ];
         Promise.all([
             this.env.getStatus('PaymentStatus'),
+            this.env.getType('PaymentType')
 
         ]).then((values:any) => {
             if(values.length){
                 this.statusList = values[0].filter(d => d.Code != 'PaymentStatus');
+                this.typeDataSource = values[1].filter(d => d.Code == 'Cash' || d.Code == 'Card' || d.Code == 'Transfer')
             }
-            
             super.preLoadData(event);
         })
 
@@ -94,7 +107,8 @@ export class IncomingPaymentDetailPage extends PageBase {
                 this.item.InComingPaymentDetails = listIPDetail.data;
                 this.patchFieldsValue();
             }
-        })
+        });
+        this._contactDataSource.initSearch();
     }
 
     sortDetail: any = {};
@@ -154,15 +168,25 @@ export class IncomingPaymentDetailPage extends PageBase {
         let groups = <FormArray>this.formGroup.controls.InComingPaymentDetails;
         let group = this.formBuilder.group({
             IDIncomingPayment: [this.item.Id],
-            Id: new FormControl({ value: field.Id, disabled: true }),
-            IDSaleOrder: new FormControl({ value: field.IDSaleOrder, disabled: true }),
-            IDCustomer: new FormControl({ value: field.IDCustomer, disabled: true }),
-            IDInvoice: new FormControl({ value: field.IDInvoice, disabled: true }),
-            Name: new FormControl({ value: field.Name, disabled: true }),
-            Remark: new FormControl({ value: field.Remark, disabled: true }),
-            Amount: new FormControl({ value: field.Amount, disabled: true }),
-        })  
+            Id: new FormControl({ value: field.Id, disabled: false }),
+            IDSaleOrder: new FormControl({ value: field.IDSaleOrder, disabled: false }),
+            IDCustomer: new FormControl({ value: field.IDCustomer, disabled: false }),
+            IDInvoice: new FormControl({ value: field.IDInvoice, disabled: false }),
+            Name: new FormControl({ value: field.Name, disabled: false }),
+            Remark: new FormControl({ value: field.Remark, disabled: false }),
+            Amount: new FormControl({ value: field.Amount, disabled: false }),
+        });
         groups.push(group);
+        group.get('IDIncomingPayment').markAsDirty();
+        group.get('Id').markAsDirty();
+        group.get('IDSaleOrder').markAsDirty();
+        group.get('IDCustomer').markAsDirty();
+        group.get('IDInvoice').markAsDirty();
+        group.get('Name').markAsDirty();
+        group.get('Remark').markAsDirty();
+        group.get('Amount').markAsDirty();
+        this.formGroup.get('InComingPaymentDetails').markAsDirty();
+
     }
 
     changeType(e) {
@@ -171,4 +195,61 @@ export class IncomingPaymentDetailPage extends PageBase {
         this.saveChange();
     }
 
+    async showOrderModal() {
+        let groups = <FormArray>this.formGroup.controls.InComingPaymentDetails;
+        const modal = await this.modalController.create({
+          component: IncomingPaymentSaleOrderModalPage,
+          componentProps: {
+            //id: this.item.Id,
+            Id_ne: groups.getRawValue().map(o => o.IDSaleOrder)
+            
+          },
+          cssClass: 'modal90',
+        });
+    
+        await modal.present();
+        const { data } = await modal.onWillDismiss();
+    
+        if (data && data.length) {
+          for (let i = 0; i < data.length; i++) {
+            const e = data[i];
+            if (this.SelectedOrderList.findIndex((d) => d.IDSaleOrder == e.IDSaleOrder) == -1) {
+              this.SelectedOrderList.push(e);
+            }
+          }
+        }
+        this.SelectedOrderList.forEach(i => this.addField(i));
+        console.log(this.formGroup);
+        if(this.formGroup.valid){
+            this.saveChange();
+        }
+
+      }
+
+    
+    
+    _contactDataSource = {
+        searchProvider: this.contactProvider,
+        loading: false,
+        input$: new Subject<string>(),
+        selected: [],
+        items$: null,
+        id: this.id,
+        initSearch() {
+            this.loading = false;
+            this.items$ = concat(
+                of(this.selected),
+                this.input$.pipe(
+                    distinctUntilChanged(),
+                    tap(() => this.loading = true),
+                    switchMap(term => this.searchProvider.search({SkipMCP: term ? false : true, SortBy: ['Id_desc'], Take: 20, Skip: 0, Term: term ? term : 'BP:' + this.item?.IDCustomer}).pipe(
+                        catchError(() => of([])), // empty list on error
+                        tap(() => this.loading = false)
+                    ))
+
+                )
+            );
+        }
+    };
+    
 }

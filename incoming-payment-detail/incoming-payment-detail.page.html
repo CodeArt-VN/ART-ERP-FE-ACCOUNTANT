@@ -1,5 +1,5 @@
 <ion-header>
-	<app-detail-toolbar [page]="this"></app-detail-toolbar>
+	<app-toolbar [page]="this" pageTitle="{{'Incoming payment detail' | translate}}" [pageConfig]="pageConfig" [selectedItems]="selectedItems" [query]="query"></app-toolbar>
 </ion-header>
 
 <ion-content appScrollbarTheme class="ion-padding">
@@ -16,16 +16,50 @@
 					<ion-col size="12" size-sm size-xl="4">
 						<app-form-control [field]="{id:'Id', label: 'Id', type : 'number', form : formGroup }">
 						</app-form-control>
-						<app-form-control [field]="{id:'DocumentDate', label: 'Document date', type : 'date', form : formGroup }" (change)="saveChange()">
-						</app-form-control>
+						<div class="c-control">
+							<label class="c-label" for="IDCustomer"
+							  >{{'Customer' | translate}}
+							  <small>#{{item.IDCustomer}}</small>
+							</label>
+							<ng-select
+							  class="c-input"
+							  (change)="saveChange()"
+							  #IDCustomer
+							  labelForId="IDCustomer"
+							  formControlName="IDCustomer"
+							  [items]="_contactDataSource.items$ | async"
+							  [typeahead]="_contactDataSource.input$"
+							  [loading]="_contactDataSource.loading"
+							  [virtualScroll]="true"
+							  bindLabel="Name"
+							  bindValue="Id"
+							  placeholder="{{'Search for name, code or phone number' | translate}}"
+							>
+							  <ng-template ng-label-tmp let-i="item"> {{i.Name}} </ng-template>
+							  <ng-template ng-option-tmp let-i="item" let-search="searchTerm">
+								<div *ngIf="i">
+								  <div>
+									<span [ngOptionHighlight]="search">{{i.Name}}</span>
+									<span *ngIf="i.WorkPhone">
+									  |
+									  <small>
+										<b [ngOptionHighlight]="search">{{i.WorkPhone}}</b>
+									  </small></span
+									>
+								  </div>
+								</div>
+							  </ng-template>
+							</ng-select>
+						  </div>
 						<app-form-control [field]="{id:'Type', label: 'Type', type : 'ng-select', dataSource: typeDataSource, bindValue:'Code', bindLabel:'Name', form : formGroup }" (change)="changeType($event)"> 
 						</app-form-control>
-						<app-form-control [field]="{id:'SubType', label: 'Sub type', type : 'text', form : formGroup }" (change)="saveChange()">
+						<app-form-control *ngIf="formGroup.controls.Type.value != 'Cash'" [field]="{id:'SubType', label: 'Sub type', type : 'text', form : formGroup }" (change)="saveChange()">
 						</app-form-control>
 						
 					</ion-col>
 					<ion-col size="12" size-sm size-xl="4">
 						<app-form-control [field]="{id:'Name', label: 'Name', type : 'text', form : formGroup }" (change)="saveChange()"></app-form-control>
+						<app-form-control [field]="{id:'Code', label: 'Code', type : 'text', form : formGroup }" (change)="saveChange()"></app-form-control>
 						<app-form-control [field]="{id:'Status', type : 'ng-select-status', form : formGroup,  dataSource: statusList,  bindValue: 'Code' }" (change)="saveChange()"></app-form-control>
 						<app-form-control [field]="{id:'Amount', label: 'Amount', type : 'number', form : formGroup }" (change)="saveChange()"></app-form-control>
 
@@ -45,9 +79,15 @@
                         <ion-label>{{'Other information' | translate}}</ion-label>
                     </ion-segment-button>
                 </ion-segment>
+				<ion-buttons slot="end" *ngIf="segmentView == 's1'">
+					<ion-button (click)="showOrderModal()" *ngIf="pageConfig.canEdit">
+					  <ion-icon slot="start" name="truck"></ion-icon>
+					  {{'Add order' | translate}}
+					</ion-button>
+				  </ion-buttons>
             </ion-toolbar>
 
-			<div class="ion-padding" *ngIf="segmentView == 's1'">
+			<div class="ion-padding" *ngIf="segmentView == 's1'">		
 				<section class="table responsive">
 					
 					<header class="bold">
