@@ -80,7 +80,7 @@
                     </ion-segment-button>
                 </ion-segment>
 				<ion-buttons slot="end" *ngIf="segmentView == 's1'">
-					<ion-button (click)="showOrderModal()" *ngIf="pageConfig.canEdit">
+					<ion-button (click)="showOrderModal()" >
 					  <ion-icon slot="start" name="truck"></ion-icon>
 					  {{'Add order' | translate}}
 					</ion-button>
@@ -122,9 +122,9 @@
 						</div>
 
 					</header>
-					<app-page-message [itemsLength]= "formGroup.get('InComingPaymentDetails')['controls']" [showSpinner]="pageConfig.showSpinner"></app-page-message>
+					<app-page-message [itemsLength]= "formGroup.get('IncomingPaymentDetails')['controls']" [showSpinner]="pageConfig.showSpinner"></app-page-message>
 					<ng-container  *ngIf="!pageConfig.showSpinner">
-						<div *ngFor="let c of formGroup.get('InComingPaymentDetails')['controls'] ;let j = index"class="row" [ngClass]="{odd: j % 2 != 0}" >
+						<div *ngFor="let c of formGroup.get('IncomingPaymentDetails')['controls'] ;let j = index"class="row" [ngClass]="{odd: j % 2 != 0}" >
 								<div class="col-id cell">{{j+1}}</div>
 								<div class="col-name cell">
 									<div *ngIf="c.get('Id')?.value">

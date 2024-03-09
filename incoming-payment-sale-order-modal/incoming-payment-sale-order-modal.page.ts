@@ -6,8 +6,6 @@ import { EnvService } from 'src/app/services/core/env.service';
 import { SALE_OrderProvider } from 'src/app/services/static/services.service';
 import { FormBuilder } from '@angular/forms';
 import { lib } from 'src/app/services/static/global-functions';
-import { ApiSetting } from 'src/app/services/static/api-setting';
-import { ConsoleLogger } from '@microsoft/signalr/dist/esm/Utils';
 
 @Component({
   selector: 'app-incoming-payment-sale-order-modal',
@@ -15,7 +13,9 @@ import { ConsoleLogger } from '@microsoft/signalr/dist/esm/Utils';
   styleUrls: ['./incoming-payment-sale-order-modal.page.scss'],
 })
 export class IncomingPaymentSaleOrderModalPage extends PageBase {
-  Id_ne;
+  IDContact;
+  amount;
+  SelectedOrderList: any;
   constructor(
     public pageProvider: SALE_OrderProvider,
     public env: EnvService,
@@ -32,15 +32,16 @@ export class IncomingPaymentSaleOrderModalPage extends PageBase {
     super();
     this.pageConfig.isDetailPage = false;
     this.id = this.route.snapshot.paramMap.get('id');
-    this.Id_ne = this.route.snapshot.paramMap.get('Id_ne');
+    this.amount = this.route.snapshot.paramMap.get('amount');
+    this.IDContact = this.route.snapshot.paramMap.get('IDContact');
+    this.SelectedOrderList = this.route.snapshot.paramMap.get('SelectedOrderList');
   }
 
   preLoadData(event) {
-    this.query.Id_ne = this.Id_ne;
+    //this.query.IDContact = this.IDContact;
     this.sortToggle('Id', true);
     super.preLoadData(event);
   }
-
 
   quickSelectChange(type) {
     if (type == 'sale') {
@@ -76,6 +77,9 @@ export class IncomingPaymentSaleOrderModalPage extends PageBase {
   };
   routeList = [];
   sellerList = [];
+  total: any = {
+    Amount: 0,
+  };
 
   loadedData(event) {
     this.selectedItems = [];
@@ -108,72 +112,99 @@ export class IncomingPaymentSaleOrderModalPage extends PageBase {
           Count: 1,
         });
       }
-
       i.OrderTimeText = i.OrderDate ? lib.dateFormat(i.OrderDate, 'hh:MM') : '';
       i.OrderDateText = i.OrderDate ? lib.dateFormat(i.OrderDate, 'dd/mm/yy') : '';
       i.Query = i.OrderDate ? lib.dateFormat(i.OrderDate, 'yyyy-mm-dd') : '';
-      i.OriginalTotalText = lib.currencyFormat(i.OriginalTotalAfterTax);
-      i.ProductWeightText = lib.formatMoney(i.ProductWeight, 2);
-      i.ProductDimensionsText = lib.formatMoney(i.ProductDimensions / 10 ** 3, 1);
+      i.DebtAmountBefore = i.Debt;
+      i.DebtAmount = '';
+      i.Debt = lib.currencyFormat(i.Debt);
     });
+    this.total.Amount = this.amount;
     super.loadedData(event);
-    this.changeSelection({});
+    if(this.SelectedOrderList.length){
+      
+      this.SelectedOrderList.forEach((s) => {
+        let so = this.items.find(i => i.Id == s.IDSaleOrder)
+        so.checked = true;
+        so.DebtAmount = s.Amount? s.Amount : s.DebtAmount;
+      });
+    }else {
+      this.autoSelect();
+    }
   }
-
-  total: any = {
-    OriginalTotalAfterTax: 0,
-    ProductWeight: 0,
-    ProductDimensions: 0,
-  };
 
   changeSelection(i, e = null) {
     super.changeSelection(i, e);
-
-    this.total = {
-      OriginalTotalAfterTax: 0,
-      ProductWeight: 0,
-      ProductDimensions: 0,
-    };
-
-    this.selectedItems.forEach((o) => {
-      this.total.OriginalTotalAfterTax += o.OriginalTotalAfterTax;
-      this.total.ProductWeight += o.ProductWeight;
-      this.total.ProductDimensions += o.ProductDimensions;
-    });
-
-    this.total.OriginalTotalText = lib.currencyFormat(this.total.OriginalTotalAfterTax);
-    this.total.ProductWeightText = lib.formatMoney(this.total.ProductWeight, 2);
-    this.total.ProductDimensionsText = lib.formatMoney(this.total.ProductDimensions / 10 ** 3, 1);
+    if (i.checked) {
+      i.checked = false;
+      i.DebtAmount = '';
+    } else {
+      i.checked = true;
+      i.DebtAmount = i.DebtAmountBefore;
+    }
+    this.autoCalculateTotalAmount();
   }
 
   SaveSelectedOrders() {
-    this.selectedItems.forEach(i => { 
-      i.IDSaleOrder = i.Id,
-      i.Id = 0,
-      i.IDCustomer = i._Customer.Id,
-      i.Amount = i.TotalAfterDiscount
+    this.selectedItems.forEach((i) => {
+      (i.IDSaleOrder = i.Id), (i.Id = 0), (i.IDCustomer = i._Customer.Id), (i.Amount = i.DebtAmount);
     });
-    console.log(this.selectedItems);
+    this.selectedItems.Amount = this.total.Amount;
     this.modalController.dismiss(this.selectedItems);
   }
 
   isAllChecked = false;
   toggleSelectAll() {
-    this.items.forEach((i) => (i.checked = this.isAllChecked));
+    let total = 0;
+    this.items.forEach((i) => {
+      i.checked = this.isAllChecked;
+      if (i.checked) {
+        total += i.DebtAmountBefore;
+        this.total.Amount = total;
+        i.DebtAmount = i.DebtAmountBefore;
+      } else {
+        i.DebtAmount = '';
+        this.total.Amount = 0;
+      }
+    });
     this.selectedItems = this.isAllChecked ? [...this.items] : [];
-    this.changeSelection({});
+    super.changeSelection({});
   }
 
   autoSelect() {
-    //total
-    //this.formGroup.Amount 
-    //list SO -> foreach -> Amount - i.Dept 
+    let totalDebt = 0;
+    this.items.forEach((i) => {
+      totalDebt += i.DebtAmountBefore;
+      if (totalDebt <= this.total.Amount) {
+        i.checked = true;
+        i.DebtAmount = i.DebtAmountBefore;
+        super.changeSelection(i);
+      } else {
+        i.DebtAmount = '';
+        i.checked = false;
+      }
+    });
+    this.selectedItems = this.items.filter((d) => d.checked);
+  }
+  changeDebtAmountSelection(i, e = null) {
+    if (i.DebtAmount <= 0 || i.DebtAmount >= i.DebtAmountBefore || i.DebtAmount == null) {
+      i.DebtAmount = i.DebtAmountBefore;
+    }
+    this.autoCalculateTotalAmount();
+  }
+  
+  changeTotalAmountSelection(e) {
+    this.autoSelect();
+  }
 
-    // truong hop 1 dept còn thì các th ở trên list SO checked 
-
-    // truong hop 2 return ko check nua
-    
-
-
+  autoCalculateTotalAmount() {
+    let total = 0;
+    this.items.forEach((i) => {
+      if (i.checked) {
+        total += i.DebtAmount;
+      }
+    });
+    this.total.Amount = total;
+    this.selectedItems = this.items.filter((d) => d.checked);
   }
 }

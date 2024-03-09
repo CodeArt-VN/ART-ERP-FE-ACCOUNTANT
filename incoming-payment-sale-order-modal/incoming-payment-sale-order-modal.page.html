@@ -5,15 +5,10 @@
     </ion-buttons>
 
     <ion-buttons slot="primary">
-      <select (change)="quickSelectChange('route')" [(ngModel)]="quickSelect.idRoute">
-        <option value="-1">{{'Quick select by route' | translate}}</option>
-        <option [value]="i.Id" *ngFor="let i of routeList">{{i.Name}} ({{i.Count}}) {{'Order' | translate}}</option>
-      </select>
-      &nbsp;
-      <select (change)="quickSelectChange('sale')" [(ngModel)]="quickSelect.idSale">
-        <option value="-1">{{'Quick select by sales staff' | translate}}</option>
-        <option [value]="i.Id" *ngFor="let i of sellerList">{{i.Name}} ({{i.Count}}) {{'Order' | translate}}</option>
-      </select>
+        <div class="total">
+         <span>{{'Total: ' | translate}}</span> 
+        <input [ngModelOptions]="{standalone: true}" (change)="changeTotalAmountSelection(total.Amount)" [(ngModel)]="total.Amount" class="c-input" [ngClass]="{active: total.Amount}" type="number">
+        </div>
       <span class="split ion-hide-sm-down">|</span>
 
       <ion-button
@@ -71,69 +66,19 @@
           color="primary"
         ></ion-icon>
       </div>
-
-      <div class="col-name cell" (click)="sortToggle('CustomerName')">
-        {{'Customer' | translate}}
-        <small>#Id</small>
-
-        <ion-icon
-          class="min-btn"
-          *ngIf="sort.CustomerName"
-          [name]="sort.CustomerName == 'CustomerName'?'arrow-down': 'arrow-up'"
-        ></ion-icon>
-        <ion-icon
-          class="min-btn"
-          (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch"
-          *ngIf="query.CustomerName"
-          name="search"
-          color="primary"
-        ></ion-icon>
-
-        <small class="right">
-          <ion-text color="dark"> {{'Address' | translate}}</ion-text>
-        </small>
+      <div class="col-code cell">
       </div>
-      <div class="col-code cell money" (click)="sortToggle('OriginalTotalAfterTax')">
-        {{'Value after discount' | translate}}
+      <div class="col-code cell money" (click)="sortToggle('Debt')">
+        {{'Debt' | translate}}
         <ion-icon
           class="min-btn"
-          *ngIf="sort.OriginalTotalAfterTax"
-          [name]="sort.OriginalTotalAfterTax == 'OriginalTotalAfterTax'?'arrow-down': 'arrow-up'"
-        ></ion-icon>
-        <ion-icon
-          class="min-btn"
-          (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch"
-          *ngIf="query.OriginalTotalAfterTax"
-          name="search"
-          color="primary"
-        ></ion-icon>
-      </div>
-      <div class="col-code cell money" (click)="sortToggle('ProductWeight')">
-        {{'weight' | translate}}
-        <ion-icon
-          class="min-btn"
-          *ngIf="sort.ProductWeight"
-          [name]="sort.ProductWeight == 'ProductWeight'?'arrow-down': 'arrow-up'"
+          *ngIf="sort.Debt"
+          [name]="sort.Debt == 'Debt'?'arrow-down': 'arrow-up'"
         ></ion-icon>
         <ion-icon
           class="min-btn"
           (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch"
           *ngIf="query.ProductWeight"
-          name="search"
-          color="primary"
-        ></ion-icon>
-      </div>
-      <div class="col-code cell money" (click)="sortToggle('ProductDimensions')">
-        {{'Volume' | translate}}
-        <ion-icon
-          class="min-btn"
-          *ngIf="sort.ProductDimensions"
-          [name]="sort.ProductDimensions == 'ProductDimensions'?'arrow-down': 'arrow-up'"
-        ></ion-icon>
-        <ion-icon
-          class="min-btn"
-          (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch"
-          *ngIf="query.ProductDimensions"
           name="search"
           color="primary"
         ></ion-icon>
@@ -191,36 +136,8 @@
             name="close-circle-outline"
           ></ion-icon>
         </div>
-        <div class="col-name cell">
-          <input
-            [ngModelOptions]="{standalone: true}"
-            [(ngModel)]="query.CustomerName"
-            class="c-input"
-            [ngClass]="{active: query.CustomerName}"
-            type="text"
-          />
-          <ion-icon
-            class="min-btn"
-            (click)="query.CustomerName=''; refresh()"
-            *ngIf="query.CustomerName"
-            name="close-circle-outline"
-          ></ion-icon>
-
-          <div class="right">
-            <b
-              ><ion-text color="danger"
-                >{{'Total' | translate}} {{selectedItems.length}} {{'Order' | translate}}:</ion-text
-              ></b
-            >
-          </div>
-        </div>
-        <div class="col-code cell money">
-          {{total.OriginalTotalText}}
-          <!-- <input [ngModelOptions]="{standalone: true}" [(ngModel)]="query.OriginalTotalAfterTax" class="c-input" [ngClass]="{active: query.OriginalTotalAfterTax}" type="text">
-                    <ion-icon class="min-btn" (click)="query.OriginalTotalAfterTax=''; refresh()" *ngIf="query.OriginalTotalAfterTax" name="close-circle-outline"></ion-icon> -->
-        </div>
-        <div class="col-code cell money">{{total.ProductWeightText}} kg</div>
-        <div class="col-code cell money">{{total.ProductDimensionsText}} lít</div>
+        <div class="col-code cell money"></div>
+        <div class="col-code cell"></div>
         <div class="col-code cell">
           <input
             [ngModelOptions]="{standalone: true}"
@@ -254,9 +171,7 @@
         <small *ngIf="i.OrderTimeText ">{{i.OrderTimeText}}</small>
       </div>
       <div class="col-name cell">
-        <span title="{{'View order's details' | translate}}" [ngOptionHighlight]="query.CustomerName"
-          >{{i.CustomerName}}</span
-        >
+        <span title="{{'View order's details' | translate}}" [ngOptionHighlight]="query.CustomerName">{{i.CustomerName}}</span>
         <small title="{{'View customers' information' | translate}}">#{{i.IDContact}}</small>
         <small class="right">
           <ion-text color="dark">
@@ -265,9 +180,13 @@
           </ion-text>
         </small>
       </div>
-      <div class="col-code cell money">{{i.OriginalTotalText}}</div>
-      <div class="col-code cell money">{{i.ProductWeightText}} kg</div>
-      <div class="col-code cell money">{{i.ProductDimensionsText}} lít</div>
+     
+      <div class="col-code cell money">
+        <input [(ngModel)]="i.DebtAmount" 
+               [min]="0"
+               [max]="i.DebtAmountBefore" 
+               (change)="changeDebtAmountSelection(i, $event)" class="c-input" type="number" [disabled]="!i.checked"></div>
+      <div class="col-code cell money">{{i.Debt}}</div>         
       <div class="col-code cell">{{i.Code}}</div>
     </div>
   </section>
