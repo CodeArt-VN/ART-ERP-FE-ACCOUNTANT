@@ -125,7 +125,7 @@
 											class="row" [ngClass]="{odd: j % 2 != 0}">
 											<div class="col-id cell">{{j+1}}</div>
 											<div class="col-name cell">
-												<div *ngIf="c.get('Id')?.value">
+												<div>
 													<a (mousedown)="$event.stopPropagation()">#{{c.get('Id').value}}
 														<ion-icon name="open-outline"></ion-icon></a>
 													<span [title]="c.get('Name')?.value"> {{c.get('Name').value}}</span>
@@ -181,7 +181,7 @@
 											class="row" [ngClass]="{odd: j % 2 != 0}">
 											<div class="col-id cell">{{j+1}}</div>
 											<div class="col-name cell">
-												<div *ngIf="c.get('Id')?.value">
+												<div>
 													<a (mousedown)="$event.stopPropagation()">#{{c.get('Id').value}}
 														<ion-icon name="open-outline"></ion-icon></a>
 													<span [title]="c.get('Name')?.value"> {{c.get('Name').value}}</span>

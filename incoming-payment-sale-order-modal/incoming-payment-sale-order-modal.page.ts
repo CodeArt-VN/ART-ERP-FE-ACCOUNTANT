@@ -38,7 +38,7 @@ export class IncomingPaymentSaleOrderModalPage extends PageBase {
   }
 
   preLoadData(event) {
-    //this.query.IDContact = this.IDContact;
+    this.query.IDContact = this.IDContact;
     this.sortToggle('Id', true);
     super.preLoadData(event);
   }
@@ -144,7 +144,7 @@ export class IncomingPaymentSaleOrderModalPage extends PageBase {
       i.DebtAmount = '';
     } else {
       i.checked = true;
-      i.DebtAmount != i.DebtAmountBefore ? i.isEdit = true : i.isEdit = false;
+      i.isEdit = true;
       i.DebtAmount = i.DebtAmountBefore;
     }
     this.autoCalculateTotalAmount();
@@ -152,7 +152,7 @@ export class IncomingPaymentSaleOrderModalPage extends PageBase {
   
   SaveSelectedOrders() {
     this.selectedItems.forEach((i) => {
-      (i.IDSaleOrder = i.Id), (i.Id = 0), (i.IDCustomer = i._Customer.Id), (i.IDIncomingPaymentDetail = i.IDIncomingPaymentDetail), (i.Amount = i.DebtAmount);
+      (i.IDSaleOrder = i.Id), (i.Id = 0), (i.IDCustomer = i._Customer.Id), (i.IDIncomingPaymentDetail = i.IDIncomingPaymentDetail), (i.Name = i.Name), (i.Amount = i.DebtAmount);
     });
     this.selectedItems.Amount = this.total.Amount;
     this.modalController.dismiss(this.selectedItems);

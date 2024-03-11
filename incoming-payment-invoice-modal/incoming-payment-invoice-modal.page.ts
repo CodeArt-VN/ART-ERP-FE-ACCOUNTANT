@@ -152,7 +152,7 @@ export class IncomingPaymentInvoiceModalPage extends PageBase {
 
   SaveSelectedOrders() {
     this.selectedItems.forEach((i) => {
-      (i.IDInvoice = i.Id), (i.Id = 0), (i.IDIncomingPaymentDetail = i.IDIncomingPaymentDetail), (i.IDCustomer = i.IDBusinessPartner), (i.Amount = i.DebtAmount);
+      (i.IDInvoice = i.Id), (i.Id = 0), (i.IDIncomingPaymentDetail = i.IDIncomingPaymentDetail), (i.IDCustomer = i.IDBusinessPartner), (i.Name = i.Name), (i.Amount = i.DebtAmount);
     });
     this.selectedItems.Amount = this.total.Amount;
     this.modalController.dismiss(this.selectedItems);
