@@ -15,6 +15,7 @@ import { FormBuilder, FormControl, FormArray, Validators } from '@angular/forms'
 import { CommonService } from 'src/app/services/core/common.service';
 import { Subject, catchError, concat, distinctUntilChanged, of, switchMap, tap } from 'rxjs';
 import { IncomingPaymentSaleOrderModalPage } from '../incoming-payment-sale-order-modal/incoming-payment-sale-order-modal.page';
+import { IncomingPaymentInvoiceModalPage } from '../incoming-payment-invoice-modal/incoming-payment-invoice-modal.page';
 
 @Component({
   selector: 'app-incoming-payment-detail',
@@ -24,6 +25,7 @@ import { IncomingPaymentSaleOrderModalPage } from '../incoming-payment-sale-orde
 export class IncomingPaymentDetailPage extends PageBase {
   statusList: [];
   SelectedOrderList: any;
+  SelectedInvoiceList: any;
   constructor(
     public pageProvider: BANK_IncomingPaymentProvider,
     public IncomingPaymentDetailservice: BANK_IncomingPaymentDetailProvider,
@@ -48,6 +50,8 @@ export class IncomingPaymentDetailPage extends PageBase {
       Name: [''],
       Code: [''],
       DocumentDate: [''],
+      PostingDate: [''],
+      DueDate: [''],
       Type: ['Cash', Validators.required],
       SubType: [''],
       Remark: [''],
@@ -71,6 +75,7 @@ export class IncomingPaymentDetailPage extends PageBase {
   }
 
   async saveChange() {
+    console.log(this.formGroup.controls.IDCustomer.value)
     let groups = <FormArray>this.formGroup.controls.IncomingPaymentDetails;
     if (groups.controls.length > 0) {
       this.formGroup.get('Type').markAsDirty();
@@ -221,7 +226,6 @@ export class IncomingPaymentDetailPage extends PageBase {
   async showOrderModal() {
     this.incomingPaymentOrderDetails = [...this.formGroup.controls.IncomingPaymentDetails.value];
     this.SelectedOrderList = this.formGroup.controls.IncomingPaymentDetails?.value;
-
     const modal = await this.modalController.create({
       component: IncomingPaymentSaleOrderModalPage,
       componentProps: {
@@ -245,6 +249,50 @@ export class IncomingPaymentDetailPage extends PageBase {
       for (let i = 0; i < data.length; i++) {
         const e = data[i];
         this.SelectedOrderList.push(e);
+        this.addField(e);
+        dataIds = data.map((e) => e.IDSaleOrder);
+      }
+      this.incomingPaymentOrderDetails.forEach((x) => {
+        if (!dataIds.includes(x.IDSaleOrder)) {
+          deletedFields.push(x.Id);
+        }
+      });
+      if (deletedFields.length && this.formGroup.controls.Id.value) {
+        this.removeField(deletedFields);
+      }
+      this.formGroup.get('Amount').setValue(data.Amount);
+      this.formGroup.get('Amount').markAsDirty();
+    }
+    if (this.formGroup.valid) {
+      this.saveChange();
+    }
+  }
+
+  async showInvoiceModal() {
+    this.incomingPaymentOrderDetails = [...this.formGroup.controls.IncomingPaymentDetails.value];
+    this.SelectedInvoiceList = this.formGroup.controls.IncomingPaymentDetails?.value;
+    const modal = await this.modalController.create({
+      component: IncomingPaymentInvoiceModalPage,
+      componentProps: {
+        IDBusinessPartner: this.formGroup.controls.IDCustomer.value,
+        amount: this.formGroup.controls.Amount.value,
+        SelectedInvoiceList: this.SelectedInvoiceList,
+      },
+      cssClass: 'modal90',
+    });
+
+    await modal.present();
+    const { data } = await modal.onWillDismiss();
+    this.SelectedInvoiceList = [];
+    if (data && data.length) {
+      this.formGroup.removeControl('IncomingPaymentDetails');
+      let groups = this.formBuilder.array([]);
+      this.formGroup.addControl('IncomingPaymentDetails', groups);
+      let deletedFields = [];
+      let dataIds = [];
+      for (let i = 0; i < data.length; i++) {
+        const e = data[i];
+        this.SelectedInvoiceList.push(e);
         this.addField(e);
         dataIds = data.map((e) => e.IDSaleOrder);
       }
@@ -300,6 +348,5 @@ export class IncomingPaymentDetailPage extends PageBase {
   removeField(deletedFields) {
     this.formGroup.get('DeletedFields').setValue(deletedFields);
     this.formGroup.get('DeletedFields').markAsDirty();
-    //this.saveChange();
   }
 }
