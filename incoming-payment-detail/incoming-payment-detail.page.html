@@ -86,15 +86,15 @@
 									(change)="saveChange()">
 								</app-form-control>
 								<app-form-control
-									[field]="{id:'DocumentDate', label: 'Document date', type : 'date', form : formGroup }"
+									[field]="{id:'DocumentDate', label: 'Document date', type : 'datetime-local', form : formGroup }"
 									(change)="saveChange()">
 								</app-form-control>
 								<app-form-control
-									[field]="{id:'PostingDate', label: 'Posting date', type : 'date', form : formGroup }"
+									[field]="{id:'PostingDate', label: 'Posting date', type : 'datetime-local', form : formGroup }"
 									(change)="saveChange()">
 								</app-form-control>
 								<app-form-control
-									[field]="{id:'DueDate', label: 'Due date', type : 'date', form : formGroup }"
+									[field]="{id:'DueDate', label: 'Due date', type : 'datetime-local', form : formGroup }"
 									(change)="saveChange()">
 								</app-form-control>
 							</ion-col>
@@ -121,7 +121,7 @@
 									</section>
 									<section class="table table-scroll">
 										<ng-container *ngFor="let c of formGroup.get('IncomingPaymentDetails')['controls'] ;let j = index">
-											<div *ngIf="c.get('IDSaleOrder').value > 0 && c.get('IDInvoice').value == null"
+											<div *ngIf="c.get('IDSaleOrder').value > 0"
 											class="row" [ngClass]="{odd: j % 2 != 0}">
 											<div class="col-id cell">{{j+1}}</div>
 											<div class="col-name cell">
@@ -176,10 +176,10 @@
 										</header>
 									</section>
 									<section class="table table-scroll">
-										<ng-container *ngFor="let c of formGroup.get('IncomingPaymentDetails')['controls'] ;let j = index">
+										<ng-container *ngFor="let c of formGroup.get('IncomingPaymentDetails')['controls'] ;let k = index">
 											<div *ngIf="c.get('IDInvoice').value > 0"
-											class="row" [ngClass]="{odd: j % 2 != 0}">
-											<div class="col-id cell">{{j+1}}</div>
+											class="row" [ngClass]="{odd: k % 2 != 0}">
+											<div class="col-id cell">{{k+1}}</div>
 											<div class="col-name cell">
 												<div>
 													<a (mousedown)="$event.stopPropagation()">#{{c.get('Id').value}}

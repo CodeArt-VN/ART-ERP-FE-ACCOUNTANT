@@ -77,8 +77,6 @@ export class IncomingPaymentDetailPage extends PageBase {
   async saveChange() {
     let groups = <FormArray>this.formGroup.controls.IncomingPaymentDetails;
     if (groups.controls.length > 0) {
-      this.formGroup.get('Type').markAsDirty();
-      this.formGroup.get('Status').markAsDirty();
       this.saveChange2();
     } else {
       this.env.showTranslateMessage('Please select at least 1 order', 'warning');
@@ -100,6 +98,10 @@ export class IncomingPaymentDetailPage extends PageBase {
           .then((savedItem: any) => {
             resolve(savedItem);
             this.savedChange(savedItem, form);
+            this.item = savedItem;
+            let formArray  = this.formGroup.get('IncomingPaymentDetails') as FormArray;
+            formArray.clear();
+            this.loadedData();
             if (publishEventCode) this.env.publishEvent({ Code: publishEventCode });
           })
           .catch((err) => {
@@ -157,32 +159,6 @@ export class IncomingPaymentDetailPage extends PageBase {
 
   amountOrder = 0;
   amountInvoice = 0;
-  // loadedData(event?: any, ignoredFromGroup?: boolean): void {
-  //   if (this.item?.Status == 'Success') {
-  //     this.pageConfig.canEdit = false;
-  //   }
-  //   super.loadedData(event, ignoredFromGroup);
-  //   this.query.IDIncomingPayment = this.item.Id;
-  //   this.query.Id = undefined;
-  //   this.IncomingPaymentDetailservice.read(this.query, false).then((listIPDetail: any) => {
-  //     if (listIPDetail != null && listIPDetail.data.length > 0) {
-  //       const IncomingPaymentDetailsArray = this.formGroup.get('IncomingPaymentDetails') as FormArray;
-  //       IncomingPaymentDetailsArray.clear();
-  //       this.item.IncomingPaymentDetails = listIPDetail.data;
-  //       this.item.IncomingPaymentDetails.forEach((detail) => {
-  //         if (detail.IDSaleOrder && detail.IDInvoice == null) {
-  //           this.amountOrder += detail.Amount;
-  //         }
-  //         if (detail.IDInvoice) {
-  //           this.amountInvoice += detail.Amount;
-  //         }
-  //       });
-  //       this.patchFieldsValue();
-  //     }
-  //   });
-  //   this._contactDataSource.initSearch();
-  // }
-
   loadedData(event?: any, ignoredFromGroup?: boolean): void {
     if (this.item?.Status == 'Success') {
       this.pageConfig.canEdit = false;
@@ -196,7 +172,9 @@ export class IncomingPaymentDetailPage extends PageBase {
               this.amountInvoice += i.Amount;
           }
       this.addField(i);
-    })
+    });
+    this.formGroup.get('Type').markAsDirty();
+    this.formGroup.get('Status').markAsDirty();
     this._contactDataSource.selected = this.item._Customer;
     this._contactDataSource.initSearch();
   }
@@ -242,14 +220,14 @@ export class IncomingPaymentDetailPage extends PageBase {
     });
   }
 
-  private patchFieldsValue() {
-    this.pageConfig.showSpinner = true;
-    this.formGroup.controls.IncomingPaymentDetails = new FormArray([]);
-    if (this.item.IncomingPaymentDetails?.length) {
-      this.item.IncomingPaymentDetails.forEach((i) => this.addField(i));
-    }
-    this.pageConfig.showSpinner = false;
-  }
+  // private patchFieldsValue() {
+  //   this.pageConfig.showSpinner = true;
+  //   this.formGroup.controls.IncomingPaymentDetails = new FormArray([]);
+  //   if (this.item.IncomingPaymentDetails?.length) {
+  //     this.item.IncomingPaymentDetails.forEach((i) => this.addField(i));
+  //   }
+  //   this.pageConfig.showSpinner = false;
+  // }
 
   addField(field: any, markAsDirty = false) {
     let groups = <FormArray>this.formGroup.controls.IncomingPaymentDetails;
