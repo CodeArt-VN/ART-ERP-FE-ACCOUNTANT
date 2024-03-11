@@ -124,9 +124,11 @@ export class IncomingPaymentSaleOrderModalPage extends PageBase {
     if(this.SelectedOrderList.length){
       
       this.SelectedOrderList.forEach((s) => {
-        let so = this.items.find(i => i.Id == s.IDSaleOrder)
-        so.checked = true;
-        so.DebtAmount = s.Amount? s.Amount : s.DebtAmount;
+        let so = this.items.find(i => i.Id == s.IDSaleOrder);
+        if(so) {
+          so.checked = true;
+          so.DebtAmount = s.Amount? s.Amount : s.DebtAmount;
+        }
       });
     }else {
       this.autoSelect();

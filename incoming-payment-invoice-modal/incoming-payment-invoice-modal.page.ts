@@ -125,9 +125,11 @@ export class IncomingPaymentInvoiceModalPage extends PageBase {
     if(this.SelectedInvoiceList.length){
       
       this.SelectedInvoiceList.forEach((s) => {
-        let so = this.items.find(i => i.Id == s.IDSaleOrder)
-        so.checked = true;
-        so.DebtAmount = s.Amount? s.Amount : s.DebtAmount;
+        let so = this.items.find(i => i.Id == s.IDInvoice)
+        if(so) {
+          so.checked = true;
+          so.DebtAmount = s.Amount? s.Amount : s.DebtAmount;
+        }   
       });
     }else {
       this.autoSelect();
@@ -148,7 +150,7 @@ export class IncomingPaymentInvoiceModalPage extends PageBase {
 
   SaveSelectedOrders() {
     this.selectedItems.forEach((i) => {
-      (i.IDSaleOrder = i.Id), (i.Id = 0), (i.IDCustomer = i._Customer.Id), (i.Amount = i.DebtAmount);
+      (i.IDInvoice = i.Id), (i.Id = 0), (i.IDCustomer = i.IDBusinessPartner), (i.Amount = i.DebtAmount);
     });
     this.selectedItems.Amount = this.total.Amount;
     this.modalController.dismiss(this.selectedItems);

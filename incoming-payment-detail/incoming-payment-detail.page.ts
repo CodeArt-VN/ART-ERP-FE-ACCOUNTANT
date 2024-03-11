@@ -75,7 +75,7 @@ export class IncomingPaymentDetailPage extends PageBase {
   }
 
   async saveChange() {
-    console.log(this.formGroup.controls.IDCustomer.value)
+    console.log(this.formGroup.controls.IDCustomer.value);
     let groups = <FormArray>this.formGroup.controls.IncomingPaymentDetails;
     if (groups.controls.length > 0) {
       this.formGroup.get('Type').markAsDirty();
@@ -123,7 +123,8 @@ export class IncomingPaymentDetailPage extends PageBase {
       super.preLoadData(event);
     });
   }
-
+  amountOrder = 0;
+  amountInvoice = 0;
   loadedData(event?: any, ignoredFromGroup?: boolean): void {
     if (this.item?.Status == 'Success') {
       this.pageConfig.canEdit = false;
@@ -136,6 +137,14 @@ export class IncomingPaymentDetailPage extends PageBase {
         const IncomingPaymentDetailsArray = this.formGroup.get('IncomingPaymentDetails') as FormArray;
         IncomingPaymentDetailsArray.clear();
         this.item.IncomingPaymentDetails = listIPDetail.data;
+        this.item.IncomingPaymentDetails.forEach((detail) => {
+          if (detail.IDSaleOrder && detail.IDInvoice == null) {
+              this.amountOrder += detail.Amount;
+          }
+          if (detail.IDInvoice) {
+              this.amountInvoice += detail.Amount;
+          }
+        });
         this.patchFieldsValue();
       }
     });
@@ -230,7 +239,7 @@ export class IncomingPaymentDetailPage extends PageBase {
       component: IncomingPaymentSaleOrderModalPage,
       componentProps: {
         IDContact: this.formGroup.controls.IDCustomer.value,
-        amount: this.formGroup.controls.Amount.value,
+        amount: this.amountOrder,
         SelectedOrderList: this.SelectedOrderList,
       },
       cssClass: 'modal90',
@@ -239,32 +248,34 @@ export class IncomingPaymentDetailPage extends PageBase {
     await modal.present();
     const { data } = await modal.onWillDismiss();
     this.SelectedOrderList = [];
-    console.log('aaa');
     if (data && data.length) {
-      this.formGroup.removeControl('IncomingPaymentDetails');
-      let groups = this.formBuilder.array([]);
-      this.formGroup.addControl('IncomingPaymentDetails', groups);
+      // this.formGroup.removeControl('IncomingPaymentDetails');
+      // let groups = this.formBuilder.array([]);
+      // this.formGroup.addControl('IncomingPaymentDetails', groups);
       let deletedFields = [];
       let dataIds = [];
       for (let i = 0; i < data.length; i++) {
         const e = data[i];
         this.SelectedOrderList.push(e);
-        this.addField(e);
+        if (!this.incomingPaymentOrderDetails.some(item => item.IDSaleOrder === e.IDSaleOrder)) {
+          this.addField(e);
+        }
+        //this.addField(e);
         dataIds = data.map((e) => e.IDSaleOrder);
       }
       this.incomingPaymentOrderDetails.forEach((x) => {
-        if (!dataIds.includes(x.IDSaleOrder)) {
+        if (!dataIds.includes(x.IDSaleOrder) && x.IDInvoice == null) {
           deletedFields.push(x.Id);
         }
       });
       if (deletedFields.length && this.formGroup.controls.Id.value) {
         this.removeField(deletedFields);
       }
-      this.formGroup.get('Amount').setValue(data.Amount);
+      this.formGroup.get('Amount').setValue(data.Amount + this.amountInvoice);
       this.formGroup.get('Amount').markAsDirty();
     }
     if (this.formGroup.valid) {
-      this.saveChange();
+      //this.saveChange();
     }
   }
 
@@ -275,7 +286,7 @@ export class IncomingPaymentDetailPage extends PageBase {
       component: IncomingPaymentInvoiceModalPage,
       componentProps: {
         IDBusinessPartner: this.formGroup.controls.IDCustomer.value,
-        amount: this.formGroup.controls.Amount.value,
+        amount: this.amountInvoice,
         SelectedInvoiceList: this.SelectedInvoiceList,
       },
       cssClass: 'modal90',
@@ -285,30 +296,34 @@ export class IncomingPaymentDetailPage extends PageBase {
     const { data } = await modal.onWillDismiss();
     this.SelectedInvoiceList = [];
     if (data && data.length) {
-      this.formGroup.removeControl('IncomingPaymentDetails');
-      let groups = this.formBuilder.array([]);
-      this.formGroup.addControl('IncomingPaymentDetails', groups);
+      // this.formGroup.removeControl('IncomingPaymentDetails');
+      // let groups = this.formBuilder.array([]);
+      // this.formGroup.addControl('IncomingPaymentDetails', groups);
       let deletedFields = [];
       let dataIds = [];
       for (let i = 0; i < data.length; i++) {
         const e = data[i];
         this.SelectedInvoiceList.push(e);
-        this.addField(e);
-        dataIds = data.map((e) => e.IDSaleOrder);
+        e.IDSaleOrder = null;
+        if (!this.incomingPaymentOrderDetails.some(item => item.IDInvoice === e.IDInvoice)) {
+          this.addField(e);
+        }
+        //this.addField(e);
+        dataIds = data.map((e) => e.IDInvoice);
       }
       this.incomingPaymentOrderDetails.forEach((x) => {
-        if (!dataIds.includes(x.IDSaleOrder)) {
+        if (!dataIds.includes(x.IDInvoice) && x.IDSaleOrder == null) {
           deletedFields.push(x.Id);
         }
       });
       if (deletedFields.length && this.formGroup.controls.Id.value) {
         this.removeField(deletedFields);
       }
-      this.formGroup.get('Amount').setValue(data.Amount);
+      this.formGroup.get('Amount').setValue(data.Amount + this.amountOrder);
       this.formGroup.get('Amount').markAsDirty();
     }
     if (this.formGroup.valid) {
-      this.saveChange();
+      //this.saveChange();
     }
   }
 
