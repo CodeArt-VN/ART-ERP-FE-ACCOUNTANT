@@ -220,14 +220,6 @@ export class IncomingPaymentDetailPage extends PageBase {
     });
   }
 
-  // private patchFieldsValue() {
-  //   this.pageConfig.showSpinner = true;
-  //   this.formGroup.controls.IncomingPaymentDetails = new FormArray([]);
-  //   if (this.item.IncomingPaymentDetails?.length) {
-  //     this.item.IncomingPaymentDetails.forEach((i) => this.addField(i));
-  //   }
-  //   this.pageConfig.showSpinner = false;
-  // }
 
   addField(field: any, markAsDirty = false) {
     let groups = <FormArray>this.formGroup.controls.IncomingPaymentDetails;

@@ -43,38 +43,7 @@ export class IncomingPaymentInvoiceModalPage extends PageBase {
     super.preLoadData(event);
   }
 
-  quickSelectChange(type) {
-    if (type == 'sale') {
-      this.quickSelect.idRoute = -1;
-      for (let x = 0; x < this.items.length; x++) {
-        const i = this.items[x];
-        if (this.quickSelect.idSale == i.IDSeller) {
-          i.checked = true;
-        }
-      }
-    } else {
-      this.quickSelect.idSale = -1;
-      for (let x = 0; x < this.items.length; x++) {
-        const i = this.items[x];
-        if (this.quickSelect.idRoute == i.IDRoute) {
-          i.checked = true;
-        }
-      }
-    }
 
-    this.selectedItems = this.items.filter((d) => d.checked);
-    this.changeSelection({});
-
-    setTimeout(() => {
-      this.quickSelect.idSale = -1;
-      this.quickSelect.idRoute = -1;
-    }, 100);
-  }
-
-  quickSelect = {
-    idSale: -1,
-    idRoute: -1,
-  };
   routeList = [];
   sellerList = [];
   total: any = {
@@ -85,10 +54,6 @@ export class IncomingPaymentInvoiceModalPage extends PageBase {
     this.selectedItems = [];
     this.routeList = [];
     this.sellerList = [];
-    this.quickSelect = {
-      idSale: -1,
-      idRoute: -1,
-    };
 
     this.items.forEach((i) => {
       let r = this.routeList.find((d) => d.Id == i.IDRoute);
@@ -200,10 +165,6 @@ export class IncomingPaymentInvoiceModalPage extends PageBase {
       i.isEdit = true;
     }
     this.autoCalculateTotalAmount();
-  }
-  
-  changeTotalAmountSelection(e) {
-    this.autoSelect();
   }
 
   autoCalculateTotalAmount() {

@@ -112,10 +112,10 @@
 									<section class="table">
 										<header class="bold">
 											<div class="col-id cell">{{'#' | translate}}</div>
+											<div class="col-id cell">{{'ID SO' | translate}}</div>
 											<div class="col-name cell">{{'Name' | translate}}</div>
 											<div class="col-status cell"></div>
-											<div class="col-status cell">{{'ID Sale order' | translate}}</div>
-											<div class="col-status cell money">{{'Customers payable' | translate}}</div>
+											<div class="col-number cell">{{'Customers payable' | translate}}</div>
 											<div class="col-name cell">{{'Remark' | translate}}</div>
 										</header>
 									</section>
@@ -124,6 +124,12 @@
 											<div *ngIf="c.get('IDSaleOrder').value > 0"
 											class="row" [ngClass]="{odd: j % 2 != 0}">
 											<div class="col-id cell">{{j+1}}</div>
+											<div class="col-id cell">
+												<a [routerLink]="['/sale-order/'+ c.get('IDSaleOrder').value]"
+													[title]="c.get('IDSaleOrder').value"
+													>{{c.get('IDSaleOrder').value}}</a>
+												
+											</div>
 											<div class="col-name cell">
 												<div>
 													<a (mousedown)="$event.stopPropagation()">#{{c.get('Id').value}}
@@ -132,9 +138,6 @@
 												</div>
 											</div>
 											<div class="col-status cell">
-											</div>
-											<div class="col-status cell">
-												{{c.get('IDSaleOrder').value}}
 											</div>
 											<div class="col-number bold cell">
 												{{c.get('Amount').value}}
@@ -149,7 +152,7 @@
 								</div>
 								<div class="c-control" *ngIf="formGroup.controls.IDCustomer.value">
 									<ion-button (click)="showOrderModal(i)" size="small" fill="outline">
-										<ion-icon slot="start" name="truck"></ion-icon>
+										<ion-icon slot="start" name="add-outline"></ion-icon>
 										{{ 'Add order' | translate }}
 									</ion-button>
 								</div>
@@ -168,10 +171,10 @@
 									<section class="table">
 										<header class="bold">
 											<div class="col-id cell">{{'#' | translate}}</div>
-											<div class="col-name cell">{{'Name' | translate}}</div>
+											<div class="col-id cell">{{'ID Invoice' | translate}}</div>
 											<div class="col-status cell"></div>
-											<div class="col-status cell">{{'ID Invoice' | translate}}</div>
-											<div class="col-status cell money">{{'Customers payable' | translate}}</div>
+											<div class="col-name cell">{{'Name' | translate}}</div>
+											<div class="col-number cell">{{'Customers payable' | translate}}</div>
 											<div class="col-name cell">{{'Remark' | translate}}</div>
 										</header>
 									</section>
@@ -180,6 +183,11 @@
 											<div *ngIf="c.get('IDInvoice').value > 0"
 											class="row" [ngClass]="{odd: k % 2 != 0}">
 											<div class="col-id cell">{{k+1}}</div>
+											<div class="col-id cell">
+												<a [routerLink]="['/arinvoice/'+ c.get('IDInvoice').value]"
+													[title]="c.get('IDInvoice').value"
+													>{{c.get('IDInvoice').value}}</a>
+											</div>
 											<div class="col-name cell">
 												<div>
 													<a (mousedown)="$event.stopPropagation()">#{{c.get('Id').value}}
@@ -189,9 +197,6 @@
 											</div>
 											<div class="col-status cell">
 												
-											</div>
-											<div class="col-status cell">
-												{{c.get('IDInvoice').value}}
 											</div>
 											<div class="col-number bold cell">
 												{{c.get('Amount').value}}
@@ -206,7 +211,7 @@
 								</div>
 								<div class="c-control" *ngIf="formGroup.controls.IDCustomer.value">
 									<ion-button (click)="showInvoiceModal(i)" size="small" fill="outline">
-										<ion-icon slot="start" name="truck"></ion-icon>
+										<ion-icon slot="start" name="add-outline"></ion-icon>
 										{{ 'Add invoice' | translate }}
 									</ion-button>
 								</div>

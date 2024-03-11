@@ -7,7 +7,7 @@
     <ion-buttons slot="primary">
         <div class="total">
          <span>{{'Total: ' | translate}}</span> 
-        <input [ngModelOptions]="{standalone: true}" (change)="changeTotalAmountSelection(total.Amount)" [(ngModel)]="total.Amount" class="c-input" [ngClass]="{active: total.Amount}" type="number">
+        <input [ngModelOptions]="{standalone: true}" (change)="autoSelect()" [(ngModel)]="total.Amount" class="c-input" [ngClass]="{active: total.Amount}" type="number">
         </div>
       <span class="split ion-hide-sm-down">|</span>
 
