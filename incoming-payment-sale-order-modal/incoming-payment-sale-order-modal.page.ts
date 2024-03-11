@@ -43,39 +43,14 @@ export class IncomingPaymentSaleOrderModalPage extends PageBase {
     super.preLoadData(event);
   }
 
-  routeList = [];
-  sellerList = [];
   total: any = {
     Amount: 0,
   };
 
   loadedData(event) {
     this.selectedItems = [];
-    this.routeList = [];
-    this.sellerList = [];
 
     this.items.forEach((i) => {
-      let r = this.routeList.find((d) => d.Id == i.IDRoute);
-      if (r) {
-        r.Count += 1;
-      } else {
-        this.routeList.push({
-          Id: i.IDRoute,
-          Name: i.IDRoute ? i.RouteName : 'Chưa có tuyến',
-          Count: 1,
-        });
-      }
-
-      let s = this.sellerList.find((d) => d.Id == i.IDSeller);
-      if (s) {
-        s.Count += 1;
-      } else {
-        this.sellerList.push({
-          Id: i.IDSeller,
-          Name: i.IDSeller ? i.SellerName : 'N/A',
-          Count: 1,
-        });
-      }
       i.OrderTimeText = i.OrderDate ? lib.dateFormat(i.OrderDate, 'hh:MM') : '';
       i.OrderDateText = i.OrderDate ? lib.dateFormat(i.OrderDate, 'dd/mm/yy') : '';
       i.Query = i.OrderDate ? lib.dateFormat(i.OrderDate, 'yyyy-mm-dd') : '';
