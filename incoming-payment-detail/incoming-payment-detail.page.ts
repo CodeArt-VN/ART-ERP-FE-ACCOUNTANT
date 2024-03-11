@@ -49,9 +49,9 @@ export class IncomingPaymentDetailPage extends PageBase {
       Id: new FormControl({ value: '', disabled: true }),
       Name: [''],
       Code: [''],
-      DocumentDate: [''],
-      PostingDate: [''],
-      DueDate: [''],
+      DocumentDate: ['',Validators.required],
+      PostingDate: ['', Validators.required],
+      DueDate: ['',Validators.required],
       Type: ['Cash', Validators.required],
       SubType: [''],
       Remark: [''],
@@ -75,7 +75,6 @@ export class IncomingPaymentDetailPage extends PageBase {
   }
 
   async saveChange() {
-    console.log(this.formGroup.controls.IDCustomer.value);
     let groups = <FormArray>this.formGroup.controls.IncomingPaymentDetails;
     if (groups.controls.length > 0) {
       this.formGroup.get('Type').markAsDirty();
@@ -123,31 +122,82 @@ export class IncomingPaymentDetailPage extends PageBase {
       super.preLoadData(event);
     });
   }
+
+  loadData(event?: any): void {
+    this.id = typeof (this.id) == 'string' ? parseInt(this.id) : this.id;
+    this.query.id = this.id;
+    if (this.id) {
+      this.pageProvider.commonService.connect('GET', 'BANK/IncomingPayment/GetAnItemIncomingPayment/', this.query).toPromise()
+          .then((ite: any) => {
+            this.item = ite;
+            this.loadedData(event);
+          }).catch((err) => {
+            console.log(err);
+            
+            if(err.status = 404){
+                this.nav('not-found', 'back');
+            }
+            else{
+                this.item = null;
+                this.loadedData(event);
+            }
+
+        });
+    }
+    else if (this.id == 0) {
+        if (!this.item) this.item = {};
+        
+        Object.assign(this.item, this.DefaultItem);
+        this.loadedData(event);
+    }
+    else{
+      this.loadedData(event);
+    }
+}
+
   amountOrder = 0;
   amountInvoice = 0;
+  // loadedData(event?: any, ignoredFromGroup?: boolean): void {
+  //   if (this.item?.Status == 'Success') {
+  //     this.pageConfig.canEdit = false;
+  //   }
+  //   super.loadedData(event, ignoredFromGroup);
+  //   this.query.IDIncomingPayment = this.item.Id;
+  //   this.query.Id = undefined;
+  //   this.IncomingPaymentDetailservice.read(this.query, false).then((listIPDetail: any) => {
+  //     if (listIPDetail != null && listIPDetail.data.length > 0) {
+  //       const IncomingPaymentDetailsArray = this.formGroup.get('IncomingPaymentDetails') as FormArray;
+  //       IncomingPaymentDetailsArray.clear();
+  //       this.item.IncomingPaymentDetails = listIPDetail.data;
+  //       this.item.IncomingPaymentDetails.forEach((detail) => {
+  //         if (detail.IDSaleOrder && detail.IDInvoice == null) {
+  //           this.amountOrder += detail.Amount;
+  //         }
+  //         if (detail.IDInvoice) {
+  //           this.amountInvoice += detail.Amount;
+  //         }
+  //       });
+  //       this.patchFieldsValue();
+  //     }
+  //   });
+  //   this._contactDataSource.initSearch();
+  // }
+
   loadedData(event?: any, ignoredFromGroup?: boolean): void {
     if (this.item?.Status == 'Success') {
       this.pageConfig.canEdit = false;
     }
     super.loadedData(event, ignoredFromGroup);
-    this.query.IDIncomingPayment = this.item.Id;
-    this.query.Id = undefined;
-    this.IncomingPaymentDetailservice.read(this.query, false).then((listIPDetail: any) => {
-      if (listIPDetail != null && listIPDetail.data.length > 0) {
-        const IncomingPaymentDetailsArray = this.formGroup.get('IncomingPaymentDetails') as FormArray;
-        IncomingPaymentDetailsArray.clear();
-        this.item.IncomingPaymentDetails = listIPDetail.data;
-        this.item.IncomingPaymentDetails.forEach((detail) => {
-          if (detail.IDSaleOrder && detail.IDInvoice == null) {
-              this.amountOrder += detail.Amount;
+    this.item.IncomingPaymentDetails?.forEach(i=>{
+      if (i.IDSaleOrder && i.IDInvoice == null) {
+            this.amountOrder += i.Amount;
           }
-          if (detail.IDInvoice) {
-              this.amountInvoice += detail.Amount;
+      if (i.IDInvoice) {
+              this.amountInvoice += i.Amount;
           }
-        });
-        this.patchFieldsValue();
-      }
-    });
+      this.addField(i);
+    })
+    this._contactDataSource.selected = this.item._Customer;
     this._contactDataSource.initSearch();
   }
 
@@ -214,15 +264,17 @@ export class IncomingPaymentDetailPage extends PageBase {
       Amount: new FormControl({ value: field.Amount, disabled: false }),
     });
     groups.push(group);
-    group.get('IDIncomingPayment').markAsDirty();
-    group.get('Id').markAsDirty();
-    group.get('IDSaleOrder').markAsDirty();
-    group.get('IDCustomer').markAsDirty();
-    group.get('IDInvoice').markAsDirty();
-    group.get('Name').markAsDirty();
-    group.get('Remark').markAsDirty();
-    group.get('Amount').markAsDirty();
-    this.formGroup.get('IncomingPaymentDetails').markAsDirty();
+    if (markAsDirty) {
+      group.get('IDIncomingPayment').markAsDirty();
+      group.get('Id').markAsDirty();
+      group.get('IDSaleOrder').markAsDirty();
+      group.get('IDCustomer').markAsDirty();
+      group.get('IDInvoice').markAsDirty();
+      group.get('Name').markAsDirty();
+      group.get('Remark').markAsDirty();
+      group.get('Amount').markAsDirty();
+      this.formGroup.get('IncomingPaymentDetails').markAsDirty();
+    }
   }
 
   changeType(e) {
@@ -249,18 +301,16 @@ export class IncomingPaymentDetailPage extends PageBase {
     const { data } = await modal.onWillDismiss();
     this.SelectedOrderList = [];
     if (data && data.length) {
-      // this.formGroup.removeControl('IncomingPaymentDetails');
-      // let groups = this.formBuilder.array([]);
-      // this.formGroup.addControl('IncomingPaymentDetails', groups);
       let deletedFields = [];
       let dataIds = [];
       for (let i = 0; i < data.length; i++) {
         const e = data[i];
         this.SelectedOrderList.push(e);
-        if (!this.incomingPaymentOrderDetails.some(item => item.IDSaleOrder === e.IDSaleOrder)) {
-          this.addField(e);
+        if (!this.incomingPaymentOrderDetails.some((item) => item.IDSaleOrder === e.IDSaleOrder)) {
+          this.addField(e, true);
+        } else {
+          this.updateField(e);
         }
-        //this.addField(e);
         dataIds = data.map((e) => e.IDSaleOrder);
       }
       this.incomingPaymentOrderDetails.forEach((x) => {
@@ -269,13 +319,18 @@ export class IncomingPaymentDetailPage extends PageBase {
         }
       });
       if (deletedFields.length && this.formGroup.controls.Id.value) {
+        deletedFields.forEach((deletedId) => {
+          let groups = <FormArray>this.formGroup.controls.IncomingPaymentDetails;
+          let index = groups.controls.findIndex((d) => d.value.Id == deletedId);
+          groups.removeAt(index);
+        });
         this.removeField(deletedFields);
       }
       this.formGroup.get('Amount').setValue(data.Amount + this.amountInvoice);
       this.formGroup.get('Amount').markAsDirty();
-    }
-    if (this.formGroup.valid) {
-      //this.saveChange();
+      if (this.formGroup.valid) {
+        this.saveChange();
+      }
     }
   }
 
@@ -296,19 +351,17 @@ export class IncomingPaymentDetailPage extends PageBase {
     const { data } = await modal.onWillDismiss();
     this.SelectedInvoiceList = [];
     if (data && data.length) {
-      // this.formGroup.removeControl('IncomingPaymentDetails');
-      // let groups = this.formBuilder.array([]);
-      // this.formGroup.addControl('IncomingPaymentDetails', groups);
       let deletedFields = [];
       let dataIds = [];
       for (let i = 0; i < data.length; i++) {
         const e = data[i];
         this.SelectedInvoiceList.push(e);
         e.IDSaleOrder = null;
-        if (!this.incomingPaymentOrderDetails.some(item => item.IDInvoice === e.IDInvoice)) {
-          this.addField(e);
+        if (!this.incomingPaymentOrderDetails.some((item) => item.IDInvoice === e.IDInvoice)) {
+          this.addField(e, true);
+        } else {
+          this.updateField(e);
         }
-        //this.addField(e);
         dataIds = data.map((e) => e.IDInvoice);
       }
       this.incomingPaymentOrderDetails.forEach((x) => {
@@ -317,13 +370,18 @@ export class IncomingPaymentDetailPage extends PageBase {
         }
       });
       if (deletedFields.length && this.formGroup.controls.Id.value) {
+        deletedFields.forEach((deletedId) => {
+          let groups = <FormArray>this.formGroup.controls.IncomingPaymentDetails;
+          let index = groups.controls.findIndex((d) => d.value.Id == deletedId);
+          groups.removeAt(index);
+        });
         this.removeField(deletedFields);
       }
       this.formGroup.get('Amount').setValue(data.Amount + this.amountOrder);
       this.formGroup.get('Amount').markAsDirty();
-    }
-    if (this.formGroup.valid) {
-      //this.saveChange();
+      if (this.formGroup.valid) {
+        this.saveChange();
+      }
     }
   }
 
@@ -363,5 +421,16 @@ export class IncomingPaymentDetailPage extends PageBase {
   removeField(deletedFields) {
     this.formGroup.get('DeletedFields').setValue(deletedFields);
     this.formGroup.get('DeletedFields').markAsDirty();
+  }
+
+  async updateField(updatedField: any) {
+    const index = this.incomingPaymentOrderDetails.findIndex((d) => d.Id === updatedField.IDIncomingPaymentDetail && updatedField.isEdit);
+    if (index != -1) {
+      this.incomingPaymentOrderDetails[index].Amount = updatedField.Amount;
+      const group = <FormArray>this.formGroup.controls.IncomingPaymentDetails;
+      group.at(index).get('Amount').setValue(updatedField.Amount);
+      group.at(index).get('IDIncomingPayment').markAsDirty();
+      group.at(index).get('Amount').markAsDirty();
+    }
   }
 }

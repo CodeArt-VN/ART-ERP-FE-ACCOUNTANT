@@ -128,6 +128,8 @@ export class IncomingPaymentSaleOrderModalPage extends PageBase {
         if(so) {
           so.checked = true;
           so.DebtAmount = s.Amount? s.Amount : s.DebtAmount;
+          so.IDIncomingPaymentDetail = s.Id;
+          so.isEdit = false;
         }
       });
     }else {
@@ -142,14 +144,15 @@ export class IncomingPaymentSaleOrderModalPage extends PageBase {
       i.DebtAmount = '';
     } else {
       i.checked = true;
+      i.DebtAmount != i.DebtAmountBefore ? i.isEdit = true : i.isEdit = false;
       i.DebtAmount = i.DebtAmountBefore;
     }
     this.autoCalculateTotalAmount();
   }
-
+  
   SaveSelectedOrders() {
     this.selectedItems.forEach((i) => {
-      (i.IDSaleOrder = i.Id), (i.Id = 0), (i.IDCustomer = i._Customer.Id), (i.Amount = i.DebtAmount);
+      (i.IDSaleOrder = i.Id), (i.Id = 0), (i.IDCustomer = i._Customer.Id), (i.IDIncomingPaymentDetail = i.IDIncomingPaymentDetail), (i.Amount = i.DebtAmount);
     });
     this.selectedItems.Amount = this.total.Amount;
     this.modalController.dismiss(this.selectedItems);
@@ -191,6 +194,9 @@ export class IncomingPaymentSaleOrderModalPage extends PageBase {
   changeDebtAmountSelection(i, e = null) {
     if (i.DebtAmount <= 0 || i.DebtAmount >= i.DebtAmountBefore || i.DebtAmount == null) {
       i.DebtAmount = i.DebtAmountBefore;
+      i.isEdit = false;
+    }else {
+      i.isEdit = true;
     }
     this.autoCalculateTotalAmount();
   }

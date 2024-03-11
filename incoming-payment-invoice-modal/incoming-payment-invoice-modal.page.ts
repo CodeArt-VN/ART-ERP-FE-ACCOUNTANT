@@ -38,8 +38,7 @@ export class IncomingPaymentInvoiceModalPage extends PageBase {
   }
 
   preLoadData(event) {
-    console.log('modal invoice');
-    //this.query.IDBusinessPartner = this.IDBusinessPartner;
+    this.query.IDBusinessPartner = this.IDBusinessPartner;
     this.sortToggle('Id', true);
     super.preLoadData(event);
   }
@@ -129,6 +128,8 @@ export class IncomingPaymentInvoiceModalPage extends PageBase {
         if(so) {
           so.checked = true;
           so.DebtAmount = s.Amount? s.Amount : s.DebtAmount;
+          so.IDIncomingPaymentDetail = s.Id;
+          so.isEdit = false;
         }   
       });
     }else {
@@ -143,6 +144,7 @@ export class IncomingPaymentInvoiceModalPage extends PageBase {
       i.DebtAmount = '';
     } else {
       i.checked = true;
+      i.isEdit = true;
       i.DebtAmount = i.DebtAmountBefore;
     }
     this.autoCalculateTotalAmount();
@@ -150,7 +152,7 @@ export class IncomingPaymentInvoiceModalPage extends PageBase {
 
   SaveSelectedOrders() {
     this.selectedItems.forEach((i) => {
-      (i.IDInvoice = i.Id), (i.Id = 0), (i.IDCustomer = i.IDBusinessPartner), (i.Amount = i.DebtAmount);
+      (i.IDInvoice = i.Id), (i.Id = 0), (i.IDIncomingPaymentDetail = i.IDIncomingPaymentDetail), (i.IDCustomer = i.IDBusinessPartner), (i.Amount = i.DebtAmount);
     });
     this.selectedItems.Amount = this.total.Amount;
     this.modalController.dismiss(this.selectedItems);
@@ -192,6 +194,10 @@ export class IncomingPaymentInvoiceModalPage extends PageBase {
   changeDebtAmountSelection(i, e = null) {
     if (i.DebtAmount <= 0 || i.DebtAmount >= i.DebtAmountBefore || i.DebtAmount == null) {
       i.DebtAmount = i.DebtAmountBefore;
+      i.isEdit = false;
+    }
+    else {
+      i.isEdit = true;
     }
     this.autoCalculateTotalAmount();
   }
