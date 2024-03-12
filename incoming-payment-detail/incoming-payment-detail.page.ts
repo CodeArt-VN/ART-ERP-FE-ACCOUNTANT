@@ -164,6 +164,10 @@ export class IncomingPaymentDetailPage extends PageBase {
       this.pageConfig.canEdit = false;
     }
     super.loadedData(event, ignoredFromGroup);
+    this.amountOrder = 0;
+    this.amountInvoice = 0;
+    let formArray  = this.formGroup.get('IncomingPaymentDetails') as FormArray;
+    formArray.clear();
     this.item.IncomingPaymentDetails?.forEach(i=>{
       if (i.IDSaleOrder && i.IDInvoice == null) {
             this.amountOrder += i.Amount;
