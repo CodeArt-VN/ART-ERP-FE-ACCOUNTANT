@@ -1,126 +1,223 @@
 <ion-header>
-	<app-detail-toolbar [page]="this"></app-detail-toolbar>
+	<app-toolbar [page]="this" pageTitle="{{'Incoming payment detail' | translate}}" [pageConfig]="pageConfig"
+		[selectedItems]="selectedItems" [query]="query"></app-toolbar>
 </ion-header>
 
 <ion-content appScrollbarTheme class="ion-padding">
-	<div id="order-detail-page" style="position: absolute;"></div>
 	<div class="main-view" *ngIf="item && pageConfig.showSpinner==false">
 		<ion-grid fixed>
-			<form [formGroup]="formGroup">
-				<ion-row class="hr-group">
-					<ion-col size="12" size-sm="12" size-md="12" size-xl="3">
-						<ion-list-header class="ion-no-padding">
-							<ion-label color="primary">{{'Incoming payment' | translate}}</ion-label>
-						</ion-list-header>
-					</ion-col>
-					<ion-col size="12" size-sm size-xl="4">
-						<app-form-control [field]="{id:'Id', label: 'Id', type : 'number', form : formGroup }">
-						</app-form-control>
-						<app-form-control [field]="{id:'DocumentDate', label: 'Document date', type : 'date', form : formGroup }" (change)="saveChange()">
-						</app-form-control>
-						<app-form-control [field]="{id:'Type', label: 'Type', type : 'ng-select', dataSource: typeDataSource, bindValue:'Code', bindLabel:'Name', form : formGroup }" (change)="changeType($event)"> 
-						</app-form-control>
-						<app-form-control [field]="{id:'SubType', label: 'Sub type', type : 'text', form : formGroup }" (change)="saveChange()">
-						</app-form-control>
-						
-					</ion-col>
-					<ion-col size="12" size-sm size-xl="4">
-						<app-form-control [field]="{id:'Name', label: 'Name', type : 'text', form : formGroup }" (change)="saveChange()"></app-form-control>
-						<app-form-control [field]="{id:'Status', type : 'ng-select-status', form : formGroup,  dataSource: statusList,  bindValue: 'Code' }" (change)="saveChange()"></app-form-control>
-						<app-form-control [field]="{id:'Amount', label: 'Amount', type : 'number', form : formGroup }" (change)="saveChange()"></app-form-control>
-
-					</ion-col>
-				</ion-row>
-
-			</form>
+			<ion-row>
+				<ion-col size="12" size-sm>
+					<app-page-title [icon]="person-outline" [color]="warning"
+						[title]="'Incoming payment'"></app-page-title>
+				</ion-col>
+			</ion-row>
 		</ion-grid>
 
-		<div class="row-full shadow full-screen">
-			<ion-toolbar color="primary">
-                <ion-segment scrollable="true" (ionChange)="segmentChanged($event)" [value]="segmentView">
-                    <ion-segment-button value="s1">
-                        <ion-label>{{'Incoming payment list' | translate}}</ion-label>
-                    </ion-segment-button>
-                    <ion-segment-button value="s2">
-                        <ion-label>{{'Other information' | translate}}</ion-label>
-                    </ion-segment-button>
-                </ion-segment>
-            </ion-toolbar>
-
+		<div class="row-full shadow full-screen"
+			style="max-width: 1440px; margin: auto; width: 100%; position: relative; z-index: 0">
 			<div class="ion-padding" *ngIf="segmentView == 's1'">
-				<section class="table responsive">
-					
-					<header class="bold">
-						<div class="col-id cell">#</div>
-						<div class="col-name cell" (click)="sortToggle('Name')">
-							{{'Name' | translate}}
-							<ion-icon class="min-btn" *ngIf="sortDetail.Name" [name]="sortDetail.Name == 'Name'?'arrow-down': 'arrow-up'"></ion-icon>
-						</div>
-						<div class="col-status cell" (click)="sortToggle('IDIncomingPayment')">
-							{{'IDIncomingPayment' | translate}}
-							<ion-icon class="min-btn" *ngIf="sortDetail.IDIncomingPayment" [name]="sortDetail.IDIncomingPayment == 'IDIncomingPayment'?'arrow-down': 'arrow-up'"></ion-icon>
-						</div>
-						<div class="col-status cell" (click)="sortToggle('IDSaleOrder')">
-							{{'IDSaleOrder' | translate}}
-							<ion-icon class="min-btn" *ngIf="sortDetail.IDSaleOrder" [name]="sortDetail.IDSaleOrder == 'IDSaleOrder'?'arrow-down': 'arrow-up'"></ion-icon>
-						</div>
-						<div class="col-status cell" (click)="sortToggle('IDContract')">
-							{{'IDCustomer' | translate}}
-							<ion-icon class="min-btn" *ngIf="sortDetail.IDContract" [name]="sortDetail.IDContract == 'IDContract'?'arrow-down': 'arrow-up'"></ion-icon>
-						</div>
-						<div class="col-status cell" (click)="sortToggle('IDInvoice')">
-							{{'IDInvoice' | translate}}
-							<ion-icon class="min-btn" *ngIf="sortDetail.IDInvoice" [name]="sortDetail.IDInvoice == 'IDInvoice'?'arrow-down': 'arrow-up'"></ion-icon>
-						</div>
-						<div class="col-number bold cell" (click)="sortToggle('Amount')">
-							{{'Amount' | translate}}
-							<ion-icon class="min-btn" *ngIf="sortDetail.Amount" [name]="sortDetail.Amount == 'Amount'?'arrow-down': 'arrow-up'"></ion-icon>
-						</div>
-						<div class="col-code cell" (click)="sortToggle('Remark')">
-							{{'Remark' | translate}}
-							<ion-icon class="min-btn" *ngIf="sortDetail.Remark" [name]="sortDetail.Remark == 'Remark'?'arrow-down': 'arrow-up'"></ion-icon>
-						</div>
-
-					</header>
-					<app-page-message [itemsLength]= "formGroup.get('InComingPaymentDetails')['controls']" [showSpinner]="pageConfig.showSpinner"></app-page-message>
-					<ng-container  *ngIf="!pageConfig.showSpinner">
-						<div *ngFor="let c of formGroup.get('InComingPaymentDetails')['controls'] ;let j = index"class="row" [ngClass]="{odd: j % 2 != 0}" >
-								<div class="col-id cell">{{j+1}}</div>
-								<div class="col-name cell">
-									<div *ngIf="c.get('Id')?.value">
-										<a (mousedown)="$event.stopPropagation()">#{{c.get('Id').value}} <ion-icon name="open-outline"></ion-icon></a>
-										<span [title]="c.get('Name')?.value"> {{c.get('Name').value}}</span>
-									</div>
-								</div>
-								<div class="col-status cell" >
-									{{c.get('IDIncomingPayment').value}}
-								</div>
-								<div class="col-status cell" >
-									{{c.get('IDSaleOrder').value}}
-								</div>
-								<div class="col-status cell" >
-									{{c.get('IDCustomer').value}}
-								</div>
-								<div class="col-status cell" >
-									{{c.get('IDInvoice').value}}									
-								</div>
-								<div class="col-number bold cell" >
-									{{c.get('Amount').value}}									
-								</div>
-								<div class="col-code cell" >
-									{{c.get('Remark').value}}
-								</div>
-
-							</div>
-					</ng-container>
-					
-				</section>
-			</div>
-
-			<!-- Order information -->
-			<div *ngIf="segmentView == 's2'">
 				<ion-grid fixed>
 					<form [formGroup]="formGroup">
+						<ion-row class="hr-group">
+							<ion-col size="12" size-sm="12" size-md="12" size-xl="3">
+								<ion-list-header class="ion-no-padding">
+									<ion-label color="primary">{{'Customer' | translate}}</ion-label>
+								</ion-list-header>
+							</ion-col>
+							<ion-col size="12" size-sm size-xl="8">
+								<div class="c-control">
+									<label class="c-label" for="IDCustomer">{{'Customer' | translate}}
+										<small>#{{item.IDCustomer}}</small>
+									</label>
+									<ng-select class="c-input" (change)="saveChange()" #IDCustomer
+										labelForId="IDCustomer" formControlName="IDCustomer"
+										[items]="_contactDataSource.items$ | async"
+										[typeahead]="_contactDataSource.input$" [loading]="_contactDataSource.loading"
+										[virtualScroll]="true" bindLabel="Name" bindValue="Id"
+										placeholder="{{'Search for name, code or phone number' | translate}}">
+										<ng-template ng-label-tmp let-i="item"> {{i.Name}} </ng-template>
+										<ng-template ng-option-tmp let-i="item" let-search="searchTerm">
+											<div *ngIf="i">
+												<div>
+													<span [ngOptionHighlight]="search">{{i.Name}}</span>
+													<span *ngIf="i.WorkPhone">
+														|
+														<small>
+															<b [ngOptionHighlight]="search">{{i.WorkPhone}}</b>
+														</small></span>
+												</div>
+											</div>
+										</ng-template>
+									</ng-select>
+								</div>
+							</ion-col>
+						</ion-row>
+						<ion-row class="hr-group">
+							<ion-col size="12" size-sm="12" size-md="12" size-xl="3">
+								<ion-list-header class="ion-no-padding">
+									<ion-label color="primary">{{'General information' | translate}}</ion-label>
+								</ion-list-header>
+							</ion-col>
+
+							<ion-col size="12" size-sm size-xl="4">
+								<app-form-control [field]="{id:'Name', label: 'Name', type : 'span-text', form : formGroup }">
+									<small label *ngIf="item?.Id">Id: {{item.Id}}</small>
+								  </app-form-control>
+								<app-form-control
+									[field]="{id:'Type', label: 'Type', type : 'ng-select', dataSource: typeDataSource, bindValue:'Code', bindLabel:'Name', form : formGroup }"
+									(change)="changeType($event)">
+								</app-form-control>
+								<app-form-control *ngIf="formGroup.controls.Type.value != 'Cash'"
+									[field]="{id:'SubType', label: 'Sub type', type : 'text', form : formGroup }"
+									(change)="saveChange()">
+								</app-form-control>
+								<app-form-control [field]="{id:'Code', label: 'Code', type : 'text', form : formGroup }"
+									(change)="saveChange()">
+								</app-form-control>
+							</ion-col>
+							<ion-col size="12" size-sm size-xl="4">
+								<app-form-control
+									[field]="{id:'Amount', label: 'Amount', type : 'number', form : formGroup }"
+									(change)="saveChange()">
+								</app-form-control>
+								<app-form-control
+									[field]="{id:'Status', type : 'ng-select-status', form : formGroup,  dataSource: statusList,  bindValue: 'Code' }"
+									(change)="saveChange()">
+								</app-form-control>
+								<app-form-control
+									[field]="{id:'DocumentDate', label: 'Document date', type : 'datetime-local', form : formGroup }"
+									(change)="saveChange()">
+								</app-form-control>
+								<app-form-control
+									[field]="{id:'PostingDate', label: 'Posting date', type : 'datetime-local', form : formGroup }"
+									(change)="saveChange()">
+								</app-form-control>
+								<app-form-control
+									[field]="{id:'DueDate', label: 'Due date', type : 'datetime-local', form : formGroup }"
+									(change)="saveChange()">
+								</app-form-control>
+							</ion-col>
+						</ion-row>
+
+						<!-- Sale order list -->
+						<ion-row class="hr-group">
+							<ion-col size="12" size-sm="12" size-md="12" size-xl="3">
+								<ion-list-header class="ion-no-padding">
+									<ion-label color="primary">Sale order</ion-label>
+								</ion-list-header>
+							</ion-col>
+							<ion-col size="12" size-sm size-xl="8">
+								<div class="table-contain">
+									<section class="table">
+										<header class="bold">
+											<div class="col-id cell">{{'#' | translate}}</div>
+											<div class="col-id cell">{{'ID SO' | translate}}</div>
+											<div class="col-name cell">{{'Name' | translate}}</div>
+											<div class="col-status cell"></div>
+											<div class="col-number cell">{{'Amount' | translate}}</div>
+											<div class="col-name cell">{{'Remark' | translate}}</div>
+										</header>
+									</section>
+									<section class="table table-scroll">
+										<ng-container *ngFor="let c of formGroup.get('IncomingPaymentDetails')['controls'] ;let j = index">
+											<div *ngIf="c.get('IDSaleOrder').value > 0"
+											class="row" [ngClass]="{odd: j % 2 != 0}">
+											<div class="col-id cell">{{j+1}}</div>
+											<div class="col-id cell">
+												<a [routerLink]="['/sale-order/'+ c.get('IDSaleOrder').value]"
+													[title]="c.get('IDSaleOrder').value"
+													>{{c.get('IDSaleOrder').value}}</a>
+												
+											</div>
+											<div class="col-name cell">
+												<div>
+													<a (mousedown)="$event.stopPropagation()">#{{c.get('Id').value}}
+														<ion-icon name="open-outline"></ion-icon></a>
+													<span [title]="c.get('Name')?.value"> {{c.get('Name').value}}</span>
+												</div>
+											</div>
+											<div class="col-status cell">
+											</div>
+											<div class="col-number bold cell">
+												{{c.get('Amount').value}}
+											</div>
+											<div class="col-code cell">
+												{{c.get('Remark').value}}
+											</div>
+										</div>
+										</ng-container>
+										
+									</section>
+								</div>
+								<div class="c-control" *ngIf="formGroup.controls.IDCustomer.value">
+									<ion-button (click)="showOrderModal(i)" size="small" fill="outline">
+										<ion-icon slot="start" name="add-outline"></ion-icon>
+										{{ 'Add order' | translate }}
+									</ion-button>
+								</div>
+							</ion-col>
+						</ion-row>
+
+						<!--Invoice -->
+						<ion-row class="hr-group">
+							<ion-col size="12" size-sm="12" size-md="12" size-xl="3">
+								<ion-list-header class="ion-no-padding">
+									<ion-label color="primary">Invoice</ion-label>
+								</ion-list-header>
+							</ion-col>
+							<ion-col size="12" size-sm size-xl="8">
+								<div class="table-contain">
+									<section class="table">
+										<header class="bold">
+											<div class="col-id cell">{{'#' | translate}}</div>
+											<div class="col-id cell">{{'ID Invoice' | translate}}</div>
+											<div class="col-status cell"></div>
+											<div class="col-name cell">{{'Name' | translate}}</div>
+											<div class="col-number cell">{{'Amount' | translate}}</div>
+											<div class="col-name cell">{{'Remark' | translate}}</div>
+										</header>
+									</section>
+									<section class="table table-scroll">
+										<ng-container *ngFor="let c of formGroup.get('IncomingPaymentDetails')['controls'] ;let k = index">
+											<div *ngIf="c.get('IDInvoice').value > 0"
+											class="row" [ngClass]="{odd: k % 2 != 0}">
+											<div class="col-id cell">{{k+1}}</div>
+											<div class="col-id cell">
+												<a [routerLink]="['/arinvoice/'+ c.get('IDInvoice').value]"
+													[title]="c.get('IDInvoice').value"
+													>{{c.get('IDInvoice').value}}</a>
+											</div>
+											<div class="col-name cell">
+												<div>
+													<a (mousedown)="$event.stopPropagation()">#{{c.get('Id').value}}
+														<ion-icon name="open-outline"></ion-icon></a>
+													<span [title]="c.get('Name')?.value"> {{c.get('Name').value}}</span>
+												</div>
+											</div>
+											<div class="col-status cell">
+												
+											</div>
+											<div class="col-number bold cell">
+												{{c.get('Amount').value}}
+											</div>
+											<div class="col-code cell">
+												{{c.get('Remark').value}}
+											</div>
+										</div>
+										</ng-container>
+										
+									</section>
+								</div>
+								<div class="c-control" *ngIf="formGroup.controls.IDCustomer.value">
+									<ion-button (click)="showInvoiceModal(i)" size="small" fill="outline">
+										<ion-icon slot="start" name="add-outline"></ion-icon>
+										{{ 'Add invoice' | translate }}
+									</ion-button>
+								</div>
+							</ion-col>
+						</ion-row>
+
 						<!-- Other information -->
 						<ion-row class="hr-group" *ngIf="item.Id">
 							<ion-col size="12" size-sm="12" size-md="12" size-xl="3">
@@ -129,20 +226,27 @@
 								</ion-list-header>
 							</ion-col>
 							<ion-col size="12" size-sm size-xl="4">
-								<app-form-control [field]="{id:'CreatedBy', type : 'text', label: 'Created by', form : formGroup }"></app-form-control>
-								<app-form-control [field]="{id:'CreatedDate', type : 'span-datetime', label: 'Created date', form : formGroup }"></app-form-control>
-								<app-form-control [field]="{id:'ModifiedBy', type : 'text', label: 'Last modified by', form : formGroup }"></app-form-control>
-								<app-form-control [field]="{id:'ModifiedDate', type : 'span-datetime', label: 'Last modified date', form : formGroup }"></app-form-control>
+								<app-form-control
+									[field]="{id:'CreatedBy', type : 'text', label: 'Created by', form : formGroup }"></app-form-control>
+								<app-form-control
+									[field]="{id:'CreatedDate', type : 'span-datetime', label: 'Created date', form : formGroup }"></app-form-control>
+								<app-form-control
+									[field]="{id:'ModifiedBy', type : 'text', label: 'Last modified by', form : formGroup }"></app-form-control>
+								<app-form-control
+									[field]="{id:'ModifiedDate', type : 'span-datetime', label: 'Last modified date', form : formGroup }"></app-form-control>
 							</ion-col>
 							<ion-col size="12" size-sm size-xl="4">
-								<app-form-control [field]="{id:'IDBranch', type : 'branch-breadcrumbs', label: 'Branch', form : formGroup, dataSource:env.branchList }"></app-form-control>
-								<app-form-control [field]="{id:'Remark', type : 'textarea', label: 'Remark', form : formGroup }" (change)="saveChange()"></app-form-control>
+								<app-form-control
+									[field]="{id:'IDBranch', type : 'branch-breadcrumbs', label: 'Branch', form : formGroup, dataSource:env.branchList }"></app-form-control>
+								<app-form-control
+									[field]="{id:'Remark', type : 'textarea', label: 'Remark', form : formGroup }"
+									(change)="saveChange()"></app-form-control>
 							</ion-col>
 						</ion-row>
 					</form>
 				</ion-grid>
-
 			</div>
+			<div *ngIf="segmentView == 's2'"></div>
 		</div>
 	</div>
 	<app-page-message [itemsLength]="item? 1: 0" [showSpinner]="pageConfig.showSpinner"></app-page-message>

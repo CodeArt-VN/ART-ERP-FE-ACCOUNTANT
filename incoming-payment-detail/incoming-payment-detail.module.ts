@@ -5,6 +5,8 @@ import { Routes, RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { ShareModule } from 'src/app/share.module';
 import { IncomingPaymentDetailPage } from './incoming-payment-detail.page';
+import { IncomingPaymentInvoiceModalPage } from '../incoming-payment-invoice-modal/incoming-payment-invoice-modal.page';
+import { IncomingPaymentSaleOrderModalPage } from '../incoming-payment-sale-order-modal/incoming-payment-sale-order-modal.page';
 
 const routes: Routes = [
   {
@@ -22,6 +24,6 @@ const routes: Routes = [
     ShareModule,
     RouterModule.forChild(routes)
   ],
-  declarations: [IncomingPaymentDetailPage]
+  declarations: [IncomingPaymentDetailPage, IncomingPaymentSaleOrderModalPage, IncomingPaymentInvoiceModalPage]
 })
 export class IncomingPaymentDetailPageModule { }
