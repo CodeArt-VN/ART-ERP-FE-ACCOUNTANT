@@ -39,6 +39,7 @@ export class IncomingPaymentInvoiceModalPage extends PageBase {
 
   preLoadData(event) {
     this.query.IDBusinessPartner = this.IDBusinessPartner;
+    this.query.TotalAfterTax_gt = 0;
     this.sortToggle('Id', true);
     super.preLoadData(event);
   }
@@ -52,9 +53,9 @@ export class IncomingPaymentInvoiceModalPage extends PageBase {
     this.selectedItems = [];
 
     this.items.forEach((i) => {
-      i.OrderTimeText = i.OrderDate ? lib.dateFormat(i.OrderDate, 'hh:MM') : '';
-      i.OrderDateText = i.OrderDate ? lib.dateFormat(i.OrderDate, 'dd/mm/yy') : '';
-      i.Query = i.OrderDate ? lib.dateFormat(i.OrderDate, 'yyyy-mm-dd') : '';
+      i.OrderTimeText = i.InvoiceDate ? lib.dateFormat(i.InvoiceDate, 'hh:MM') : '';
+      i.OrderDateText = i.InvoiceDate ? lib.dateFormat(i.InvoiceDate, 'dd/mm/yy') : '';
+      i.Query = i.InvoiceDate ? lib.dateFormat(i.InvoiceDate, 'yyyy-mm-dd') : '';
       i.DebtAmountBefore = i.TotalAfterTax;
       i.DebtAmount = '';
       i.Debt = lib.currencyFormat(i.TotalAfterTax);

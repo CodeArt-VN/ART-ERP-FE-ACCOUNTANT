@@ -39,6 +39,7 @@ export class IncomingPaymentSaleOrderModalPage extends PageBase {
 
   preLoadData(event) {
     this.query.IDContact = this.IDContact;
+    this.query.Debt_gt = 0;
     this.sortToggle('Id', true);
     super.preLoadData(event);
   }
@@ -51,6 +52,8 @@ export class IncomingPaymentSaleOrderModalPage extends PageBase {
     this.selectedItems = [];
 
     this.items.forEach((i) => {
+      i.CustomerName = i._Customer.Name;
+      i.CustomerAddress = i._Customer.Address;
       i.OrderTimeText = i.OrderDate ? lib.dateFormat(i.OrderDate, 'hh:MM') : '';
       i.OrderDateText = i.OrderDate ? lib.dateFormat(i.OrderDate, 'dd/mm/yy') : '';
       i.Query = i.OrderDate ? lib.dateFormat(i.OrderDate, 'yyyy-mm-dd') : '';

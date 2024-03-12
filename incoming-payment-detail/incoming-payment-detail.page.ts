@@ -179,7 +179,9 @@ export class IncomingPaymentDetailPage extends PageBase {
     });
     this.formGroup.get('Type').markAsDirty();
     this.formGroup.get('Status').markAsDirty();
-    this._contactDataSource.selected = this.item._Customer;
+    if (this._contactDataSource.selected.length === 0) {
+      this._contactDataSource.selected.push(this.item.Customer);
+    }
     this._contactDataSource.initSearch();
   }
 

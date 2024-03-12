@@ -66,7 +66,26 @@
           color="primary"
         ></ion-icon>
       </div>
-      <div class="col-name cell">
+      <div class="col-name cell" (click)="sortToggle('CustomerName')">
+        {{'Customer' | translate}}
+        <small>#Id</small>
+
+        <ion-icon
+          class="min-btn"
+          *ngIf="sort.CustomerName"
+          [name]="sort.CustomerName == 'CustomerName'?'arrow-down': 'arrow-up'"
+        ></ion-icon>
+        <ion-icon
+          class="min-btn"
+          (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch"
+          *ngIf="query.CustomerName"
+          name="search"
+          color="primary"
+        ></ion-icon>
+
+        <small class="right">
+          <ion-text color="dark"> {{'Address' | translate}}</ion-text>
+        </small>
       </div>
       <div class="col-code cell money" (click)="sortToggle('Debt')">
         {{'Debt' | translate}}
@@ -136,7 +155,29 @@
             name="close-circle-outline"
           ></ion-icon>
         </div>
-        <div class="col-name cell"></div>
+        <div class="col-name cell">
+          <input
+            [ngModelOptions]="{standalone: true}"
+            [(ngModel)]="query.CustomerName"
+            class="c-input"
+            [ngClass]="{active: query.CustomerName}"
+            type="text"
+          />
+          <ion-icon
+            class="min-btn"
+            (click)="query.CustomerName=''; refresh()"
+            *ngIf="query.CustomerName"
+            name="close-circle-outline"
+          ></ion-icon>
+
+          <div class="right">
+            <b
+              ><ion-text color="danger"
+                >{{'Total' | translate}} {{selectedItems.length}} {{'Order' | translate}}:</ion-text
+              ></b
+            >
+          </div>
+        </div>
         <div class="col-code cell"></div>
         <div class="col-code cell">
           <input
@@ -170,9 +211,15 @@
         <small *ngIf="i.OrderTimeText ">{{i.OrderTimeText}}</small>
       </div>
       <div class="col-name cell">
-        
+        <span [ngOptionHighlight]="query.CustomerName"
+          >{{i.CustomerName}}</span>
+        <small>#{{i.IDBusinessPartner}}</small>
+        <small class="right">
+          <ion-text color="dark">
+            <span>{{i.BuyerAddress}}</span>
+          </ion-text>
+        </small>
       </div>
-     
       <div class="col-code cell money">
         <input [(ngModel)]="i.DebtAmount" 
                [min]="0"
