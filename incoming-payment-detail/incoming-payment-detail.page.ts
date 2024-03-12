@@ -285,7 +285,13 @@ export class IncomingPaymentDetailPage extends PageBase {
       }
       this.incomingPaymentOrderDetails.forEach((x) => {
         if (!dataIds.includes(x.IDSaleOrder) && x.IDInvoice == null) {
-          deletedFields.push(x.Id);
+          if(x.Id) {
+            deletedFields.push(x.Id);
+          } else {
+              let groups = <FormArray>this.formGroup.controls.IncomingPaymentDetails;
+              let index = groups.controls.findIndex((d) => d.value.IDSaleOrder == x.IDSaleOrder);
+              groups.removeAt(index);
+          }
         }
       });
       if (deletedFields.length && this.formGroup.controls.Id.value) {
@@ -296,6 +302,7 @@ export class IncomingPaymentDetailPage extends PageBase {
         });
         this.removeField(deletedFields);
       }
+      this.amountOrder = data.Amount;
       this.formGroup.get('Amount').setValue(data.Amount + this.amountInvoice);
       this.formGroup.get('Amount').markAsDirty();
       if (this.formGroup.valid) {
@@ -336,7 +343,13 @@ export class IncomingPaymentDetailPage extends PageBase {
       }
       this.incomingPaymentOrderDetails.forEach((x) => {
         if (!dataIds.includes(x.IDInvoice) && x.IDSaleOrder == null) {
-          deletedFields.push(x.Id);
+          if(x.Id){
+            deletedFields.push(x.Id);
+          }else {
+              let groups = <FormArray>this.formGroup.controls.IncomingPaymentDetails;
+              let index = groups.controls.findIndex((d) => d.value.IDInvoice == x.IDInvoice);
+              groups.removeAt(index);
+          }
         }
       });
       if (deletedFields.length && this.formGroup.controls.Id.value) {
@@ -347,6 +360,7 @@ export class IncomingPaymentDetailPage extends PageBase {
         });
         this.removeField(deletedFields);
       }
+      this.amountInvoice = data.Amount;
       this.formGroup.get('Amount').setValue(data.Amount + this.amountOrder);
       this.formGroup.get('Amount').markAsDirty();
       if (this.formGroup.valid) {
