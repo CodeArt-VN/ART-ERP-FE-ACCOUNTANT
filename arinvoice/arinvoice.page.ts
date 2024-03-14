@@ -24,7 +24,6 @@ import { SortConfig } from 'src/app/models/options-interface';
   styleUrls: ['./arinvoice.page.scss'],
 })
 export class ARInvoicePage extends PageBase {
-  baseURL = ApiSetting.mainService.base;
   branchList = [];
   statusList = [];
 
