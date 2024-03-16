@@ -49,8 +49,7 @@
 
   <!-- ion-margin-horizontal box-shadow-->
   <app-data-table
-    style="min-width: 1000px"
-    class="box-shadow"
+    class="box-shadow responsive"
     [rows]="items"
     [trackBy]="'Id'"
     [(selectedRows)]="selectedItems"
@@ -68,8 +67,6 @@
       </ng-template>
     </datatable-column>
     <datatable-column class="col-id" name="SO Id" property="IDSaleOrder">
-      
-      <ng-template let-i="row" datatable-filter-template>aa</ng-template>
       <ng-template let-i="row" datatable-cell-template>
         <a *ngIf="i.IDSaleOrder" [routerLink]="['/sale-order-mobile-viewer/'+i.IDSaleOrder]" class="col-id cell"
           ><span class="show-small-inline">SO: </span> {{i.IDSaleOrder}}</a
@@ -123,7 +120,7 @@
         </div>
       </ng-template>
     </datatable-column>
-    <datatable-column class="col-money bold" format="1.0-0" name="Total" property="TotalAfterTax"></datatable-column>
+    <datatable-column class="col-number bold" format="1.0-0" name="Total" property="TotalAfterTax"></datatable-column>
     <datatable-column class="col-remark" name="Invoice No." property="InvoiceNo">
       <ng-template let-i="row" datatable-cell-template>
         <span *ngIf="i.InvoiceNo">
