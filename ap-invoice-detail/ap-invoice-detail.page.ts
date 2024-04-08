@@ -67,20 +67,20 @@ export class APInvoiceDetailPage extends PageBase {
 
       InvoiceForm: [''],
       InvoiceSerial: [''],
-      InvoiceNo: [''],
+      InvoiceNo: ['',Validators.required],
       InvoiceGUID: [''],
       InvoiceCode: [''],
       InvoiceURL: [''],
-      InvoiceDate: [''],
+      InvoiceDate: ['',Validators.required],
       InvoiceSignedDate: [''],
 
-      TotalBeforeDiscount: [0],
-      TotalDiscount: [0],
+      TotalBeforeDiscount: ['',Validators.required],
+      TotalDiscount: ['',Validators.required],
       CalcTotalAfterDiscount: new FormControl({
         value: 0,
         disabled: true,
       }),
-      Tax: [0],
+      Tax: ['',Validators.required],
       WithholdingTax: [0],
       CalcTotalAfterTax: new FormControl({ value: 0, disabled: true }),
 
