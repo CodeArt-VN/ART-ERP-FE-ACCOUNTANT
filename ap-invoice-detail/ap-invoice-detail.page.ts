@@ -22,10 +22,12 @@ import { catchError, distinctUntilChanged, switchMap, tap } from 'rxjs/operators
 })
 export class APInvoiceDetailPage extends PageBase {
   statusList = [];
+  branchList=[];
   constructor(
     public pageProvider: AC_APInvoiceProvider,
     public receiptProvider: WMS_ReceiptProvider,
     public purchaseOrderProvider: PURCHASE_OrderProvider,
+    public branchProvider: BRA_BranchProvider,
     public env: EnvService,
     public navCtrl: NavController,
     public route: ActivatedRoute,
@@ -109,6 +111,19 @@ export class APInvoiceDetailPage extends PageBase {
   }
 
   preLoadData(event?: any): void {
+    this.branchProvider.read({ Skip: 0, Take: 5000, Type: 'Warehouse', AllParent: true, Id: this.env.selectedBranchAndChildren }).then(resp => {
+      lib.buildFlatTree(resp['data'], this.branchList).then((result: any) => {
+          this.branchList = result;
+          this.branchList.forEach(i => {
+              i.disabled = true;
+          });
+          this.markNestedNode(this.branchList, this.env.selectedBranch);
+          super.preLoadData(event);
+      }).catch(err => {
+          this.env.showMessage(err);
+          console.log(err);
+      });
+  });
     this.env.getStatus('APInvoice').then((result) => {
       this.statusList = result;
       super.preLoadData();
@@ -234,4 +249,12 @@ export class APInvoiceDetailPage extends PageBase {
       );
     },
   };
+
+  markNestedNode(ls, Id) {
+    ls.filter(d => d.IDParent == Id).forEach(i => {
+        if (i.Type == 'Warehouse')
+            i.disabled = false;
+        this.markNestedNode(ls, i.Id);
+    });
+}
 }
