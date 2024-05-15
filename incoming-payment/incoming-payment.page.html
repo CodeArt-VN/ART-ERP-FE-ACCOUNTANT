@@ -11,7 +11,7 @@
 
 		</div>
 	</ion-fab>
-	<app-data-table style="min-width: 1000px;" class="box-shadow responsive" [rows]="items" [trackBy]="'Id'" [(selectedRows)]="selectedItems" [showSpinner]="pageConfig.showSpinner" [showFilter]="pageConfig.isShowSearch" [(query)]="query" (dataInfinite)="loadData($event)" (filter)="onDatatableFilter($event)" (sort)="onSort($event)">
+	<app-data-table class="box-shadow responsive" [rows]="items" [trackBy]="'Id'" [(selectedRows)]="selectedItems" [showSpinner]="pageConfig.showSpinner" [showFilter]="pageConfig.isShowSearch" [(query)]="query" (dataInfinite)="loadData($event)" (filter)="onDatatableFilter($event)" (sort)="onSort($event)">
 		<datatable-column [checkbox]="true"></datatable-column>
 		<datatable-column class="col-id" name="Id" property="Id">
 			<ng-template let-i="row" datatable-cell-template>
@@ -27,7 +27,29 @@
 		<datatable-column class="col-code" name="SubType" property="SubType">	
 		</datatable-column>
 
-		<datatable-column class="col-name" name="Remark" property="Remark">
+		<datatable-column class="col-name" name="Business partner" property="_BusinessPartner">
+			<ng-template let-i="row" datatable-cell-template>
+				{{i._BusinessPartner.Name}}
+			</ng-template>	
+		</datatable-column>
+
+		<datatable-column class="col-name" name="Invoices" property="_ARInvoices">
+			<ng-template let-i="row" datatable-cell-template>
+				<div *ngFor="let idArInvoice of i._ARInvoices; let isLast = last">
+					<a [routerLink]="['/arinvoice/' + idArInvoice]">{{ idArInvoice }}</a><span *ngIf="!isLast">, </span>
+				</div>
+			</ng-template>
+		</datatable-column>
+
+		<datatable-column class="col-name" name="Sale orders" property="_SaleOrders">
+			<ng-template let-i="row" datatable-cell-template>
+				<div *ngFor="let idOrder of i._SaleOrders; let isLast = last">
+					<a [routerLink]="['/sale-order/' + idOrder]">{{ idOrder }}</a><span *ngIf="!isLast">, </span>
+				</div>
+			</ng-template>			
+		</datatable-column>
+
+		<datatable-column class="col-code" name="Remark" property="Remark">
 		</datatable-column>
 
 		<datatable-column class="col-number bold" format="1.0-0" name="Amount" property="Amount"></datatable-column>
