@@ -29,7 +29,7 @@
 
 		<datatable-column class="col-name" name="Business partner" property="_BusinessPartner">
 			<ng-template let-i="row" datatable-cell-template>
-				{{i._BusinessPartner.Name}}
+				{{i?._BusinessPartner?.Name}}
 			</ng-template>	
 		</datatable-column>
 
