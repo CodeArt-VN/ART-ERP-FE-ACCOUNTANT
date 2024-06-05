@@ -40,7 +40,7 @@ export class IncomingPaymentSaleOrderModalPage extends PageBase {
   preLoadData(event) {
     this.query.IDContact = this.IDContact;
     this.query.Debt_gt = 0;
-    this.sortToggle('Id', true);
+    this.sortToggle('Id_desc', true);
     super.preLoadData(event);
   }
 

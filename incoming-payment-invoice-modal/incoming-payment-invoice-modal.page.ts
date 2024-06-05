@@ -40,7 +40,7 @@ export class IncomingPaymentInvoiceModalPage extends PageBase {
   preLoadData(event) {
     this.query.IDBusinessPartner = this.IDBusinessPartner;
     this.query.TotalAfterTax_gt = 0;
-    this.sortToggle('Id', true);
+    this.sortToggle('Id_desc', true);
     super.preLoadData(event);
   }
 
