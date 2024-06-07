@@ -387,8 +387,8 @@
                   (change)="saveChange()"
                 ></app-form-control>
                 <app-form-control
-                  [field]="{id:'BuyerTaxCode', label: 'Invoice required', type : 'select', dataSource: TaxCodeDataSource, bindLabel: 'CompanyName', bindValue: 'TaxCode', form : formGroup }"
-                  (change)="onBuyerTaxCodeChange()"
+                  [field]="{id:'BuyerTaxCode', label: 'Invoice required', type : 'ng-select', dataSource: TaxCodeDataSource, bindLabel: 'CompanyName', bindValue: 'TaxCode', form : formGroup }"
+                  (change)="onBuyerTaxCodeChange($event)"
                 ></app-form-control>
                 <app-form-control
                   [field]="{id:'BuyerTaxCode', label: 'Tax code', type : 'text', form : formGroup }"

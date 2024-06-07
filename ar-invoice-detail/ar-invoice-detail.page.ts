@@ -44,7 +44,7 @@ export class ARInvoiceDetailPage extends PageBase {
   receiveTypeList = [];
   paymentMethodList = [];
   contentTypeList = [];
-
+  isBindingTaxCode = false
   defaultOutputTax = null;
 
   constructor(
@@ -156,29 +156,31 @@ export class ARInvoiceDetailPage extends PageBase {
   };
 
   TaxCodeDataSource = [];
-  LoadTaxCodeDataSource(i) {
+  LoadTaxCodeDataSource(i, markAsDirty = false) {
     this.TaxCodeDataSource = [];
     if (i?.TaxAddresses) {
       this.TaxCodeDataSource = i.TaxAddresses;
     }
-    this.TaxCodeDataSource.unshift({
-      TaxCode: null,
+
+    this.TaxCodeDataSource.push({
+      TaxCode: '',
       CompanyName: 'Khách vãng lai',
       Email: '',
       BillingAddress: '',
       WorkPhone: '',
     });
+    if (!this.item?.BuyerTaxCode) this.item.BuyerTaxCode = '';
+    if (markAsDirty) this.onBuyerTaxCodeChange(this.TaxCodeDataSource[0]);
   }
 
-  onBuyerTaxCodeChange() {
-    let taxCode = this.formGroup.get('BuyerTaxCode').value;
-    let i = this.TaxCodeDataSource.find((d) => d.TaxCode == taxCode);
+  onBuyerTaxCodeChange(event) {
+    this.formGroup.get('BuyerTaxCode').setValue(event.TaxCode);
+    this.formGroup.get('BuyerUnitName').setValue(event.CompanyName);
+    this.formGroup.get('BuyerAddress').setValue(event.BillingAddress);
+    this.formGroup.get('ReceiverEmail').setValue(event.Email);
+    this.formGroup.get('ReceiverMobile').setValue(event.BillingPhone || event.WorkPhone);
 
-    this.formGroup.get('BuyerUnitName').setValue(i.CompanyName);
-    this.formGroup.get('BuyerAddress').setValue(i.BillingAddress);
-    this.formGroup.get('ReceiverEmail').setValue(i.Email);
-    this.formGroup.get('ReceiverMobile').setValue(i.BillingPhone || i.WorkPhone);
-
+    this.formGroup.get('BuyerTaxCode').markAsDirty();
     this.formGroup.get('BuyerUnitName').markAsDirty();
     this.formGroup.get('BuyerAddress').markAsDirty();
     this.formGroup.get('ReceiverEmail').markAsDirty();
@@ -188,9 +190,10 @@ export class ARInvoiceDetailPage extends PageBase {
   }
 
   IDBusinessPartnerChange(i) {
-    this.LoadTaxCodeDataSource(i);
+    //this.LoadTaxCodeDataSource(i);
     this.formGroup.get('BuyerName').setValue(i.IsPersonal ? i.Name : '');
     this.formGroup.get('BuyerName').markAsDirty();
+    this.isBindingTaxCode = true;
     this.saveChange();
   }
 
@@ -245,13 +248,13 @@ export class ARInvoiceDetailPage extends PageBase {
       if (this.item?._BusinessPartner) {
         this.IDBusinessPartnerDataSource.selected.push(this.item?._BusinessPartner);
       }
-      this.LoadTaxCodeDataSource(this.item?._BusinessPartner);
+     
     }
 
     super.loadedData(event, ignoredFromGroup);
-
+    this.LoadTaxCodeDataSource(this.item?._BusinessPartner,this.isBindingTaxCode);
+    this.isBindingTaxCode = false;
     this.patchFormValue();
-
     this.IDBusinessPartnerDataSource.initSearch();
   }
 
