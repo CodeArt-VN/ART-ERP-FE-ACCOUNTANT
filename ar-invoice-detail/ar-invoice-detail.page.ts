@@ -44,7 +44,7 @@ export class ARInvoiceDetailPage extends PageBase {
   receiveTypeList = [];
   paymentMethodList = [];
   contentTypeList = [];
-
+  isBindingTaxCode = false
   defaultOutputTax = null;
 
   constructor(
@@ -193,27 +193,8 @@ export class ARInvoiceDetailPage extends PageBase {
     //this.LoadTaxCodeDataSource(i);
     this.formGroup.get('BuyerName').setValue(i.IsPersonal ? i.Name : '');
     this.formGroup.get('BuyerName').markAsDirty();
-    this.formGroup.updateValueAndValidity();
-    if (!this.formGroup.valid) {
-      this.env.showTranslateMessage('Please recheck information highlighted in red above', 'warning');
-    } else if (this.submitAttempt == false) {
-      this.submitAttempt = true;
-      let submitItem = this.getDirtyValues(this.formGroup);
-
-      this.pageProvider
-        .save(submitItem, this.pageConfig.isForceCreate)
-        .then((savedItem: any) => {
-          this.submitAttempt = false;
-          this.item = savedItem;
-          this.loadedData();
-          this.LoadTaxCodeDataSource(savedItem._BusinessPartner, true);
-        })
-        .catch((err) => {
-          this.env.showTranslateMessage('Cannot save, please try again', 'danger');
-          this.cdr.detectChanges();
-          this.submitAttempt = false;
-        });
-    }
+    this.isBindingTaxCode = true;
+    this.saveChange();
   }
 
   TypeCreateInvoiceChange(i) {
@@ -267,13 +248,13 @@ export class ARInvoiceDetailPage extends PageBase {
       if (this.item?._BusinessPartner) {
         this.IDBusinessPartnerDataSource.selected.push(this.item?._BusinessPartner);
       }
-      this.LoadTaxCodeDataSource(this.item?._BusinessPartner);
+     
     }
 
     super.loadedData(event, ignoredFromGroup);
-
+    this.LoadTaxCodeDataSource(this.item?._BusinessPartner,this.isBindingTaxCode);
+    this.isBindingTaxCode = false;
     this.patchFormValue();
-
     this.IDBusinessPartnerDataSource.initSearch();
   }
 
