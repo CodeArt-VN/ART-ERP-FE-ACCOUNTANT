@@ -6,6 +6,7 @@ import { EnvService } from 'src/app/services/core/env.service';
 import {
   AC_APInvoiceProvider,
   BRA_BranchProvider,
+  HRM_StaffProvider,
   PURCHASE_OrderProvider,
   WMS_ReceiptProvider,
 } from 'src/app/services/static/services.service';
@@ -22,12 +23,13 @@ import { catchError, distinctUntilChanged, switchMap, tap } from 'rxjs/operators
 })
 export class APInvoiceDetailPage extends PageBase {
   statusList = [];
-  branchList=[];
+  branchList = [];
   constructor(
     public pageProvider: AC_APInvoiceProvider,
     public receiptProvider: WMS_ReceiptProvider,
     public purchaseOrderProvider: PURCHASE_OrderProvider,
     public branchProvider: BRA_BranchProvider,
+    public staffProvider: HRM_StaffProvider,
     public env: EnvService,
     public navCtrl: NavController,
     public route: ActivatedRoute,
@@ -69,20 +71,20 @@ export class APInvoiceDetailPage extends PageBase {
 
       InvoiceForm: [''],
       InvoiceSerial: [''],
-      InvoiceNo: ['',Validators.required],
+      InvoiceNo: ['', Validators.required],
       InvoiceGUID: [''],
       InvoiceCode: [''],
       InvoiceURL: [''],
-      InvoiceDate: ['',Validators.required],
+      InvoiceDate: ['', Validators.required],
       InvoiceSignedDate: [''],
 
-      TotalBeforeDiscount: ['',Validators.required],
-      TotalDiscount: ['',Validators.required],
+      TotalBeforeDiscount: ['', Validators.required],
+      TotalDiscount: ['', Validators.required],
       CalcTotalAfterDiscount: new FormControl({
         value: 0,
         disabled: true,
       }),
-      Tax: ['',Validators.required],
+      Tax: ['', Validators.required],
       WithholdingTax: [0],
       CalcTotalAfterTax: new FormControl({ value: 0, disabled: true }),
 
@@ -111,19 +113,24 @@ export class APInvoiceDetailPage extends PageBase {
   }
 
   preLoadData(event?: any): void {
-    this.branchProvider.read({ Skip: 0, Take: 5000, Type: 'Warehouse', AllParent: true, Id: this.env.selectedBranchAndChildren }).then(resp => {
-      lib.buildFlatTree(resp['data'], this.branchList).then((result: any) => {
-          this.branchList = result;
-          this.branchList.forEach(i => {
+    this.branchProvider
+      .read({ Skip: 0, Take: 5000, Type: 'Warehouse', AllParent: true, Id: this.env.selectedBranchAndChildren })
+      .then((resp) => {
+        lib
+          .buildFlatTree(resp['data'], this.branchList)
+          .then((result: any) => {
+            this.branchList = result;
+            this.branchList.forEach((i) => {
               i.disabled = true;
+            });
+            this.markNestedNode(this.branchList, this.env.selectedBranch);
+            super.preLoadData(event);
+          })
+          .catch((err) => {
+            this.env.showMessage(err);
+            console.log(err);
           });
-          this.markNestedNode(this.branchList, this.env.selectedBranch);
-          super.preLoadData(event);
-      }).catch(err => {
-          this.env.showMessage(err);
-          console.log(err);
       });
-  });
     this.env.getStatus('APInvoice').then((result) => {
       this.statusList = result;
       super.preLoadData();
@@ -134,10 +141,28 @@ export class APInvoiceDetailPage extends PageBase {
     if (this.item.Id) {
       this.item.InvoiceDate = lib.dateFormat(this.item.InvoiceDate);
       this.item.InvoiceSignedDate = lib.dateFormat(this.item.InvoiceSignedDate);
+    } else {
+      this.item.IDOwner = this.env.user.StaffID;
+      this.IDOwnerDataSource.selected.push({
+        Id: this.env.user.StaffID,
+        FullName: this.env.user.FullName,
+      });
     }
     super.loadedData(event, ignoredFromGroup);
     this.IDReceiptDataSource.initSearch();
     this.IDPurchaseOrderDataSource.initSearch();
+    this.IDOwnerDataSource.initSearch();
+
+    if (this.item._Receipt) {
+      this.IDReceiptDataSource.selected.push(this.item._Receipt);
+    }
+
+    if (this.item._PurchaseOrder) {
+      this.IDPurchaseOrderDataSource.selected.push(this.item._PurchaseOrder);
+    }
+    if (this.item._Owner) {
+      this.IDOwnerDataSource.selected.push(this.item._Owner);
+    }
   }
 
   segmentView = 's1';
@@ -150,12 +175,13 @@ export class APInvoiceDetailPage extends PageBase {
 
     this.item.CalcTotalAfterDiscount = rvalue.TotalBeforeDiscount - rvalue.TotalDiscount;
     this.item.CalcTotalAfterTax = this.item.CalcTotalAfterDiscount + rvalue.Tax - rvalue.WithholdingTax;
-    this.item.CalcBalance = this.item.CalcTotalAfterTax - rvalue.Received;
+    if (rvalue.Received) {
+      this.item.CalcBalance = this.item.CalcTotalAfterTax - rvalue.Received;
+      this.formGroup.controls['CalcBalance'].setValue(this.item.CalcBalance);
+    }
 
     this.formGroup.controls['CalcTotalAfterDiscount'].setValue(this.item.CalcTotalAfterDiscount);
     this.formGroup.controls['CalcTotalAfterTax'].setValue(this.item.CalcTotalAfterTax);
-    this.formGroup.controls['CalcBalance'].setValue(this.item.CalcBalance);
-
     super.saveChange2();
   }
 
@@ -251,10 +277,40 @@ export class APInvoiceDetailPage extends PageBase {
   };
 
   markNestedNode(ls, Id) {
-    ls.filter(d => d.IDParent == Id).forEach(i => {
-        if (i.Type == 'Warehouse')
-            i.disabled = false;
-        this.markNestedNode(ls, i.Id);
+    ls.filter((d) => d.IDParent == Id).forEach((i) => {
+      if (i.Type == 'Warehouse') i.disabled = false;
+      this.markNestedNode(ls, i.Id);
     });
-}
+  }
+
+  IDOwnerDataSource = {
+    searchProvider: this.staffProvider,
+    loading: false,
+    input$: new Subject<string>(),
+    selected: [],
+    items$: null,
+    initSearch() {
+      this.loading = false;
+      this.items$ = concat(
+        of(this.selected),
+        this.input$.pipe(
+          distinctUntilChanged(),
+          tap(() => (this.loading = true)),
+          switchMap((term) =>
+            this.searchProvider
+              .search({
+                SortBy: ['Id_desc'],
+                Take: 20,
+                Skip: 0,
+                Term: term,
+              })
+              .pipe(
+                catchError(() => of([])), // empty list on error
+                tap(() => (this.loading = false)),
+              ),
+          ),
+        ),
+      );
+    },
+  };
 }
