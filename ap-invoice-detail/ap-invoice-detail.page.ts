@@ -147,6 +147,8 @@ export class APInvoiceDetailPage extends PageBase {
         Id: this.env.user.StaffID,
         FullName: this.env.user.FullName,
       });
+      this.formGroup.controls['IDOwner'].setValue(this.env.user.StaffID);
+      this.formGroup.controls['IDOwner'].markAsDirty();
     }
     super.loadedData(event, ignoredFromGroup);
     this.IDReceiptDataSource.initSearch();
@@ -217,6 +219,7 @@ export class APInvoiceDetailPage extends PageBase {
   };
 
   receiptChange(e) {
+ 
     if (e.IDPurchaseOrder) {
       this.formGroup.controls['IDPurchaseOrder'].setValue(e.IDPurchaseOrder);
       this.formGroup.controls['IDPurchaseOrder'].markAsDirty();
