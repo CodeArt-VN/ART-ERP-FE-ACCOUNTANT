@@ -49,9 +49,9 @@ export class IncomingPaymentDetailPage extends PageBase {
       Id: new FormControl({ value: '', disabled: true }),
       Name: [''],
       Code: [''],
-      DocumentDate: ['',Validators.required],
+      DocumentDate: ['', Validators.required],
       PostingDate: ['', Validators.required],
-      DueDate: ['',Validators.required],
+      DueDate: ['', Validators.required],
       Type: ['Cash', Validators.required],
       SubType: [''],
       Remark: [''],
@@ -99,7 +99,7 @@ export class IncomingPaymentDetailPage extends PageBase {
             resolve(savedItem);
             this.savedChange(savedItem, form);
             this.item = savedItem;
-            let formArray  = this.formGroup.get('IncomingPaymentDetails') as FormArray;
+            let formArray = this.formGroup.get('IncomingPaymentDetails') as FormArray;
             formArray.clear();
             this.loadedData();
             if (publishEventCode) this.env.publishEvent({ Code: publishEventCode });
@@ -126,55 +126,51 @@ export class IncomingPaymentDetailPage extends PageBase {
   }
 
   loadData(event?: any): void {
-    this.id = typeof (this.id) == 'string' ? parseInt(this.id) : this.id;
+    this.id = typeof this.id == 'string' ? parseInt(this.id) : this.id;
     this.query.id = this.id;
     if (this.id) {
-      this.pageProvider.commonService.connect('GET', 'BANK/IncomingPayment/GetAnItemIncomingPayment/', this.query).toPromise()
-          .then((ite: any) => {
-            this.item = ite;
-            this.loadedData(event);
-          }).catch((err) => {
-            console.log(err);
-            
-            if(err.status = 404){
-                this.nav('not-found', 'back');
-            }
-            else{
-                this.item = null;
-                this.loadedData(event);
-            }
+      this.pageProvider.commonService
+        .connect('GET', 'BANK/IncomingPayment/GetAnItemIncomingPayment/', this.query)
+        .toPromise()
+        .then((ite: any) => {
+          this.item = ite;
+          this.loadedData(event);
+        })
+        .catch((err) => {
+          console.log(err);
 
+          if ((err.status = 404)) {
+            this.nav('not-found', 'back');
+          } else {
+            this.item = null;
+            this.loadedData(event);
+          }
         });
-    }
-    else if (this.id == 0) {
-        if (!this.item) this.item = {};
-        
-        Object.assign(this.item, this.DefaultItem);
-        this.loadedData(event);
-    }
-    else{
+    } else if (this.id == 0) {
+      if (!this.item) this.item = {};
+
+      Object.assign(this.item, this.DefaultItem);
+      this.loadedData(event);
+    } else {
       this.loadedData(event);
     }
-}
+  }
 
   amountOrder = 0;
   amountInvoice = 0;
   loadedData(event?: any, ignoredFromGroup?: boolean): void {
-    if (this.item?.Status == 'Success') {
-      this.pageConfig.canEdit = false;
-    }
     super.loadedData(event, ignoredFromGroup);
     this.amountOrder = 0;
     this.amountInvoice = 0;
-    let formArray  = this.formGroup.get('IncomingPaymentDetails') as FormArray;
+    let formArray = this.formGroup.get('IncomingPaymentDetails') as FormArray;
     formArray.clear();
-    this.item.IncomingPaymentDetails?.forEach(i=>{
+    this.item.IncomingPaymentDetails?.forEach((i) => {
       if (i.IDSaleOrder && i.IDInvoice == null) {
-            this.amountOrder += i.Amount;
-          }
+        this.amountOrder += i.Amount;
+      }
       if (i.IDInvoice) {
-              this.amountInvoice += i.Amount;
-          }
+        this.amountInvoice += i.Amount;
+      }
       this.addField(i);
     });
     this.formGroup.get('Type').markAsDirty();
@@ -225,7 +221,6 @@ export class IncomingPaymentDetailPage extends PageBase {
       return desc ? -comparison : comparison;
     });
   }
-
 
   addField(field: any, markAsDirty = false) {
     let groups = <FormArray>this.formGroup.controls.IncomingPaymentDetails;
@@ -291,12 +286,12 @@ export class IncomingPaymentDetailPage extends PageBase {
       }
       this.incomingPaymentOrderDetails.forEach((x) => {
         if (!dataIds.includes(x.IDSaleOrder) && x.IDInvoice == null) {
-          if(x.Id) {
+          if (x.Id) {
             deletedFields.push(x.Id);
           } else {
-              let groups = <FormArray>this.formGroup.controls.IncomingPaymentDetails;
-              let index = groups.controls.findIndex((d) => d.value.IDSaleOrder == x.IDSaleOrder);
-              groups.removeAt(index);
+            let groups = <FormArray>this.formGroup.controls.IncomingPaymentDetails;
+            let index = groups.controls.findIndex((d) => d.value.IDSaleOrder == x.IDSaleOrder);
+            groups.removeAt(index);
           }
         }
       });
@@ -349,12 +344,12 @@ export class IncomingPaymentDetailPage extends PageBase {
       }
       this.incomingPaymentOrderDetails.forEach((x) => {
         if (!dataIds.includes(x.IDInvoice) && x.IDSaleOrder == null) {
-          if(x.Id){
+          if (x.Id) {
             deletedFields.push(x.Id);
-          }else {
-              let groups = <FormArray>this.formGroup.controls.IncomingPaymentDetails;
-              let index = groups.controls.findIndex((d) => d.value.IDInvoice == x.IDInvoice);
-              groups.removeAt(index);
+          } else {
+            let groups = <FormArray>this.formGroup.controls.IncomingPaymentDetails;
+            let index = groups.controls.findIndex((d) => d.value.IDInvoice == x.IDInvoice);
+            groups.removeAt(index);
           }
         }
       });
@@ -414,7 +409,9 @@ export class IncomingPaymentDetailPage extends PageBase {
   }
 
   async updateField(updatedField: any) {
-    const index = this.incomingPaymentOrderDetails.findIndex((d) => d.Id === updatedField.IDIncomingPaymentDetail && updatedField.isEdit);
+    const index = this.incomingPaymentOrderDetails.findIndex(
+      (d) => d.Id === updatedField.IDIncomingPaymentDetail && updatedField.isEdit,
+    );
     if (index != -1) {
       this.incomingPaymentOrderDetails[index].Amount = updatedField.Amount;
       const group = <FormArray>this.formGroup.controls.IncomingPaymentDetails;
