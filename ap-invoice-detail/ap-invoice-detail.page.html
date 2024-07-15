@@ -93,21 +93,23 @@
                   >
                     <ng-template ng-label-tmp let-i="item">
                       <div *ngIf="i">
-                        <span><ion-text color="primary">#{{i.Id}}</ion-text></span>
+                        <span><ion-text color="primary">#{{i.Id}} 
+                          <span *ngIf="i.VendorName"> {{i.VendorName}} → {{i.StorerName}}</span>
+                        </ion-text> </span>
                       </div>
                     </ng-template>
                     <ng-template ng-option-tmp let-i="item" let-search="searchTerm">
                       <div *ngIf="i">
-                        <span [ngOptionHighlight]="search"><ion-text color="primary">#{{i.Id}}</ion-text></span>
-                        <small *ngIf="i.IDPurchaseOrder" [ngOptionHighlight]="search"> PO: {{i.IDPurchaseOrder}}</small>
-                        <small *ngIf="i.VehicleNumber" [ngOptionHighlight]="search"> Xe: {{i.VehicleNumber}}</small>
+                        <span><ion-text color="primary">#{{i.Id}}</ion-text></span>
+                        <small *ngIf="i.IDPurchaseOrder"> PO: {{i.IDPurchaseOrder}}</small>
+                        <small *ngIf="i.VehicleNumber"> Xe: {{i.VehicleNumber}}</small>
                         <small *ngIf="i.ExpectedReceiptDate">
                           - {{i.ExpectedReceiptDate | date: 'HH:mm dd/MM/yy'}}</small
                         >
                         <div>
-                          <span [ngOptionHighlight]="search">{{i.VendorName}}</span>
+                          <span>{{i.VendorName}}</span>
                           →
-                          <span [ngOptionHighlight]="search">{{i.StorerName}}</span>
+                          <span>{{i.StorerName}}</span>
                         </div>
                       </div>
                     </ng-template>
@@ -134,24 +136,30 @@
                     [typeahead]="IDPurchaseOrderDataSource.input$"
                     [loading]="IDPurchaseOrderDataSource.loading"
                     bindValue="Id"
+                    [virtualScroll]="true"
                     placeholder="{{'Search' | translate}}"
                   >
                     <ng-template ng-label-tmp let-i="item">
                       <div *ngIf="i">
-                        <span><ion-text color="primary">#{{i.Id}}</ion-text></span>
+                        <span
+                          ><ion-text color="primary"
+                            >#{{i.Id}}
+                            <span *ngIf="i.VendorName"> {{i.VendorName}} → {{i.StorerName}}</span>
+                          </ion-text></span
+                        >
                       </div>
                     </ng-template>
                     <ng-template ng-option-tmp let-i="item" let-search="searchTerm">
                       <div *ngIf="i">
-                        <span [ngOptionHighlight]="search"><ion-text color="primary">#{{i.Id}}</ion-text></span>
-                        <small *ngIf="i.Code" [ngOptionHighlight]="search"> PO: {{i.Code}}</small>
+                        <span><ion-text color="primary">#{{i.Id}}</ion-text></span>
+                        <small *ngIf="i.Code"> PO: {{i.Code}}</small>
                         <small *ngIf="i.ExpectedReceiptDate">
                           - {{i.ExpectedReceiptDate | date: 'HH:mm dd/MM/yy'}}</small
                         >
                         <div>
-                          <span [ngOptionHighlight]="search">{{i.VendorName}}</span>
+                          <span>{{i.VendorName}}</span>
                           →
-                          <span [ngOptionHighlight]="search">{{i.StorerName}}</span>
+                          <span>{{i.StorerName}}</span>
                         </div>
                       </div>
                     </ng-template>
@@ -243,7 +251,7 @@
                     type="date"
                   />
                 </div>
-                 
+
                 <!-- <div class="c-control">
 									<label class="c-label" for="InvoiceSignedDate">Ngày ký
 										<span *ngIf="!formGroup.controls.InvoiceSignedDate.valid && !formGroup.controls.InvoiceSignedDate.pending && (formGroup.controls.InvoiceSignedDate.dirty || submitAttempt)" ion-text color="danger">(*)</span>
@@ -263,7 +271,7 @@
 									</label>
 									<input class="c-input" id="Name" (change)="saveChange();" formControlName="Name" type="text">
 								</div> -->
-            
+
                 <div class="c-control">
                   <label class="c-label" for="SellerName"
                     >Bên bán
@@ -301,7 +309,7 @@
                   />
                 </div>
               </ion-col>
-    
+
               <ion-col size="12" size-sm size-xl="4">
                 <div class="c-control">
                   <label class="c-label" for="TotalBeforeDiscount"
@@ -447,7 +455,39 @@
                   </label>
                   <input (change)="saveChange()" class="c-input" id="DueDate" formControlName="DueDate" type="date" />
                 </div>
-                
+
+                <div class="c-control">
+                  <label class="c-label" for="IDOwner">Người mua hàng</label>
+                  <ng-select
+                    (change)="saveChange()"
+                    class="c-input"
+                    #IDOwner
+                    formControlName="IDOwner"
+                    labelForId="IDOwner"
+                    [items]="IDOwnerDataSource.items$ | async"
+                    [typeahead]="IDOwnerDataSource.input$"
+                    [loading]="IDOwnerDataSource.loading"
+                    [virtualScroll]="true"
+                    bindLabel="FullName"
+                    bindValue="Id"
+                    placeholder="{{'Search for name, code or phone number' | translate}}"
+                  >
+                    <ng-template ng-option-tmp let-i="item" let-search="searchTerm">
+                      <div *ngIf="i">
+                        <div>
+                          <span [ngOptionHighlight]="search">{{i.FullName}}</span>
+                        </div>
+                        <small
+                          >#<b><span class="important" [ngOptionHighlight]="search">{{i.Id}} - {{i.Code}}</span></b>
+                          <span *ngIf="i.Phone">
+                            | {{'Telephone' | translate}}:
+                            <b [ngOptionHighlight]="search">{{i.PhoneNumber}}</b></span
+                          ></small
+                        >
+                      </div>
+                    </ng-template>
+                  </ng-select>
+                </div>
               </ion-col>
             </ion-row>
             <ion-row class="hr-group" *ngIf="item.Id">
@@ -457,14 +497,27 @@
                 </ion-list-header>
               </ion-col>
               <ion-col size="12" size-sm size-xl="4">
-                <app-form-control [field]="{id:'CreatedBy', type : 'text', label: 'Created by', form : formGroup }"></app-form-control>
-                <app-form-control [field]="{id:'CreatedDate', type : 'span-datetime', label: 'Created date', form : formGroup }"></app-form-control>
-                <app-form-control [field]="{id:'ModifiedBy', type : 'text', label: 'Last modified by', form : formGroup }"></app-form-control>
-                <app-form-control [field]="{id:'ModifiedDate', type : 'span-datetime', label: 'Last modified date', form : formGroup }"></app-form-control>
+                <app-form-control
+                  [field]="{id:'CreatedBy', type : 'text', label: 'Created by', form : formGroup }"
+                ></app-form-control>
+                <app-form-control
+                  [field]="{id:'CreatedDate', type : 'span-datetime', label: 'Created date', form : formGroup }"
+                ></app-form-control>
+                <app-form-control
+                  [field]="{id:'ModifiedBy', type : 'text', label: 'Last modified by', form : formGroup }"
+                ></app-form-control>
+                <app-form-control
+                  [field]="{id:'ModifiedDate', type : 'span-datetime', label: 'Last modified date', form : formGroup }"
+                ></app-form-control>
               </ion-col>
               <ion-col size="12" size-sm size-xl="4">
-                <app-form-control [field]="{id:'IDBranch', type : 'branch-breadcrumbs', label: 'Branch', form : formGroup, dataSource:env.branchList }"></app-form-control>
-                <app-form-control [field]="{id:'Remark', type : 'textarea', label: 'Remark', form : formGroup }" (change)="saveChange()"></app-form-control>
+                <app-form-control
+                  [field]="{id:'IDBranch', type : 'branch-breadcrumbs', label: 'Branch', form : formGroup, dataSource:env.branchList }"
+                ></app-form-control>
+                <app-form-control
+                  [field]="{id:'Remark', type : 'textarea', label: 'Remark', form : formGroup }"
+                  (change)="saveChange()"
+                ></app-form-control>
               </ion-col>
             </ion-row>
           </form>
