@@ -43,7 +43,7 @@ export class IncomingPaymentDetailPage extends PageBase {
   ) {
     super();
     this.pageConfig.isDetailPage = true;
-    this.pageConfig.canEdit = true;
+
     this.formGroup = formBuilder.group({
       IDBranch: [this.env.selectedBranch],
       Id: new FormControl({ value: '', disabled: true }),
@@ -52,11 +52,11 @@ export class IncomingPaymentDetailPage extends PageBase {
       DocumentDate: ['', Validators.required],
       PostingDate: ['', Validators.required],
       DueDate: ['', Validators.required],
-      Type: ['Cash', Validators.required],
+      Type: ['', Validators.required],
       SubType: [''],
       Remark: [''],
-      Amount: new FormControl({ value: 0, disabled: true }),
-      Status: new FormControl({ value: 'Success', disabled: true }),
+      Amount: ['', Validators.required],
+      Status: ['', Validators.required],
       IDCustomer: ['', Validators.required],
       IncomingPaymentDetails: this.formBuilder.array([]),
       IsDisabled: new FormControl({ value: '', disabled: true }),
@@ -75,12 +75,13 @@ export class IncomingPaymentDetailPage extends PageBase {
   }
 
   async saveChange() {
-    let groups = <FormArray>this.formGroup.controls.IncomingPaymentDetails;
-    if (groups.controls.length > 0) {
-      this.saveChange2();
-    } else {
-      this.env.showTranslateMessage('Please select at least 1 order', 'warning');
-    }
+    this.saveChange2();
+    // let groups = <FormArray>this.formGroup.controls.IncomingPaymentDetails;
+    // if (groups.controls.length > 0) {
+
+    // } else {
+    //   this.env.showTranslateMessage('Please select at least 1 order', 'warning');
+    // }
   }
 
   saveChange2(form = this.formGroup, publishEventCode = this.pageConfig.pageName, provider = this.pageProvider) {
@@ -91,7 +92,6 @@ export class IncomingPaymentDetailPage extends PageBase {
       } else if (this.submitAttempt == false) {
         this.submitAttempt = true;
         let submitItem = this.getDirtyValues(form);
-
         this.pageProvider.commonService
           .connect('POST', 'BANK/IncomingPayment/PostIncomingPayment', submitItem)
           .toPromise()
@@ -159,6 +159,14 @@ export class IncomingPaymentDetailPage extends PageBase {
   amountOrder = 0;
   amountInvoice = 0;
   loadedData(event?: any, ignoredFromGroup?: boolean): void {
+    let IDCustomerDisabled = true;
+    if (this.item?.Status == 'Success') {
+      if (this.item.IDCustomer == null && this.pageConfig.canEdit) {
+        IDCustomerDisabled = false;
+      }
+      this.pageConfig.canEdit = false;
+    }
+
     super.loadedData(event, ignoredFromGroup);
     this.amountOrder = 0;
     this.amountInvoice = 0;
@@ -173,12 +181,15 @@ export class IncomingPaymentDetailPage extends PageBase {
       }
       this.addField(i);
     });
-    this.formGroup.get('Type').markAsDirty();
-    this.formGroup.get('Status').markAsDirty();
-    if (this._contactDataSource.selected.length === 0 && this.item?.Id && this.item?.Customer) {
+    if (this.item?.Id && this.item?.Customer) {
+      this._contactDataSource.selected = [];
       this._contactDataSource.selected.push(this.item.Customer);
     }
     this._contactDataSource.initSearch();
+
+    if (!IDCustomerDisabled || this.pageConfig.canEditCustomer) {
+      this.formGroup.controls['IDCustomer'].enable();
+    }
   }
 
   sortDetail: any = {};
@@ -262,8 +273,11 @@ export class IncomingPaymentDetailPage extends PageBase {
       component: IncomingPaymentSaleOrderModalPage,
       componentProps: {
         IDContact: this.formGroup.controls.IDCustomer.value,
-        amount: this.amountOrder,
+        //amount: this.amountOrder,
+        amount: this.formGroup.get('Amount').value,
         SelectedOrderList: this.SelectedOrderList,
+        canEditAmount: this.formGroup.get('Amount').value > 0 ? false : true,
+        amountInvoice: this.amountInvoice
       },
       cssClass: 'modal90',
     });
@@ -304,8 +318,10 @@ export class IncomingPaymentDetailPage extends PageBase {
         this.removeField(deletedFields);
       }
       this.amountOrder = data.Amount;
-      this.formGroup.get('Amount').setValue(data.Amount + this.amountInvoice);
-      this.formGroup.get('Amount').markAsDirty();
+      if (this.formGroup.get('Amount').value <= 0) {
+        this.formGroup.get('Amount').setValue(data.Amount + this.amountInvoice);
+        this.formGroup.get('Amount').markAsDirty();
+      }
       if (this.formGroup.valid) {
         this.saveChange();
       }
@@ -319,8 +335,10 @@ export class IncomingPaymentDetailPage extends PageBase {
       component: IncomingPaymentInvoiceModalPage,
       componentProps: {
         IDBusinessPartner: this.formGroup.controls.IDCustomer.value,
-        amount: this.amountInvoice,
+        //amount: this.amountInvoice,
+        amount: this.formGroup.get('Amount').value,
         SelectedInvoiceList: this.SelectedInvoiceList,
+        amountOrder: this.amountOrder
       },
       cssClass: 'modal90',
     });
@@ -362,8 +380,10 @@ export class IncomingPaymentDetailPage extends PageBase {
         this.removeField(deletedFields);
       }
       this.amountInvoice = data.Amount;
-      this.formGroup.get('Amount').setValue(data.Amount + this.amountOrder);
-      this.formGroup.get('Amount').markAsDirty();
+      if (this.formGroup.get('Amount').value <= 0) {
+        this.formGroup.get('Amount').setValue(data.Amount + this.amountOrder);
+        this.formGroup.get('Amount').markAsDirty();
+      }
       if (this.formGroup.valid) {
         this.saveChange();
       }
@@ -418,6 +438,36 @@ export class IncomingPaymentDetailPage extends PageBase {
       group.at(index).get('Amount').setValue(updatedField.Amount);
       group.at(index).get('IDIncomingPayment').markAsDirty();
       group.at(index).get('Amount').markAsDirty();
+    }
+  }
+
+  removeItem(index) {
+    let groups = <FormArray>this.formGroup.controls.IncomingPaymentDetails;
+    let id = groups.controls[index].value.Id;
+    if (id != 0) {
+      this.env.showPrompt('Bạn chắc muốn xóa không?', null, 'Xóa 1 dòng').then((_) => {
+        this.formGroup.get('DeletedFields').setValue([id]);
+        this.formGroup.get('DeletedFields').markAsDirty();
+        this.saveChange();
+      });
+    } else {
+      groups.removeAt(index);
+    }
+  }
+
+  IDCustomerChange() {
+    if (this.item.Id != 0) {
+      this.env
+        .showPrompt('Khi thay đổi đổi khách hàng sẽ xóa toàn bộ hóa đơn trước đó', null, 'Bạn có muốn thay đổi không?')
+        .then((_) => {
+          this.saveChange();
+        })
+        .catch((_) => {
+          this.formGroup.controls.IDCustomer.setValue(this.item.IDCustomer);
+          this._contactDataSource.initSearch();
+        });
+    } else {
+      this.formGroup.controls.IncomingPaymentDetails = new FormArray([]);
     }
   }
 }

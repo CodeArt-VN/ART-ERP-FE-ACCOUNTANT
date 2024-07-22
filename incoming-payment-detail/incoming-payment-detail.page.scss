@@ -1,4 +1,15 @@
-.full-screen{
+.full-screen {
     min-height: calc(100vh - 97px);
 }
 
+.col-del {
+    max-width: 40px;
+    min-width: 40px;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.table header .cell {
+    color: var(--ion-color-dark);
+    padding-left: 5px;
+}
