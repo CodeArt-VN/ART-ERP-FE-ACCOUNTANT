@@ -16,6 +16,8 @@ export class IncomingPaymentSaleOrderModalPage extends PageBase {
   IDContact;
   amount;
   SelectedOrderList: any;
+  canEditAmount;
+  amountInvoice;
   constructor(
     public pageProvider: SALE_OrderProvider,
     public env: EnvService,
@@ -35,12 +37,17 @@ export class IncomingPaymentSaleOrderModalPage extends PageBase {
     this.amount = this.route.snapshot.paramMap.get('amount');
     this.IDContact = this.route.snapshot.paramMap.get('IDContact');
     this.SelectedOrderList = this.route.snapshot.paramMap.get('SelectedOrderList');
+    this.canEditAmount = this.route.snapshot.paramMap.get('canEditAmount');
+    this.amountInvoice= this.route.snapshot.paramMap.get('amountInvoice');
+    console.log();
+    
   }
 
   preLoadData(event) {
     this.query.IDContact = this.IDContact;
     this.query.Debt_gt = 0;
-    this.sortToggle('Id_desc', true);
+    this.sortToggle('OrderDate', true);
+
     super.preLoadData(event);
   }
 
@@ -50,7 +57,6 @@ export class IncomingPaymentSaleOrderModalPage extends PageBase {
 
   loadedData(event) {
     this.selectedItems = [];
-
     this.items.forEach((i) => {
       i.CustomerName = i._Customer.Name;
       i.CustomerAddress = i._Customer.Address;
@@ -63,23 +69,33 @@ export class IncomingPaymentSaleOrderModalPage extends PageBase {
     });
     this.total.Amount = this.amount;
     super.loadedData(event);
-    if(this.SelectedOrderList.length){
-      
+    if (this.SelectedOrderList.length) {
       this.SelectedOrderList.forEach((s) => {
-        let so = this.items.find(i => i.Id == s.IDSaleOrder);
-        if(so) {
+        let so = this.items.find((i) => i.Id == s.IDSaleOrder);
+        if (so) {
           so.checked = true;
-          so.DebtAmount = s.Amount? s.Amount : s.DebtAmount;
+          so.DebtAmount = s.Amount ? s.Amount : s.DebtAmount;
           so.IDIncomingPaymentDetail = s.Id;
           so.isEdit = false;
+          this.selectedItems.push(so);
         }
       });
-    }else {
+    } else {
       this.autoSelect();
     }
   }
 
   changeSelection(i, e = null) {
+    if (!this.canEditAmount && !i.checked) {
+      let amount =  this.amountInvoice + i.DebtAmountBefore + this.selectedItems.map((x) => x.DebtAmount).reduce((a, b) => +a + +b, 0);
+      if (amount > this.amount) {
+        i.checked = false;
+        this.env.showMessage('Số tiền của hóa đơn thanh toán đã vượt số tiền thanh toán', 'danger');
+        e?.preventDefault();
+        return;
+      }
+    }
+
     super.changeSelection(i, e);
     if (i.checked) {
       i.checked = false;
@@ -91,10 +107,15 @@ export class IncomingPaymentSaleOrderModalPage extends PageBase {
     }
     this.autoCalculateTotalAmount();
   }
-  
+
   SaveSelectedOrders() {
     this.selectedItems.forEach((i) => {
-      (i.IDSaleOrder = i.Id), (i.Id = 0), (i.IDCustomer = i._Customer.Id), (i.IDIncomingPaymentDetail = i.IDIncomingPaymentDetail), (i.Name = i.Name), (i.Amount = i.DebtAmount);
+      (i.IDSaleOrder = i.Id),
+        (i.Id = 0),
+        (i.IDCustomer = i._Customer.Id),
+        (i.IDIncomingPaymentDetail = i.IDIncomingPaymentDetail),
+        (i.Name = i.Name),
+        (i.Amount = i.DebtAmount);
     });
     this.selectedItems.Amount = this.total.Amount;
     this.modalController.dismiss(this.selectedItems);
@@ -119,10 +140,9 @@ export class IncomingPaymentSaleOrderModalPage extends PageBase {
   }
 
   autoSelect() {
-    let totalDebt = 0;
+    let totalDebt = this.total.Amount;
     this.items.forEach((i) => {
-      totalDebt += i.DebtAmountBefore;
-      if (totalDebt <= this.total.Amount) {
+      if (totalDebt >= i.DebtAmountBefore) {
         i.checked = true;
         i.DebtAmount = i.DebtAmountBefore;
         super.changeSelection(i);
@@ -130,20 +150,25 @@ export class IncomingPaymentSaleOrderModalPage extends PageBase {
         i.DebtAmount = '';
         i.checked = false;
       }
+      totalDebt = totalDebt - i.DebtAmount;
     });
     this.selectedItems = this.items.filter((d) => d.checked);
   }
+
   changeDebtAmountSelection(i, e = null) {
     if (i.DebtAmount <= 0 || i.DebtAmount >= i.DebtAmountBefore || i.DebtAmount == null) {
       i.DebtAmount = i.DebtAmountBefore;
       i.isEdit = false;
-    }else {
+    } else {
       i.isEdit = true;
     }
     this.autoCalculateTotalAmount();
   }
 
   autoCalculateTotalAmount() {
+    if (!this.canEditAmount) {
+      return;
+    }
     let total = 0;
     this.items.forEach((i) => {
       if (i.checked) {

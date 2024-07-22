@@ -12,6 +12,7 @@ import { SortConfig } from 'src/app/models/options-interface';
   styleUrls: ['incoming-payment.page.scss'],
 })
 export class IncomingPaymentPage extends PageBase {
+  statusList: [];
   constructor(
     public pageProvider: BANK_IncomingPaymentProvider,
     public branchProvider: BRA_BranchProvider,
@@ -24,10 +25,7 @@ export class IncomingPaymentPage extends PageBase {
     public location: Location,
   ) {
     super();
-    this.pageConfig.canDelete = true;
-    this.pageConfig.canAdd = true;
   }
-  statusList: [];
 
   preLoadData(event?: any): void {
     let sorted: SortConfig[] = [{ Dimension: 'Id', Order: 'DESC' }];
