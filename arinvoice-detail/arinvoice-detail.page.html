@@ -642,7 +642,7 @@
                 <input (change)="toggleSelectAll()" [(ngModel)]="isAllChecked" class="c-checkbox" type="checkbox" />
               </div>
               <div class="col-id cell" (click)="sortToggle('Id')">
-                {{'#Id' | translate}}
+                {{'Id' | translate}}
                 <ion-icon class="min-btn" *ngIf="sort.Id" [name]="sort.Id == 'Id'?'arrow-down': 'arrow-up'"></ion-icon>
                 <ion-icon
                   class="min-btn"
@@ -653,7 +653,7 @@
                 ></ion-icon>
               </div>
               <div class="col-id cell" (click)="sortToggle('IDSaleOrder')">
-                {{'#Id SO' | translate}}
+                {{'Sale orders' | translate}}
                 <ion-icon
                   class="min-btn"
                   *ngIf="sort.IDSaleOrder"
@@ -697,7 +697,7 @@
                   <ion-text color="warning"> {{'Tax code' | translate}}</ion-text>
                 </small>
                 {{'Customer' | translate}}
-                <small>{{'#Id' | translate}}</small>
+                <small>{{'Id' | translate}}</small>
 
                 <ion-icon
                   class="min-btn"
@@ -736,7 +736,7 @@
                 <div class="col-checkbox cell"></div>
                 <div class="col-id cell">
                   <input
-                    placeholder="{{'#Id' | translate}}"
+                    placeholder="{{'Id' | translate}}"
                     (change)="searchRelatedARs_Id = $event.target.value; reInitRelatedARs()"
                     class="c-input"
                     type="number"
