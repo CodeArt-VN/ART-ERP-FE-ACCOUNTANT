@@ -92,17 +92,6 @@ export class ARInvoicePage extends PageBase {
     console.log(this.items);
   }
 
-  showDetail(i) {
-    this.navCtrl.navigateForward('/arinvoice/' + i.Id);
-  }
-
-  add() {
-    let newARInvoice = {
-      Id: 0,
-    };
-    this.showDetail(newARInvoice);
-  }
-
   approveInvoices() {
     if (!this.pageConfig.canApproveInvoice) {
       return;
