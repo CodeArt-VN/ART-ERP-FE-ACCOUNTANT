@@ -1,7 +1,5 @@
-import { map } from 'rxjs/operators';
-
 import { Component, ChangeDetectorRef } from '@angular/core';
-import { NavController, ModalController, LoadingController, AlertController } from '@ionic/angular';
+import { NavController, ModalController, LoadingController, AlertController, PopoverController } from '@ionic/angular';
 import { PageBase } from 'src/app/page-base';
 import { ActivatedRoute } from '@angular/router';
 import { EnvService } from 'src/app/services/core/env.service';
@@ -30,6 +28,7 @@ export class IncomingPaymentDetailPage extends PageBase {
     public pageProvider: BANK_IncomingPaymentProvider,
     public IncomingPaymentDetailservice: BANK_IncomingPaymentDetailProvider,
     public branchProvider: BRA_BranchProvider,
+    public popoverCtrl: PopoverController,
     public env: EnvService,
     public navCtrl: NavController,
     public route: ActivatedRoute,
