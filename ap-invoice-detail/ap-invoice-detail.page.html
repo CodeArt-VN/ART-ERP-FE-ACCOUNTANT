@@ -43,13 +43,13 @@
       <ion-toolbar color="primary">
         <ion-segment scrollable="true" (ionChange)="segmentChanged($event)" [value]="segmentView">
           <ion-segment-button value="s1">
-            <ion-label>Thông tin chung</ion-label>
+            <ion-label>{{'General information' | translate}}</ion-label>
           </ion-segment-button>
           <ion-segment-button value="s2">
-            <ion-label>DS sản phẩm</ion-label>
+            <ion-label>{{'Product list' | translate}}</ion-label>
           </ion-segment-button>
           <ion-segment-button value="s3">
-            <ion-label>Lịch sử thanh toán</ion-label>
+            <ion-label>{{'Payment history' | translate}}</ion-label>
           </ion-segment-button>
         </ion-segment>
       </ion-toolbar>
@@ -71,7 +71,7 @@
 
                 <div class="c-control">
                   <label class="c-label" for="IDReceipt"
-                    >ASN/Receipt
+                    >{{'ASN/Receipt' | translate}}
                     <span
                       *ngIf="!formGroup.controls.IDReceipt.valid && !formGroup.controls.IDReceipt.pending && (formGroup.controls.IDReceipt.dirty || submitAttempt)"
                       ion-text
@@ -181,7 +181,7 @@
 
                 <div class="c-control">
                   <label class="c-label" for="InvoiceForm"
-                    >Mẫu số /Form
+                    >{{'Form' | translate}}
                     <span
                       *ngIf="!formGroup.controls.InvoiceForm.valid && !formGroup.controls.InvoiceForm.pending && (formGroup.controls.InvoiceForm.dirty || submitAttempt)"
                       ion-text
@@ -199,7 +199,7 @@
                 </div>
                 <div class="c-control">
                   <label class="c-label" for="InvoiceSerial"
-                    >Ký hiệu /Serial
+                    >{{'Serial' | tran}}
                     <span
                       *ngIf="!formGroup.controls.InvoiceSerial.valid && !formGroup.controls.InvoiceSerial.pending && (formGroup.controls.InvoiceSerial.dirty || submitAttempt)"
                       ion-text
@@ -217,7 +217,7 @@
                 </div>
                 <div class="c-control">
                   <label class="c-label" for="InvoiceNo"
-                    >Số hoá đơn /Inv. No
+                    >{{'Invoice number' | translate}}
                     <span
                       *ngIf="!formGroup.controls.InvoiceNo.valid && !formGroup.controls.InvoiceNo.pending && (formGroup.controls.InvoiceNo.dirty || submitAttempt)"
                       ion-text
@@ -235,7 +235,7 @@
                 </div>
                 <div class="c-control">
                   <label class="c-label" for="InvoiceDate"
-                    >Ngày hóa đơn
+                    >{{'Invoice date' | translate}}
                     <span
                       *ngIf="!formGroup.controls.InvoiceDate.valid && !formGroup.controls.InvoiceDate.pending && (formGroup.controls.InvoiceDate.dirty || submitAttempt)"
                       ion-text
@@ -274,7 +274,7 @@
 
                 <div class="c-control">
                   <label class="c-label" for="SellerName"
-                    >Bên bán
+                    >{{'Bên bán' | translate}}
                     <span
                       *ngIf="!formGroup.controls.SellerName.valid && !formGroup.controls.SellerName.pending && (formGroup.controls.SellerName.dirty || submitAttempt)"
                       ion-text
@@ -292,7 +292,7 @@
                 </div>
                 <div class="c-control">
                   <label class="c-label" for="BuyerName"
-                    >Bên mua
+                    >{{'Bên mua' | translate}}
                     <span
                       *ngIf="!formGroup.controls.BuyerName.valid && !formGroup.controls.BuyerName.pending && (formGroup.controls.BuyerName.dirty || submitAttempt)"
                       ion-text
@@ -313,7 +313,7 @@
               <ion-col size="12" size-sm size-xl="4">
                 <div class="c-control">
                   <label class="c-label" for="TotalBeforeDiscount"
-                    >Cộng tiền hàng
+                    >{{'Total cost of goods' | translate}}
                     <span
                       *ngIf="!formGroup.controls.TotalBeforeDiscount.valid && !formGroup.controls.TotalBeforeDiscount.pending && (formGroup.controls.TotalBeforeDiscount.dirty || submitAttempt)"
                       ion-text
@@ -333,7 +333,7 @@
                 </div>
                 <div class="c-control">
                   <label class="c-label" for="TotalDiscount"
-                    >Chiết khấu
+                    >{{'Discount' | translate}}
                     <span
                       *ngIf="!formGroup.controls.TotalDiscount.valid && !formGroup.controls.TotalDiscount.pending && (formGroup.controls.TotalDiscount.dirty || submitAttempt)"
                       ion-text
@@ -359,7 +359,7 @@
 								</div> -->
                 <div class="c-control">
                   <label class="c-label" for="Tax"
-                    >Tiền thuế GTGT
+                    >{{'VAT' | translate}}
                     <span
                       *ngIf="!formGroup.controls.Tax.valid && !formGroup.controls.Tax.pending && (formGroup.controls.Tax.dirty || submitAttempt)"
                       ion-text
@@ -385,7 +385,7 @@
 								</div> -->
                 <div class="c-control">
                   <label class="c-label" for="CalcTotalAfterTax"
-                    >Tổng cộng tiền thanh toán
+                    >{{'Total payment amount' | translate}}
                     <span
                       *ngIf="!formGroup.controls.CalcTotalAfterTax.valid && !formGroup.controls.CalcTotalAfterTax.pending && (formGroup.controls.CalcTotalAfterTax.dirty || submitAttempt)"
                       ion-text
@@ -405,7 +405,7 @@
                 </div>
                 <div class="c-control">
                   <label class="c-label" for="Paid"
-                    >Đã trả
+                    >{{'Amount paid' | translate}}
                     <span
                       *ngIf="!formGroup.controls.Paid.valid && !formGroup.controls.Paid.pending && (formGroup.controls.Paid.dirty || submitAttempt)"
                       ion-text
@@ -425,7 +425,7 @@
                 </div>
                 <div class="c-control">
                   <label class="c-label" for="CalcBalance"
-                    >Còn lại
+                    >{{'Remaining' | translate}}
                     <span
                       *ngIf="!formGroup.controls.CalcBalance.valid && !formGroup.controls.CalcBalance.pending && (formGroup.controls.CalcBalance.dirty || submitAttempt)"
                       ion-text
@@ -445,7 +445,7 @@
                 </div>
                 <div class="c-control" *ngIf="item.CalcBalance">
                   <label class="c-label" for="DueDate"
-                    >Hạn thanh toán
+                    >{{'Payment due date' | translate}}
                     <span
                       *ngIf="!formGroup.controls.DueDate.valid && !formGroup.controls.DueDate.pending && (formGroup.controls.DueDate.dirty || submitAttempt)"
                       ion-text
@@ -457,7 +457,7 @@
                 </div>
 
                 <div class="c-control">
-                  <label class="c-label" for="IDOwner">Người mua hàng</label>
+                  <label class="c-label" for="IDOwner">{{'Buyer' | translate}}</label>
                   <ng-select
                     (change)="saveChange()"
                     class="c-input"
