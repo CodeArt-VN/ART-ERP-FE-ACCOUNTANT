@@ -477,7 +477,7 @@ export class ARInvoicePage extends PageBase {
 
     this.selectedItems = this.selectedItems.filter((i) => i.Status == 'EInvoiceNew');
     if (!this.selectedItems.length) {
-      this.env.showMessage('Vui lòng chọn hóa đơn cần cập nhật dữ liệu');
+      this.env.showTranslateMessage('Vui lòng chọn hóa đơn cần cập nhật dữ liệu');
       return;
     }
     this.submitAttempt = true;
@@ -489,17 +489,16 @@ export class ARInvoicePage extends PageBase {
       )
       .then((resp: any) => {
         this.submitAttempt = false;
-        this.env.showMessage('Đã cập nhật hóa đơn điện tử thành công!', 'success');
+        this.env.showTranslateMessage('Đã cập nhật hóa đơn điện tử thành công!', 'success');
         this.refresh();
       })
       .catch((err) => {
-        console.log(err);
         if (err?.error?.ExceptionMessage) {
-          this.env.showMessage(err.error.ExceptionMessage, 'danger');
+          this.env.showTranslateMessage(err.error.ExceptionMessage, 'danger');
         } else if (err.message) {
-          this.env.showMessage(err.message, 'danger');
+          this.env.showTranslateMessage(err.message, 'danger');
         } else {
-          this.env.showMessage('Có lỗi khi cập nhật, xin vui lòng thử lại sau', 'danger');
+          this.env.showTranslateMessage('Có lỗi khi cập nhật, xin vui lòng thử lại sau', 'danger');
         }
 
         this.submitAttempt = false;
@@ -510,7 +509,7 @@ export class ARInvoicePage extends PageBase {
     if (this.submitAttempt) return;
     this.selectedItems = this.selectedItems.filter((i) => i.Status == 'EInvoiceNew');
     if (!this.selectedItems.length) {
-      this.env.showMessage('Vui lòng chọn hóa đơn cần ký');
+      this.env.showTranslateMessage('Vui lòng chọn hóa đơn cần ký');
       return;
     }
     this.submitAttempt = true;
@@ -535,7 +534,7 @@ export class ARInvoicePage extends PageBase {
 
     this.selectedItems = this.selectedItems.filter((i) => i.Status == 'EInvoiceNew');
     if (!this.selectedItems.length) {
-      this.env.showMessage('Vui lòng chọn hóa đơn cần đồng bộ dữ liệu');
+      this.env.showTranslateMessage('Vui lòng chọn hóa đơn cần đồng bộ dữ liệu');
       return;
     }
     this.submitAttempt = true;
@@ -604,13 +603,13 @@ export class ARInvoicePage extends PageBase {
                         );
                         this.refresh();
                       } else {
-                        this.env.showMessage('Đã xuất hóa đơn điện tử!', 'success');
+                        this.env.showTranslateMessage('Đã xuất hóa đơn điện tử!', 'success');
                         this.submitAttempt = false;
                         this.refresh();
                       }
                     })
                     .catch((err: any) => {
-                      this.env.showMessage(
+                      this.env.showTranslateMessage(
                         'Không xuất hóa đơn được, xin vui lòng kiểm tra lại! \n' + err?.error?.ExceptionMessage,
                         'danger',
                       );
@@ -694,7 +693,7 @@ export class ARInvoicePage extends PageBase {
     // let _eInvoices = this.selectedItems.filter(f => f.Status == 'EInvoiceNew');
 
     // if (_eInvoices.length > 1) {
-    //     this.env.showMessage('Có nhiều hơn 1 hóa đơn đã tạo HĐĐT, xin vui lòng kiểm tra lại!', 'warning')
+    //     this.env.showTranslateMessage('Có nhiều hơn 1 hóa đơn đã tạo HĐĐT, xin vui lòng kiểm tra lại!', 'warning')
     //     return;
     // }
 

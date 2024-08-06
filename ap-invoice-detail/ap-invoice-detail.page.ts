@@ -127,8 +127,7 @@ export class APInvoiceDetailPage extends PageBase {
             super.preLoadData(event);
           })
           .catch((err) => {
-            this.env.showMessage(err);
-            console.log(err);
+            this.env.showTranslateMessage(err);
           });
       });
     this.env.getStatus('APInvoice').then((result) => {
