@@ -90,7 +90,7 @@ export class IncomingPaymentSaleOrderModalPage extends PageBase {
       let amount =  this.amountInvoice + i.DebtAmountBefore + this.selectedItems.map((x) => x.DebtAmount).reduce((a, b) => +a + +b, 0);
       if (amount > this.amount) {
         i.checked = false;
-        this.env.showMessage('Số tiền của hóa đơn thanh toán đã vượt số tiền thanh toán', 'danger');
+        this.env.showTranslateMessage('Số tiền của hóa đơn thanh toán đã vượt số tiền thanh toán', 'danger');
         e?.preventDefault();
         return;
       }

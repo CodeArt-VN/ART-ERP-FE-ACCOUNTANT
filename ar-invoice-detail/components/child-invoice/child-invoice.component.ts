@@ -67,7 +67,7 @@ export class ChildInvoiceComponent extends PageBase {
   }
 
   addARInvoice() {
-    this.env.showMessage('Add A/R invoice function will be coming soon!');
+    this.env.showTranslateMessage('Add A/R invoice function will be coming soon!');
     //this.onUpdate.emit();
   }
 

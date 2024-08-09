@@ -69,7 +69,7 @@
     <datatable-column class="col-id" name="SO Id" property="IDSaleOrder">
       <ng-template let-i="row" datatable-cell-template>
         <a *ngIf="i.IDSaleOrder" [routerLink]="['/sale-order-mobile-viewer/'+i.IDSaleOrder]" class="col-id cell"
-          ><span class="show-small-inline">SO: </span> {{i.IDSaleOrder}}</a
+          ><span class="show-small-inline">{{'SO:' | translate}} </span> {{i.IDSaleOrder}}</a
         >
       </ng-template>
     </datatable-column>
@@ -129,7 +129,7 @@
             target="_blank"
             title="{{'Search e-invoice' | translate}}"
           >
-            <i class="show-small-inline">eHĐ: </i>
+            <i class="show-small-inline">{{'eHĐ:' | translate}} </i>
             {{i.InvoiceForm}}{{i.InvoiceSerial}}-{{i.InvoiceNo}}
           </a>
         </span>

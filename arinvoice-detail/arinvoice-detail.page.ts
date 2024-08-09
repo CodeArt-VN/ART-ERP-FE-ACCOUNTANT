@@ -616,7 +616,7 @@ export class ARInvoiceDetailPage_ extends PageBase {
                       var json = JSON.parse(resp);
 
                       if (json[0].MessLog != '') {
-                        this.env.showMessage(json[0].MessLog, 'warning');
+                        this.env.showTranslateMessage(json[0].MessLog, 'warning');
                         this.submitAttempt = false;
                       } else {
                         this.env.showTranslateMessage('Successfully generated e-invoice!', 'success');
