@@ -113,7 +113,7 @@ export class ARInvoicePage extends PageBase {
         .create({
           header: 'Duyệt ' + this.selectedItems.length + ' hóa đơn',
           //subHeader: '---',
-          message: 'Bạn chắc muốn xác nhận ' + this.selectedItems.length + ' hóa đơn đang chọn?',
+          message: 'Bạn có chắc muốn xác nhận ' + this.selectedItems.length + ' hóa đơn đang chọn?',
           buttons: [
             {
               text: 'Không',
@@ -192,7 +192,7 @@ export class ARInvoicePage extends PageBase {
         .create({
           header: 'Từ chối duyệt ' + this.selectedItems.length + ' hóa đơn',
           //subHeader: '---',
-          message: 'Bạn chắc muốn từ chối duyệt ' + this.selectedItems.length + ' hóa đơn đang chọn?',
+          message: 'Bạn có chắc muốn từ chối duyệt ' + this.selectedItems.length + ' hóa đơn đang chọn?',
           buttons: [
             {
               text: 'Không',
@@ -271,7 +271,7 @@ export class ARInvoicePage extends PageBase {
         .create({
           header: 'HỦY ' + this.selectedItems.length + ' hóa đơn',
           //subHeader: '---',
-          message: 'Bạn chắc muốn HỦY ' + this.selectedItems.length + ' hóa đơn đang chọn?',
+          message: 'Bạn có chắc muốn HỦY ' + this.selectedItems.length + ' hóa đơn đang chọn?',
           buttons: [
             {
               text: 'Không',
@@ -350,7 +350,7 @@ export class ARInvoicePage extends PageBase {
         .create({
           header: 'Gửi duyệt ' + this.selectedItems.length + ' hóa đơn',
           //subHeader: '---',
-          message: 'Bạn chắc muốn gửi duyệt ' + this.selectedItems.length + ' hóa đơn đang chọn?',
+          message: 'Bạn có chắc muốn gửi duyệt ' + this.selectedItems.length + ' hóa đơn đang chọn?',
           buttons: [
             {
               text: 'Không',
@@ -483,7 +483,7 @@ export class ARInvoicePage extends PageBase {
     this.submitAttempt = true;
 
     this.env
-      .showLoading(
+      .showLoading2(
         'Vui lòng chờ cập nhật hóa đơn...',
         this.EInvoiceService.UpdateEInvoice(this.selectedItems.map((i) => i.Id)).toPromise(),
       )
@@ -515,7 +515,7 @@ export class ARInvoicePage extends PageBase {
     this.submitAttempt = true;
 
     this.env
-      .showLoading(
+      .showLoading2(
         'Vui lòng chờ ký số hóa đơn...',
         this.EInvoiceService.SignEInvoice(this.selectedItems.map((i) => i.Id)).toPromise(),
       )
@@ -540,7 +540,7 @@ export class ARInvoicePage extends PageBase {
     this.submitAttempt = true;
 
     this.env
-      .showLoading(
+      .showLoading2(
         'Vui lòng chờ đồng bộ hóa đơn...',
         this.EInvoiceService.SyncEInvoice(this.selectedItems.map((i) => i.Id)).toPromise(),
       )
@@ -594,12 +594,7 @@ export class ARInvoicePage extends PageBase {
                           message += '<br> #' + e.PartnerInvoiceID + ' lỗi: ' + e.MessLog;
                         }
                       if (message != '') {
-                        this.env.showAlert(
-                          message,
-                          'Có ' +
-                            errors.length +
-                            ' hóa đơn lỗi, vui lòng kiểm tra lại ghi chú của các hóa đơn không được duyệt.',
-                          'Xuất hóa đơn',
+                        this.env.showAlert2(message,{code:'Có {{value}} hóa đơn lỗi, vui lòng kiểm tra lại ghi chú của các hóa đơn không được duyệt.',value:errors.length},'Xuất hóa đơn',
                         );
                         this.refresh();
                       } else {

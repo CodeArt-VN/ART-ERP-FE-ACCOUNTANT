@@ -444,7 +444,7 @@ export class IncomingPaymentDetailPage extends PageBase {
     let groups = <FormArray>this.formGroup.controls.IncomingPaymentDetails;
     let id = groups.controls[index].value.Id;
     if (id != 0) {
-      this.env.showPrompt('Bạn chắc muốn xóa không?', null, 'Xóa 1 dòng').then((_) => {
+      this.env.showPrompt2('Bạn có chắc muốn xóa không?', null, 'Xóa 1 dòng').then((_) => {
         this.formGroup.get('DeletedFields').setValue([id]);
         this.formGroup.get('DeletedFields').markAsDirty();
         this.saveChange();
@@ -457,7 +457,7 @@ export class IncomingPaymentDetailPage extends PageBase {
   IDCustomerChange() {
     if (this.item.Id != 0) {
       this.env
-        .showPrompt('Khi thay đổi đổi khách hàng sẽ xóa toàn bộ hóa đơn trước đó', null, 'Bạn có muốn thay đổi không?')
+        .showPrompt2('Khi thay đổi đổi khách hàng sẽ xóa toàn bộ hóa đơn trước đó', null, 'Bạn có muốn thay đổi không?')
         .then((_) => {
           this.saveChange();
         })

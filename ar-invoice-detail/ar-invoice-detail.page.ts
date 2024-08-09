@@ -532,7 +532,7 @@ export class ARInvoiceDetailPage extends PageBase {
 
   removeContent(g, index) {
     this.env
-      .showPrompt('Are you sure you want to delete this row(s)?')
+      .showPrompt2('Are you sure you want to delete this row(s)?')
       .then((_) => {
         let groups = <FormArray>this.formGroup.controls.Contents;
         groups.removeAt(index);

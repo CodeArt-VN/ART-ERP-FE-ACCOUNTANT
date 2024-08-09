@@ -594,7 +594,7 @@ export class ARInvoiceDetailPage_ extends PageBase {
         .create({
           header: 'Xuất hóa đơn điện tử',
           //subHeader: '---',
-          message: 'Bạn chắc muốn xác nhận xuất hóa đơn điện tử hóa đơn này?',
+          message: 'Bạn có chắc muốn xác nhận xuất hóa đơn điện tử hóa đơn này?',
           buttons: [
             {
               text: 'Không',
@@ -655,7 +655,7 @@ export class ARInvoiceDetailPage_ extends PageBase {
         .create({
           header: 'Xuất hóa đơn điện tử',
           //subHeader: '---',
-          message: 'Bạn chắc muốn xác nhận xuất hóa đơn điện tử(và ký duyệt tự động) cho hóa đơn này?',
+          message: 'Bạn có chắc muốn xác nhận xuất hóa đơn điện tử(và ký duyệt tự động) cho hóa đơn này?',
           buttons: [
             {
               text: 'Không',

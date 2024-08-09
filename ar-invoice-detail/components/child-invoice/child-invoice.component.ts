@@ -85,10 +85,10 @@ export class ChildInvoiceComponent extends PageBase {
 
     if (this.selectedItems.length > 0) {
       this.env
-        .showPrompt(
+        .showPrompt2(
           'Bạn có chắc muốn gở bỏ các hóa đơn này khỏi hóa đơn gộp không? (Thao tác này không thể khôi phục, các hóa đơn gở bỏ sẽ được chuyển về trạng thái đã duyệt)',
           null,
-          'Gỡ bỏ (' + this.selectedItems.length + ') hóa đơn đã chọn',
+          {code:'Gỡ bỏ {{value}} hóa đơn đã chọn',value:{value:this.selectedItems.length}},
         )
         .then((_) => {
           let ids = this.selectedItems.map((m) => m.Id);
