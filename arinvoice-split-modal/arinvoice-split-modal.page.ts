@@ -492,7 +492,7 @@ export class ARInvoiceSplitModalPage extends PageBase {
 
     return new Promise((resolve, reject) => {
       if (!this.isCanSplit) {
-        this.env.showTranslateMessage('Please check customer or vendors name', 'warning');
+        this.env.showMessage('Please check customer or vendors name', 'warning');
       } else if (this.submitAttempt == false) {
         this.submitAttempt = true;
 
@@ -511,13 +511,13 @@ export class ARInvoiceSplitModalPage extends PageBase {
             if (publishEventCode) {
               this.env.publishEvent({ Code: publishEventCode });
             }
-            this.env.showTranslateMessage('Invoice splitting completed', 'success');
+            this.env.showMessage('Invoice splitting completed', 'success');
             resolve(true);
             this.submitAttempt = false;
             this.closeModal();
           })
           .catch((err) => {
-            this.env.showTranslateMessage('Cannot split invoice, please try again', 'danger');
+            this.env.showMessage('Cannot split invoice, please try again', 'danger');
             this.cdr?.detectChanges();
             this.submitAttempt = false;
             reject(err);

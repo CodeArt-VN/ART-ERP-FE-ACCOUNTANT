@@ -402,7 +402,7 @@ export class ARInvoiceDetailPage extends PageBase {
         return;
       }
 
-      if (e.SalesTaxInPercent != -99) this.env.showTranslateMessage('The item has not been set tax');
+      if (e.SalesTaxInPercent != -99) this.env.showMessage('The item has not been set tax');
     }
 
     group.controls.TaxRate.setValue(null);
@@ -532,7 +532,7 @@ export class ARInvoiceDetailPage extends PageBase {
 
   removeContent(g, index) {
     this.env
-      .showPrompt2('Are you sure you want to delete this row(s)?')
+      .showPrompt('Are you sure you want to delete this row(s)?')
       .then((_) => {
         let groups = <FormArray>this.formGroup.controls.Contents;
         groups.removeAt(index);

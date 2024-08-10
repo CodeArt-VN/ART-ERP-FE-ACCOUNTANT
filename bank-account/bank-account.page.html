@@ -35,26 +35,8 @@
         ></ion-icon>
       </div>
       
-      <div class="col-code cell">
-        {{'Code' | translate}}
-        <ion-icon *ngIf="sort.Code" [name]="sort.Code == 'Code'?'arrow-down': 'arrow-up'"></ion-icon>
-        <ion-icon
-          (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch"
-          *ngIf="query.Code"
-          name="search"
-          color="primary"
-        ></ion-icon>
-      </div>
-      <div class="col-remark cell">
-        {{'Note' | translate}}
-        <ion-icon *ngIf="sort.Remark" [name]="sort.Remark == 'Remark'?'arrow-down': 'arrow-up'"></ion-icon>
-        <ion-icon
-          (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch"
-          *ngIf="query.Remark"
-          name="search"
-          color="primary"
-        ></ion-icon>
-      </div>
+     
+      
     </header>
     <form (submit)="refresh()" action="#">
       <header class="filter" *ngIf="pageConfig.isShowSearch">
@@ -89,26 +71,8 @@
           />
           <ion-icon (click)="query.Keyword=''; refresh()" *ngIf="query.Keyword" name="close"></ion-icon>
         </div>
-        <div class="col-code cell">
-          <input
-            [ngModelOptions]="{standalone: true}"
-            [(ngModel)]="query.Code"
-            class="c-input"
-            [ngClass]="{active: query.Code}"
-            type="text"
-          />
-          <ion-icon (click)="query.Code=''; refresh()" *ngIf="query.Code" name="close"></ion-icon>
-        </div>
-        <div class="col-remark cell">
-          <input
-            [ngModelOptions]="{standalone: true}"
-            [(ngModel)]="query.Remark"
-            class="c-input"
-            [ngClass]="{active: query.Remark}"
-            type="text"
-          />
-          <ion-icon (click)="query.Remark=''; refresh()" *ngIf="query.Remark" name="close"></ion-icon>
-        </div>
+      
+        
         <button mat-raised-button type="submit" style="display: none">{{'Search' | translate}}</button>
       </header>
     </form>
@@ -137,11 +101,9 @@
               class="min-btn clickable"
               [name]="i.HasChild? (!i.showdetail? 'chevron-forward-outline':'chevron-down-outline') : ''"
             ></ion-icon>
-            <ion-text class="clickable" (click)="showModal(i)" [color]="i.Color">{{i.Name}}</ion-text>
+            <ion-text class="clickable" (click)="showModal(i)" [color]="i.Color">{{i.Code}}</ion-text>
           </div>
           <div class="col-money cell">{{i.WorkingBalance}}</div>
-          <div class="col-code cell">{{i.Code}}</div>
-          <div class="col-remark cell">{{i.Remark}}</div>
         </div>
       </ng-container>
     </section>

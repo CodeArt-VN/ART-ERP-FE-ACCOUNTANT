@@ -67,7 +67,7 @@ export class ChildInvoiceComponent extends PageBase {
   }
 
   addARInvoice() {
-    this.env.showTranslateMessage('Add A/R invoice function will be coming soon!');
+    this.env.showMessage('Add A/R invoice function will be coming soon!');
     //this.onUpdate.emit();
   }
 
@@ -85,7 +85,7 @@ export class ChildInvoiceComponent extends PageBase {
 
     if (this.selectedItems.length > 0) {
       this.env
-        .showPrompt2(
+        .showPrompt(
           'Bạn có chắc muốn gở bỏ các hóa đơn này khỏi hóa đơn gộp không? (Thao tác này không thể khôi phục, các hóa đơn gở bỏ sẽ được chuyển về trạng thái đã duyệt)',
           null,
           {code:'Gỡ bỏ {{value}} hóa đơn đã chọn',value:{value:this.selectedItems.length}},
@@ -95,19 +95,19 @@ export class ChildInvoiceComponent extends PageBase {
 
           this.arInvoiceProvider.RollbackMergedARInvoice({ Ids: ids }).then((resp: any) => {
             if (resp == 'empty') {
-              this.env.showTranslateMessage(
+              this.env.showMessage(
                 'Không tìn thấy thông tin hóa đơn cần gở bỏ. Vui lòng kiểm tra lại.',
                 'warning',
               );
             } else if (resp == 'parent_empty') {
-              this.env.showTranslateMessage(
+              this.env.showMessage(
                 'Không tìn thấy thông tin hóa đơn gộp để thực hiện việc gỡ bỏ hóa đơn. Vui lòng kiểm tra lại.',
                 'warning',
               );
             } else if (resp == '') {
-              this.env.showTranslateMessage('Đã gỡ bỏ hóa đơn thành công!', 'success');
+              this.env.showMessage('Đã gỡ bỏ hóa đơn thành công!', 'success');
             } else {
-              this.env.showTranslateMessage(resp + 'Xin vui lòng thông báo với quản trị viên!', 'danger');
+              this.env.showMessage(resp + 'Xin vui lòng thông báo với quản trị viên!', 'danger');
             }
 
             this.submitAttempt = false;

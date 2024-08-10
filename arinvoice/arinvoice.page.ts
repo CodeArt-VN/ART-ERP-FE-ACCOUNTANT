@@ -99,7 +99,7 @@ export class ARInvoicePage extends PageBase {
 
     let itemsCanNotProcess = this.selectedItems.filter((i) => !(i.Status == 'ARInvoicePending'));
     if (itemsCanNotProcess.length == this.selectedItems.length) {
-      this.env.showTranslateMessage(
+      this.env.showMessage(
         'Your selected order cannot be approved. Please only select pending for approval order',
         'warning',
       );
@@ -149,7 +149,7 @@ export class ARInvoicePage extends PageBase {
                           Code: publishEventCode,
                         });
                       }
-                      this.env.showTranslateMessage('Saving completed!', 'success');
+                      this.env.showMessage('Saving completed!', 'success');
                       this.submitAttempt = false;
                     })
                     .catch((err) => {
@@ -176,7 +176,7 @@ export class ARInvoicePage extends PageBase {
       (i) => !(i.Status == 'ARInvoicePending' || i.Status == 'ARInvoiceApproved'),
     );
     if (itemsCanNotProcess.length == this.selectedItems.length) {
-      this.env.showTranslateMessage(
+      this.env.showMessage(
         'Your selected invoices cannot be disaaproved. Please select approved or pending for approval invoice',
         'warning',
       );
@@ -228,7 +228,7 @@ export class ARInvoicePage extends PageBase {
                           Code: publishEventCode,
                         });
                       }
-                      this.env.showTranslateMessage('Saving completed!', 'success');
+                      this.env.showMessage('Saving completed!', 'success');
                       this.submitAttempt = false;
                     })
                     .catch((err) => {
@@ -255,7 +255,7 @@ export class ARInvoicePage extends PageBase {
       (i) => i.Status == 'ARInvoiceCanceled' || i.Status == 'ARInvoiceSplited' || i.Status == 'ARInvoiceMerged',
     );
     if (itemsCanNotProcess.length == this.selectedItems.length) {
-      this.env.showTranslateMessage(
+      this.env.showMessage(
         'Your selected invoices cannot be canceled. Please select draft or pending for approval invoice',
         'warning',
       );
@@ -307,7 +307,7 @@ export class ARInvoicePage extends PageBase {
                           Code: publishEventCode,
                         });
                       }
-                      this.env.showTranslateMessage('Saving completed!', 'success');
+                      this.env.showMessage('Saving completed!', 'success');
                       this.submitAttempt = false;
                     })
                     .catch((err) => {
@@ -334,7 +334,7 @@ export class ARInvoicePage extends PageBase {
       (i) => !(i.Status == 'ARInvoiceDraft' || i.Status == 'ARInvoiceRejected' || i.Status == 'ARInvoiceNew'),
     );
     if (itemsCanNotProcess.length == this.selectedItems.length) {
-      this.env.showTranslateMessage(
+      this.env.showMessage(
         'Your selected invoices cannot be approved. Please select new or draft or disapproved ones',
         'warning',
       );
@@ -386,7 +386,7 @@ export class ARInvoicePage extends PageBase {
                           Code: publishEventCode,
                         });
                       }
-                      this.env.showTranslateMessage('Saving completed!', 'success');
+                      this.env.showMessage('Saving completed!', 'success');
                       this.submitAttempt = false;
                     })
                     .catch((err) => {
@@ -414,7 +414,7 @@ export class ARInvoicePage extends PageBase {
         i.Status == 'EInvoiceWaitForSign',
     );
     if (itemsCanNotDelete.length == this.selectedItems.length) {
-      this.env.showTranslateMessage(
+      this.env.showMessage(
         'Your selected invoices cannot be deleted. Please only delete new or disapproved invoice',
         'warning',
       );
@@ -462,7 +462,7 @@ export class ARInvoicePage extends PageBase {
 
     let itemsCanNotProcess = this.selectedItems.filter((i) => i.Status != 'ARInvoiceApproved');
     if (itemsCanNotProcess.length == this.selectedItems.length) {
-      this.env.showTranslateMessage('Cannot generate e-invoice. Please only select approved order', 'warning');
+      this.env.showMessage('Cannot generate e-invoice. Please only select approved order', 'warning');
     } else {
       itemsCanNotProcess.forEach((i) => {
         i.checked = false;
@@ -477,28 +477,28 @@ export class ARInvoicePage extends PageBase {
 
     this.selectedItems = this.selectedItems.filter((i) => i.Status == 'EInvoiceNew');
     if (!this.selectedItems.length) {
-      this.env.showTranslateMessage('Vui lòng chọn hóa đơn cần cập nhật dữ liệu');
+      this.env.showMessage('Vui lòng chọn hóa đơn cần cập nhật dữ liệu');
       return;
     }
     this.submitAttempt = true;
 
     this.env
-      .showLoading2(
-        'Vui lòng chờ cập nhật hóa đơn...',
+      .showLoading(
+        'Please wait for a few moments',
         this.EInvoiceService.UpdateEInvoice(this.selectedItems.map((i) => i.Id)).toPromise(),
       )
       .then((resp: any) => {
         this.submitAttempt = false;
-        this.env.showTranslateMessage('Đã cập nhật hóa đơn điện tử thành công!', 'success');
+        this.env.showMessage('Đã cập nhật hóa đơn điện tử thành công!', 'success');
         this.refresh();
       })
       .catch((err) => {
         if (err?.error?.ExceptionMessage) {
-          this.env.showTranslateMessage(err.error.ExceptionMessage, 'danger');
+          this.env.showMessage(err.error.ExceptionMessage, 'danger');
         } else if (err.message) {
-          this.env.showTranslateMessage(err.message, 'danger');
+          this.env.showMessage(err.message, 'danger');
         } else {
-          this.env.showTranslateMessage('Có lỗi khi cập nhật, xin vui lòng thử lại sau', 'danger');
+          this.env.showMessage('Có lỗi khi cập nhật, xin vui lòng thử lại sau', 'danger');
         }
 
         this.submitAttempt = false;
@@ -509,14 +509,14 @@ export class ARInvoicePage extends PageBase {
     if (this.submitAttempt) return;
     this.selectedItems = this.selectedItems.filter((i) => i.Status == 'EInvoiceNew');
     if (!this.selectedItems.length) {
-      this.env.showTranslateMessage('Vui lòng chọn hóa đơn cần ký');
+      this.env.showMessage('Vui lòng chọn hóa đơn cần ký');
       return;
     }
     this.submitAttempt = true;
 
     this.env
-      .showLoading2(
-        'Vui lòng chờ ký số hóa đơn...',
+      .showLoading(
+        'Please wait for a few moments',
         this.EInvoiceService.SignEInvoice(this.selectedItems.map((i) => i.Id)).toPromise(),
       )
       .then((resp: any) => {
@@ -534,14 +534,14 @@ export class ARInvoicePage extends PageBase {
 
     this.selectedItems = this.selectedItems.filter((i) => i.Status == 'EInvoiceNew');
     if (!this.selectedItems.length) {
-      this.env.showTranslateMessage('Vui lòng chọn hóa đơn cần đồng bộ dữ liệu');
+      this.env.showMessage('Vui lòng chọn hóa đơn cần đồng bộ dữ liệu');
       return;
     }
     this.submitAttempt = true;
 
     this.env
-      .showLoading2(
-        'Vui lòng chờ đồng bộ hóa đơn...',
+      .showLoading(
+        'Please wait for a few moments',
         this.EInvoiceService.SyncEInvoice(this.selectedItems.map((i) => i.Id)).toPromise(),
       )
       .then((resp: any) => {
@@ -594,17 +594,17 @@ export class ARInvoicePage extends PageBase {
                           message += '<br> #' + e.PartnerInvoiceID + ' lỗi: ' + e.MessLog;
                         }
                       if (message != '') {
-                        this.env.showAlert2(message,{code:'Có {{value}} hóa đơn lỗi, vui lòng kiểm tra lại ghi chú của các hóa đơn không được duyệt.',value:errors.length},'Xuất hóa đơn',
+                        this.env.showAlert(message,{code:'Có {{value}} hóa đơn lỗi, vui lòng kiểm tra lại ghi chú của các hóa đơn không được duyệt.',value:errors.length},'Xuất hóa đơn',
                         );
                         this.refresh();
                       } else {
-                        this.env.showTranslateMessage('Đã xuất hóa đơn điện tử!', 'success');
+                        this.env.showMessage('Đã xuất hóa đơn điện tử!', 'success');
                         this.submitAttempt = false;
                         this.refresh();
                       }
                     })
                     .catch((err: any) => {
-                      this.env.showTranslateMessage(
+                      this.env.showMessage(
                         'Không xuất hóa đơn được, xin vui lòng kiểm tra lại! \n' + err?.error?.ExceptionMessage,
                         'danger',
                       );
@@ -634,7 +634,7 @@ export class ARInvoicePage extends PageBase {
         Status == 'ARInvoiceMerged'
       )
     ) {
-      this.env.showTranslateMessage(
+      this.env.showMessage(
         'Your selected order cannot be split. Please choose draft, new, pending for approval or disaaproved order',
         'warning',
       );
@@ -666,7 +666,7 @@ export class ARInvoicePage extends PageBase {
         i.Status == 'ARInvoiceMerged',
     );
     if (itemsCanNotProcess.length == this.selectedItems.length) {
-      this.env.showTranslateMessage(
+      this.env.showMessage(
         'Your selected invoices cannot be combined. Please select new or disapproved invoice',
         'warning',
       );

@@ -87,7 +87,7 @@ export class IncomingPaymentDetailPage extends PageBase {
     return new Promise((resolve, reject) => {
       this.formGroup.updateValueAndValidity();
       if (!form.valid) {
-        this.env.showTranslateMessage('Please recheck information highlighted in red above', 'warning');
+        this.env.showMessage('Please recheck information highlighted in red above', 'warning');
       } else if (this.submitAttempt == false) {
         this.submitAttempt = true;
         let submitItem = this.getDirtyValues(form);
@@ -104,7 +104,7 @@ export class IncomingPaymentDetailPage extends PageBase {
             if (publishEventCode) this.env.publishEvent({ Code: publishEventCode });
           })
           .catch((err) => {
-            this.env.showTranslateMessage('Cannot save, please try again', 'danger');
+            this.env.showMessage('Cannot save, please try again', 'danger');
             this.cdr.detectChanges();
             this.submitAttempt = false;
             reject(err);
@@ -444,7 +444,7 @@ export class IncomingPaymentDetailPage extends PageBase {
     let groups = <FormArray>this.formGroup.controls.IncomingPaymentDetails;
     let id = groups.controls[index].value.Id;
     if (id != 0) {
-      this.env.showPrompt2('Bạn có chắc muốn xóa không?', null, 'Xóa 1 dòng').then((_) => {
+      this.env.showPrompt('Bạn có chắc muốn xóa không?', null, 'Xóa 1 dòng').then((_) => {
         this.formGroup.get('DeletedFields').setValue([id]);
         this.formGroup.get('DeletedFields').markAsDirty();
         this.saveChange();
@@ -457,7 +457,7 @@ export class IncomingPaymentDetailPage extends PageBase {
   IDCustomerChange() {
     if (this.item.Id != 0) {
       this.env
-        .showPrompt2('Khi thay đổi đổi khách hàng sẽ xóa toàn bộ hóa đơn trước đó', null, 'Bạn có muốn thay đổi không?')
+        .showPrompt('Khi thay đổi đổi khách hàng sẽ xóa toàn bộ hóa đơn trước đó', null, 'Bạn có muốn thay đổi không?')
         .then((_) => {
           this.saveChange();
         })

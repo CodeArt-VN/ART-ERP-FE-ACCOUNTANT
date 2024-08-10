@@ -583,7 +583,7 @@ export class ARInvoiceDetailPage_ extends PageBase {
 
     let itemsCanNotProcess = this.selectedItems.filter((i) => !(i.Status == 'ARInvoiceApproved'));
     if (itemsCanNotProcess.length == this.selectedItems.length) {
-      this.env.showTranslateMessage('Cannot generate e-invoice. Please only select approved order', 'warning');
+      this.env.showMessage('Cannot generate e-invoice. Please only select approved order', 'warning');
     } else {
       itemsCanNotProcess.forEach((i) => {
         i.checked = false;
@@ -616,10 +616,10 @@ export class ARInvoiceDetailPage_ extends PageBase {
                       var json = JSON.parse(resp);
 
                       if (json[0].MessLog != '') {
-                        this.env.showTranslateMessage(json[0].MessLog, 'warning');
+                        this.env.showMessage(json[0].MessLog, 'warning');
                         this.submitAttempt = false;
                       } else {
-                        this.env.showTranslateMessage('Successfully generated e-invoice!', 'success');
+                        this.env.showMessage('Successfully generated e-invoice!', 'success');
                         this.submitAttempt = false;
                       }
                     })
@@ -644,7 +644,7 @@ export class ARInvoiceDetailPage_ extends PageBase {
 
     let itemsCanNotProcess = this.selectedItems.filter((i) => !(i.Status == 'ARInvoiceApproved'));
     if (itemsCanNotProcess.length == this.selectedItems.length) {
-      this.env.showTranslateMessage('Cannot generate e-invoice. Please only select approved order', 'warning');
+      this.env.showMessage('Cannot generate e-invoice. Please only select approved order', 'warning');
     } else {
       itemsCanNotProcess.forEach((i) => {
         i.checked = false;
@@ -672,7 +672,7 @@ export class ARInvoiceDetailPage_ extends PageBase {
                   this.submitAttempt = true;
 
                   this.EInvoiceService.CreateAndSignEInvoice(this.id, this.item.IDBranch).then((resp: any) => {
-                    this.env.showTranslateMessage('Successfully generated and sign e-invoice!', 'success');
+                    this.env.showMessage('Successfully generated and sign e-invoice!', 'success');
                     this.submitAttempt = false;
                   });
                 }
@@ -1041,19 +1041,19 @@ export class ARInvoiceDetailPage_ extends PageBase {
                   Ids: ids,
                 }).then((resp: any) => {
                   if (resp == 'empty') {
-                    this.env.showTranslateMessage(
+                    this.env.showMessage(
                       'Không tìn thấy thông tin hóa đơn cần gở bỏ. Vui lòng kiểm tra lại.',
                       'warning',
                     );
                   } else if (resp == 'parent_empty') {
-                    this.env.showTranslateMessage(
+                    this.env.showMessage(
                       'Không tìn thấy thông tin hóa đơn gộp để thực hiện việc gỡ bỏ hóa đơn. Vui lòng kiểm tra lại.',
                       'warning',
                     );
                   } else if (resp == '') {
-                    this.env.showTranslateMessage('Đã gỡ bỏ hóa đơn thành công!', 'success');
+                    this.env.showMessage('Đã gỡ bỏ hóa đơn thành công!', 'success');
                   } else {
-                    this.env.showTranslateMessage(resp + 'Xin vui lòng thông báo với quản trị viên!', 'danger');
+                    this.env.showMessage(resp + 'Xin vui lòng thông báo với quản trị viên!', 'danger');
                   }
 
                   this.submitAttempt = false;
