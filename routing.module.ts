@@ -23,5 +23,7 @@ export const ACCOUNTTANTRoutes: Routes = [
    { path: 'statement-matching-criteria', loadChildren: () => import('./statement-matching-criteria/statement-matching-criteria.module').then(m => m.StatementMatchingCriteriaPageModule), canActivate: [AuthGuard] },
    { path: 'statement-matching-criteria/:id', loadChildren: () => import('./statement-matching-criteria-detail/statement-matching-criteria-detail.module').then(m => m.StatementMatchingCriteriaDetailPageModule), canActivate: [AuthGuard] },
    
+   { path: 'bank-transaction', loadChildren: () => import('./bank-transaction/bank-transaction.module').then(m => m.BankTransactionPageModule), canActivate: [AuthGuard] },
+   { path: 'bank-transaction/:id', loadChildren: () => import('./bank-transaction-detail/bank-transaction-detail.module').then(m => m.BankTransactionDetailPageModule), canActivate: [AuthGuard] },
 
 ];
