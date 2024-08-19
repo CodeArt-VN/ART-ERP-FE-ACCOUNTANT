@@ -16,7 +16,7 @@
   >
     <ion-list>
       <ion-list-header lines="full">
-        <ion-label color="dark">{{'Providers' | translate}}</ion-label>
+        <ion-label color="dark">{{'Bank accounts' | translate}}</ion-label>
       </ion-list-header>
       <ion-item [color]="!groupControl.selectedGroup? 'primary': '' " lines="full" button (click)="onGroupChange(null)">
         <!-- <ion-icon aria-hidden="true" name="layers" slot="start"></ion-icon> -->
@@ -44,7 +44,7 @@
           (ionError)="img.src = 'assets/avartar-empty.jpg'"
         ></ion-img> -->
           <ion-label [title]="g.Id">{{g.Code}}</ion-label>
-          <ion-badge color="success" slot="end">2.000.000.000</ion-badge>
+          <ion-badge color="success" slot="end">{{g.WorkingBalance | number: '1.0-0' }}</ion-badge>
         </ion-item>
       </ng-container>
     </ion-list>
