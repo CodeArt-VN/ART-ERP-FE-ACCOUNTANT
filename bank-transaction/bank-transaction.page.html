@@ -69,10 +69,12 @@
       (sort)="onSort($event)"
     >
       <datatable-column [checkbox]="true" name=""></datatable-column>
-      <datatable-column class="col-id" name="Reference number" property="ReferenceNumber"></datatable-column>
-      <datatable-column class="col-date" name="Transaction date" property="TransactionDate">
-        <ng-template let-i="row" datatable-cell-template> {{i.TransactionDate | date: 'yy-MM-dd HH:mm'}} </ng-template>
+      <datatable-column class="col-id" name="Reference number" property="ReferenceNumber">
+        <ng-template let-i="row" datatable-cell-template>
+          <a [routerLink]="['/'+pageConfig.pageName+'/'+i.Id]">{{i.ReferenceNumber}}</a>
+        </ng-template>
       </datatable-column>
+      <datatable-column class="col-date" format="yyyy-MM-dd HH:mm" name="Transaction date" property="TransactionDate"></datatable-column>
       <datatable-column class="col-name" name="Remark" property="Remark">
         <ng-template let-i="row" datatable-cell-template>
           <div *ngIf="i" [routerLink]="['/'+pageConfig.pageName+'/'+i.Id]">

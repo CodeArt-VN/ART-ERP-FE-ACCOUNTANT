@@ -2,3 +2,14 @@
 .icon-30 {
     width: 30px;
 }
+
+::ng-deep {
+    .col-id{
+        min-width: 130px !important;
+        max-width: 130px !important;
+    }
+    .col-date{
+        min-width: 140px !important;
+        max-width: 140px !important;
+    }
+}
