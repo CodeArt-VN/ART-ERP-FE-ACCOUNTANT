@@ -1,5 +1,12 @@
 <ion-header>
-  <app-toolbar [page]="this"></app-toolbar>
+  <app-toolbar [page]="this">
+    <ion-button *ngIf="ShowAssignBranchAndBP && selectedItems.length>0 && pageConfig.canEdit" title="{{'Assign branch and contact' | translate}}" color="secondary" (click)="presentPopover()">
+      <ion-icon color="success" slot="icon-only" name="layers-outline"></ion-icon>
+    </ion-button>
+    <ion-button *ngIf="pageConfig.canEdit" (click)="FindMatchingCriteria()" title="{{'Find mactching criteria' | translate}}" color="secondary">
+      <ion-icon name="sync-circle-outline"></ion-icon>
+    </ion-button>
+  </app-toolbar>
 </ion-header>
 <ion-content appScrollbarTheme class="left" [ngClass]="{withFeature: pageConfig.isShowFeature}" forceOverscroll="false">
   <ion-refresher [disabled]="!pageConfig.refresher" slot="fixed" (ionRefresh)="refresh($event)">
@@ -7,7 +14,7 @@
   </ion-refresher>
 
   <ion-fab
-    *ngIf="pageConfig.isShowFeature"
+    *ngIf="pageConfig.isShowFeature && groupControl.groupList.length>1"
     [ngClass]="{'ion-hide-md-down' : pageConfig.isSubActive}"
     class="feature no-print"
     vertical="bottom"
@@ -43,7 +50,8 @@
           [src]="'assets/logos/banks/'+g.Type+'.png'"
           (ionError)="img.src = 'assets/avartar-empty.jpg'"
         ></ion-img> -->
-          <ion-label [title]="g.Id">{{g.Code}}</ion-label>
+       <ion-label [title]="g.Id">{{g.Code}}</ion-label>
+          <ion-badge color="warning" slot="end" *ngIf="g.UnrecognizedTotal>0" >{{g.UnrecognizedTotal | number: '1.0-0' }}</ion-badge>
           <ion-badge color="success" slot="end">{{g.WorkingBalance | number: '1.0-0' }}</ion-badge>
         </ion-item>
       </ng-container>
@@ -67,6 +75,7 @@
       (dataInfinite)="loadData($event)"
       (filter)="onDatatableFilter($event)"
       (sort)="onSort($event)"
+      (activate) ="changeSelection($event)"
     >
       <datatable-column [checkbox]="true" name=""></datatable-column>
       <datatable-column class="col-id" name="Reference number" property="ReferenceNumber">
@@ -93,9 +102,54 @@
           >
         </ng-template>
       </datatable-column>
+      <datatable-column class="col-status" name="Reconciliation status" property="ReconciliationStatus">
+        <ng-template let-i="row" datatable-cell-template >
+          <ion-badge *ngIf="i._ReconciliationStatus" [color]="i._ReconciliationStatus?.Color" [title]="i._ReconciliationStatus?.Name">
+            {{i._ReconciliationStatus?.Name}}
+          </ion-badge>
+          </ng-template>
+      </datatable-column>
+      
     </app-data-table>
   </div>
-
+  <ion-popover class="w300" #popover [isOpen]="isOpenPopover" (didDismiss)="dismissPopover()">
+		<ng-template>
+		<ion-content appScrollbarTheme>
+			<ion-grid>
+			<form [formGroup]="formGroup" (submit)="dismissPopover(true)">
+				<ion-row>
+				<ion-col size="12" size-sm size-xl="12">
+          <div class="c-control">
+            <label class="c-label" for="IDBranch">{{'Branch' | translate}}
+              <span *ngIf="!formGroup.controls.IDBranch.valid && !formGroup.controls.IDBranch.pending && (formGroup.controls.IDBranch.dirty || submitAttempt)" ion-text color="danger">(*)</span>
+            </label>
+            <ng-select class="c-input"  (change)="changeIDBranch()" labelForId="IDBranch" formControlName="IDBranch" [items]="branchList" [virtualScroll]="true" bindLabel="Name" bindValue="Id" placeholder="{{'Search...' | translate}}">
+              <ng-template ng-option-tmp let-i="item" let-search="searchTerm">
+                <div *ngIf="i">
+                  <div> <span *ngFor="let l of i.levels">&nbsp;&nbsp;&nbsp;</span> <span [ngOptionHighlight]="search">{{i.Name}}</span></div>
+                </div>
+              </ng-template>
+            </ng-select>
+          </div>
+        <app-form-control
+				[form]="formGroup"
+				type="ng-select-bp"
+				label = "Contact"
+				id="IDContact"
+				[dataSource]="_contactDataSource"
+        (change)="changeBP($event)"
+				bindValue="Id"
+				bindLabel="Name"
+        [clearable]="true"
+				></app-form-control>
+				</ion-col>
+			</ion-row>
+			</form>
+		</ion-grid>
+		  </ion-content>
+		  <ion-button class="ion-margin" size="small" expand="block" (click)="dismissPopover(true)">Apply</ion-button>
+		</ng-template>
+	 </ion-popover>
   <div class="ion-padding"></div>
   <ion-infinite-scroll
     color="primary"

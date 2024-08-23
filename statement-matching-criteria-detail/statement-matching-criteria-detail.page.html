@@ -14,69 +14,31 @@
     <ion-grid fixed>
       <ion-row>
         <ion-col size="12" size-sm="12" size-md="6">
+          <app-form-control [field]="{ id: 'Name', label: 'Name', type: 'text', form: formGroup }" ></app-form-control>
+          <app-form-control [field]="{ id: 'IDParent', label: 'Belonged to', type: 'ng-select', dataSource:items, form: formGroup, bindLabel:'Name', bindValue:'Id'}" ></app-form-control>
+        
           <div class="c-control">
-            <label class="c-label" for="Name"
-              >{{'Name' | translate}}
-              <span
-                *ngIf="!formGroup.controls.Name.valid && !formGroup.controls.Name.pending && (formGroup.controls.Name.dirty || submitAttempt)"
-                ion-text
-                color="danger"
-                >(*)</span
-              >
+            <label class="c-label" for="IDBranch">{{'Branch' | translate}}
+              <span *ngIf="!formGroup.controls.IDBranch.valid && !formGroup.controls.IDBranch.pending && (formGroup.controls.IDBranch.dirty || submitAttempt)" ion-text color="danger">(*)</span>
             </label>
-            <input class="c-input" id="Name" formControlName="Name" type="text" />
+            <ng-select class="c-input"  labelForId="IDBranch" formControlName="IDBranch" [items]="branchList" [virtualScroll]="true" bindLabel="Name" bindValue="Id" placeholder="{{'Search...' | translate}}">
+              <ng-template ng-option-tmp let-i="item" let-search="searchTerm">
+                <div *ngIf="i">
+                  <div> <span *ngFor="let l of i.levels">&nbsp;&nbsp;&nbsp;</span> <span [ngOptionHighlight]="search">{{i.Name}}</span></div>
+                </div>
+              </ng-template>
+            </ng-select>
           </div>
-          <div class="c-control">
-            <label class="c-label" for="IDParent"
-              >{{'Belonged to' | translate}}
-              <span
-                *ngIf="!formGroup.controls.IDParent.valid && !formGroup.controls.IDParent.pending && (formGroup.controls.IDParent.dirty || submitAttempt)"
-                ion-text
-                color="danger"
-                >(*)</span
-              >
-            </label>
-
-            <select class="c-input c-dropdown" formControlName="IDParent">
-              <option [disabled]="t.Flag" *ngFor="let t of items" [value]="t.Id">{{t.Name}}</option>
-            </select>
-          </div>
-
-          <div class="c-control">
-            <label class="c-label" for="Sort">{{'Sort' | translate}}</label>
-            <input class="c-input" id="Sort" formControlName="Sort" type="number" />
-          </div>
+          <app-form-control [field]="{ id: 'Type', label: 'Type', type: 'text', form: formGroup }" ></app-form-control>
+          <app-form-control [field]="{ id: 'Sort', label: 'Sort', type: 'number', form: formGroup }" ></app-form-control>
+         
         </ion-col>
         <ion-col size="12" size-sm="12" size-md="6">
-          <div class="c-control">
-            <label class="c-label" for="Code">{{'Id' | translate}}</label>
-            <input [readonly]="id" class="c-input" id="Id" formControlName="Id" type="text" />
-          </div>
+          <app-form-control [field]="{ id: 'Id', label: 'Id', type: 'span-text', form: formGroup}" ></app-form-control>
 
-          <div class="c-control">
-            <label class="c-label" for="Code"
-              >{{'Code' | translate}}
-              <span
-                *ngIf="!formGroup.controls.Code.valid && !formGroup.controls.Code.pending && (formGroup.controls.Code.dirty || submitAttempt)"
-                ion-text
-                color="danger"
-                >(*)</span
-              >
-            </label>
-            <input class="c-input" id="Code" formControlName="Code" type="text" />
-          </div>
-          <div class="c-control">
-            <label class="c-label" for="Remark"
-              >{{'Description' | translate}}
-              <span
-                *ngIf="!formGroup.controls.Remark.valid && !formGroup.controls.Remark.pending && (formGroup.controls.Remark.dirty || submitAttempt)"
-                ion-text
-                color="danger"
-                >(*)</span
-              >
-            </label>
-            <textarea rows="3" class="c-input" id="Remark" formControlName="Remark" type="textarea"></textarea>
-          </div>
+          <app-form-control [field]="{ id: 'Code', label: 'Code', type: 'text', form: formGroup}" ></app-form-control>
+
+          <app-form-control [field]="{ id: 'Remark', label: 'Remark', type: 'textarea', form: formGroup }" ></app-form-control>
 
           <div class="c-control ion-text-right" *ngIf="item.Id==0">
             <label class="c-label" for=""></label>

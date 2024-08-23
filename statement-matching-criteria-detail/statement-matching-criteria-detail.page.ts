@@ -5,7 +5,7 @@ import { ActivatedRoute } from '@angular/router';
 import { EnvService } from 'src/app/services/core/env.service';
 import { FormBuilder, FormControl, Validators } from '@angular/forms';
 import { lib } from 'src/app/services/static/global-functions';
-import { BANK_StatementMatchingCriteriaProvider } from 'src/app/services/static/services.service';
+import { BANK_StatementMatchingCriteriaProvider, BRA_BranchProvider } from 'src/app/services/static/services.service';
 
 @Component({
   selector: 'app-statement-matching-criteria-detail',
@@ -13,8 +13,11 @@ import { BANK_StatementMatchingCriteriaProvider } from 'src/app/services/static/
   styleUrls: ['./statement-matching-criteria-detail.page.scss'],
 })
 export class StatementMatchingCriteriaDetailPage extends PageBase {
+  branchList;
+
   constructor(
     public pageProvider: BANK_StatementMatchingCriteriaProvider,
+    public branchProvider: BRA_BranchProvider,
     public env: EnvService,
     public navCtrl: NavController,
     public route: ActivatedRoute,
@@ -34,8 +37,10 @@ export class StatementMatchingCriteriaDetailPage extends PageBase {
     this.formGroup = formBuilder.group({
       IDParent: [''],
       Id: new FormControl({ value: '', disabled: true }),
+      IDBranch: [''],
       Code: ['', Validators.required],
       Name: ['', Validators.required],
+      Type:[''],
       Remark: [''],
       Sort: [''],
     });
@@ -55,8 +60,28 @@ export class StatementMatchingCriteriaDetailPage extends PageBase {
       this.id = this.navParams.data.id;
 
       this.removeCurrentNode();
+      
       this.cdr.detectChanges();
-      super.loadedData();
+      this.branchProvider
+      .read({ Skip: 0, Take: 5000, AllParent: true, Id: this.env.selectedBranchAndChildren })
+      .then((resp) => {
+        lib
+          .buildFlatTree(resp['data'], this.branchList)
+          .then((result: any) => {
+            this.branchList = result;
+            this.branchList.forEach((i) => {
+              if(i.Id != this.env.selectedBranch){
+                i.disabled = true;
+              }
+            });
+            this.markNestedNodeBranch(this.branchList, this.env.selectedBranch);
+            this.loadedData();
+          })
+          .catch((err) => {
+            this.env.showMessage(err);
+          });
+      });
+      
     }
   }
 
@@ -78,7 +103,12 @@ export class StatementMatchingCriteriaDetailPage extends PageBase {
       this.markNestedNode(ls, i.Id);
     });
   }
-
+  markNestedNodeBranch(ls, Id) {
+    ls.filter((d) => d.IDParent == Id).forEach((i) => {
+      if (i.Type != 'Warehouse' && i.Type != 'TitlePosition') i.disabled = false;
+      this.markNestedNodeBranch(ls, i.Id);
+    });
+  }
   async saveChange(){
     this.saveChange2()
   }

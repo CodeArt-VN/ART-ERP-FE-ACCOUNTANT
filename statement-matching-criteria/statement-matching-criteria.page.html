@@ -25,6 +25,16 @@
         ></ion-icon>
       </div>
       <div class="col-code cell">
+        {{'Type' | translate}}
+        <ion-icon *ngIf="sort.Type" [name]="sort.Type == 'Type'?'arrow-down': 'arrow-up'"></ion-icon>
+        <ion-icon
+          (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch"
+          *ngIf="query.Type"
+          name="search"
+          color="primary"
+        ></ion-icon>
+      </div>
+      <div class="col-code cell">
         {{'Code' | translate}}
         <ion-icon *ngIf="sort.Code" [name]="sort.Code == 'Code'?'arrow-down': 'arrow-up'"></ion-icon>
         <ion-icon
@@ -116,6 +126,7 @@
             ></ion-icon>
             <ion-text class="clickable" (click)="showModal(i)" [color]="i.Color">{{i.Name}}</ion-text>
           </div>
+          <div class="col-code cell">{{i.Type}}</div>
           <div class="col-code cell">{{i.Code}}</div>
           <div class="col-remark cell">{{i.Remark}}</div>
         </div>
