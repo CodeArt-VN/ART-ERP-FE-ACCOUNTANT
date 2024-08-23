@@ -46,6 +46,7 @@ export class IncomingPaymentDetailPage extends PageBase {
     this.formGroup = formBuilder.group({
       IDBranch: [this.env.selectedBranch],
       Id: new FormControl({ value: '', disabled: true }),
+      IDTransaction: new FormControl({ value: '', disabled: true }),
       Name: [''],
       Code: [''],
       DocumentDate: ['', Validators.required],

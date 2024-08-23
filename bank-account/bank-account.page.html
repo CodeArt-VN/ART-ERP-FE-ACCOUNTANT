@@ -101,7 +101,8 @@
               class="min-btn clickable"
               [name]="i.HasChild? (!i.showdetail? 'chevron-forward-outline':'chevron-down-outline') : ''"
             ></ion-icon>
-            <ion-text class="clickable" (click)="showModal(i)" [color]="i.Color">{{i.Code}}</ion-text>
+            <ion-text *ngIf="!i.IDParent" class="clickable" (click)="showModal(i)" [color]="i.Color">{{i.Name}}</ion-text>
+            <ion-text *ngIf="i.IDParent" class="clickable" (click)="showModal(i)" [color]="i.Color">{{i.Code}}</ion-text>
           </div>
           <div class="col-money cell">{{i.WorkingBalance}}</div>
         </div>

@@ -18,10 +18,7 @@
       </ion-row>
     </ion-grid>
 
-    <div
-      class="row-full shadow full-screen"
-      style="max-width: 1440px; margin: auto; width: 100%; position: relative; z-index: 0"
-    >
+    <div class="row-full shadow full-screen" style="max-width: 1440px; margin: auto; width: 100%; position: relative; z-index: 0" >
       <div class="ion-padding" *ngIf="segmentView == 's1'">
         <ion-grid fixed>
           <form [formGroup]="formGroup">
@@ -100,6 +97,19 @@
                   (change)="saveChange()"
                 >
                 </app-form-control>
+                <div class="c-control" *ngIf="item.IDTransaction">
+                  <label class="c-label">
+                    {{'Transaction' | translate }}
+                  </label>
+                  <div class="col-name">
+                    <div class="c-input">
+                      <div >
+                        <a [routerLink]="['/bank-transaction/', item.IDTransaction]">{{item.IDTransaction}}</a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+             
               </ion-col>
               <ion-col size="12" size-sm size-xl="4">
                 <app-form-control

@@ -82,7 +82,7 @@ export class IncomingPaymentInvoiceModalPage extends PageBase {
 
   changeSelection(i, e = null) {
     if (!this.canEditAmount && !i.checked) {
-      let amount =  this.amountOrder + i.DebtAmountBefore + this.selectedItems.map((x) => x.DebtAmount).reduce((a, b) => +a + +b, 0);
+      let amount =  parseFloat(this.amountOrder || 0)  +parseFloat( i.DebtAmountBefore|| 0 )+ parseFloat( this.selectedItems.map((x) => x.DebtAmount).reduce((a, b) => +a + +b, 0)|| 0);
       if (amount > this.amount) {
         i.checked = false;
         e?.preventDefault();

@@ -3,9 +3,10 @@ import { NavController, ModalController, NavParams, LoadingController, AlertCont
 import { PageBase } from 'src/app/page-base';
 import { ActivatedRoute } from '@angular/router';
 import { EnvService } from 'src/app/services/core/env.service';
-import { SALE_OrderProvider } from 'src/app/services/static/services.service';
+import { PURCHASE_OrderProvider, SALE_OrderProvider } from 'src/app/services/static/services.service';
 import { FormBuilder } from '@angular/forms';
 import { lib } from 'src/app/services/static/global-functions';
+import { CommonService } from 'src/app/services/core/common.service';
 
 @Component({
   selector: 'app-incoming-payment-sale-order-modal',
@@ -18,8 +19,10 @@ export class IncomingPaymentSaleOrderModalPage extends PageBase {
   SelectedOrderList: any;
   canEditAmount;
   amountInvoice;
+  provider : any;
   constructor(
     public pageProvider: SALE_OrderProvider,
+    public commonService: CommonService,
     public env: EnvService,
     public navCtrl: NavController,
     public route: ActivatedRoute,
@@ -39,7 +42,7 @@ export class IncomingPaymentSaleOrderModalPage extends PageBase {
     this.SelectedOrderList = this.route.snapshot.paramMap.get('SelectedOrderList');
     this.canEditAmount = this.route.snapshot.paramMap.get('canEditAmount');
     this.amountInvoice= this.route.snapshot.paramMap.get('amountInvoice');
-    console.log();
+    // this.provider = this.route.snapshot.paramMap.get('provider');
     
   }
 
@@ -47,7 +50,9 @@ export class IncomingPaymentSaleOrderModalPage extends PageBase {
     this.query.IDContact = this.IDContact;
     this.query.Debt_gt = 0;
     this.sortToggle('OrderDate', true);
-
+    // if( this.provider  == "PURCHASE") {
+    //   this.pageProvider = new PURCHASE_OrderProvider(this.commonService);
+    // }
     super.preLoadData(event);
   }
 
@@ -87,7 +92,7 @@ export class IncomingPaymentSaleOrderModalPage extends PageBase {
 
   changeSelection(i, e = null) {
     if (!this.canEditAmount && !i.checked) {
-      let amount =  this.amountInvoice + i.DebtAmountBefore + this.selectedItems.map((x) => x.DebtAmount).reduce((a, b) => +a + +b, 0);
+      let amount =  parseFloat(this.amountInvoice || 0) +parseFloat( i.DebtAmountBefore || 0)+ parseFloat(this.selectedItems.map((x) => x.DebtAmount).reduce((a, b) => +a + +b, 0) || 0);
       if (amount > this.amount) {
         i.checked = false;
         this.env.showMessage('Số tiền của hóa đơn thanh toán đã vượt số tiền thanh toán', 'danger');

@@ -19,6 +19,7 @@ import { lib } from 'src/app/services/static/global-functions';
 })
 export class BankAccountDetailPage extends PageBase {
   ChartOfAccount = [];
+  branchList;
   constructor(
     public pageProvider: BANK_AccountProvider,
     public branchProvider: BRA_BranchProvider,
@@ -79,14 +80,26 @@ export class BankAccountDetailPage extends PageBase {
           AllParent: true,
         })
         .toPromise(),
+        this.branchProvider
+        .read({ Skip: 0, Take: 5000, AllParent: true, Id: this.env.selectedBranchAndChildren })
     ]).then((values: any) => {
       if (values[0]) {
         lib.buildFlatTree(values[0], []).then((result: any) => {
           this.ChartOfAccount = result;
         });
       }
+      if(values[1]){
+        lib .buildFlatTree(values[1]['data'], this.branchList).then((result: any) => {
+          this.branchList = result;
+          this.branchList.forEach((i) => {
+            i.disabled = true;
+          });
+          this.markNestedNode(this.branchList, this.env.selectedBranch);
+        })
+      }
+      super.preLoadData(event);
+
     });
-    super.preLoadData();
   }
 
   segmentView = 's1';
@@ -96,5 +109,11 @@ export class BankAccountDetailPage extends PageBase {
 
   async saveChange() {
     super.saveChange2();
+  }
+  markNestedNode(ls, Id) {
+    ls.filter((d) => d.IDParent == Id).forEach((i) => {
+      if (i.Type != 'TitlePosition') i.disabled = false;
+      this.markNestedNode(ls, i.Id);
+    });
   }
 }
