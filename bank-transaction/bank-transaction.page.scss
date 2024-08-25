@@ -4,6 +4,9 @@
 }
 
 ::ng-deep {
+    .row{
+        padding: 16px 170px 16px 35px !important;
+    }
     .col-id{
         min-width: 130px !important;
         max-width: 130px !important;

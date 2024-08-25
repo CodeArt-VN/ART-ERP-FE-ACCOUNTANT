@@ -89,7 +89,7 @@ export class BankTransactionPage extends PageBase {
     this.selectedItems = [];
     this.statusList = [
       { Code: 'Unrecognized', Name: 'Unrecognized', Color: 'warning' },
-      { Code: 'Suggested', Name: 'Suggested entry', Color: 'secondary' },
+      { Code: 'Suggested', Name: 'Suggested entry', Color: 'danger' },
       { Code: 'RecordFound', Name: 'Record found', Color: 'success' },
     ];
     let sorted: SortConfig[] = [{ Dimension: 'Id', Order: 'DESC' }];
@@ -197,7 +197,7 @@ loadedData(event){
       this.submitAttempt = false;
     })
     .finally(() => {
-      super.loadedData(event);
+      super.loadedData();
       this.submitAttempt = false;
     });
   }
