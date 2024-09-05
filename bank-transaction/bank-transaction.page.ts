@@ -49,9 +49,9 @@ export class BankTransactionPage extends PageBase {
     this.pageConfig.isShowFeature = true;
     this.pageConfig.isFeatureAsMain = true;
     this.formGroup = this.formBuilder.group({
-      IDBranch:[''],
-      IDContact:['']
-  });
+      IDBranch: [''],
+      IDContact: [''],
+    });
   }
   _contactDataSource = {
     searchProvider: this.contactProvider,
@@ -95,7 +95,7 @@ export class BankTransactionPage extends PageBase {
     let sorted: SortConfig[] = [{ Dimension: 'Id', Order: 'DESC' }];
     this.pageConfig.sort = sorted;
     this.pageConfig.pageIcon = 'flash-outline';
-   
+
     this.providerService
       .read({ Take: 5000 })
       .then((res) => {
@@ -115,31 +115,36 @@ export class BankTransactionPage extends PageBase {
         super.preLoadData(event);
       });
   }
-loadedData(event){
+  loadedData(event) {
     super.loadedData(event);
     this.branchProvider
-    .read({ Skip: 0, Take: 5000, AllParent: true, Id: this.env.selectedBranchAndChildren })
-    .then((resp) => {
-      lib
-        .buildFlatTree(resp['data'], this.branchList)
-        .then((result: any) => {
-          this.branchList = result;
-          this.branchList.forEach((i) => {
-            i.disabled = true;
+      .read({ Skip: 0, Take: 5000, AllParent: true, Id: this.env.selectedBranchAndChildren })
+      .then((resp) => {
+        lib
+          .buildFlatTree(resp['data'], this.branchList)
+          .then((result: any) => {
+            this.branchList = result;
+            this.branchList.forEach((i) => {
+              i.disabled = true;
+            });
+            this.markNestedNode(this.branchList, this.env.selectedBranch);
+          })
+          .catch((err) => {
+            this.env.showMessage(err);
           });
-          this.markNestedNode(this.branchList, this.env.selectedBranch);
-        })
-        .catch((err) => {
-          this.env.showMessage(err);
-        });
-    });
+      });
     this.items.forEach((i) => {
       i._ReconciliationStatus = this.statusList.find((d) => d.Code == i.ReconciliationStatus);
     });
-   this._contactDataSource.initSearch();
-   this.formGroup.get('IDBranch').markAsPristine();
-
+    this._contactDataSource.initSearch();
+    this.formGroup.get('IDBranch').markAsPristine();
   }
+
+  refresh(event?: any): void {
+    this.clearData();
+    this.preLoadData(event);
+  }
+
   @ViewChild('popover') popover;
   isOpenPopover = false;
   dismissPopover(apply: boolean = false) {
@@ -149,20 +154,25 @@ loadedData(event){
       // this.form.patchValue(this._reportConfig?.DataConfig);
     } else {
       this.submitAttempt = true;
-      let obj ={Ids: this.selectedItems.map(s=>s.Id), IDBranch : this.formGroup.get('IDBranch').value, IDContact : this.formGroup.get('IDContact').value}
-      this.providerService.commonService.connect('PUT','BANK/Transaction/AssignBranchAndContact',obj).toPromise()
-      .then((res) => {
-        if(res)  this.env.showMessage('saved', 'success');
-        this.submitAttempt = false;
-
-      })
-      .catch((err) => {
-        this.env.showMessage(err, 'danger');
-        this.submitAttempt = false;
-      })
-      .finally(() => {
-        this.submitAttempt = false;
-      });
+      let obj = {
+        Ids: this.selectedItems.map((s) => s.Id),
+        IDBranch: this.formGroup.get('IDBranch').value,
+        IDContact: this.formGroup.get('IDContact').value,
+      };
+      this.providerService.commonService
+        .connect('PUT', 'BANK/Transaction/AssignBranchAndContact', obj)
+        .toPromise()
+        .then((res) => {
+          if (res) this.env.showMessage('saved', 'success');
+          this.submitAttempt = false;
+        })
+        .catch((err) => {
+          this.env.showMessage(err, 'danger');
+          this.submitAttempt = false;
+        })
+        .finally(() => {
+          this.submitAttempt = false;
+        });
     }
     this.isOpenPopover = false;
   }
@@ -171,35 +181,35 @@ loadedData(event){
   }
   ShowAssignBranchAndBP = false;
   changeSelection(i, e = null) {
-    console.log(this.formGroup)
+    console.log(this.formGroup);
     super.changeSelection(i, e);
-    this.selectedItems?.length >0 ? this.ShowAssignBranchAndBP = true :  this.ShowAssignBranchAndBP = false;
+    this.selectedItems?.length > 0 ? (this.ShowAssignBranchAndBP = true) : (this.ShowAssignBranchAndBP = false);
     this.selectedItems?.forEach((i) => {
       let notShowAssignBranchAndBP = ['RecordFound'];
-      if (notShowAssignBranchAndBP.indexOf(i.ReconciliationStatus) > -1 ) {
+      if (notShowAssignBranchAndBP.indexOf(i.ReconciliationStatus) > -1) {
         this.ShowAssignBranchAndBP = false;
       }
-  
     });
   }
 
-  FindMatchingCriteria(){
-    let obj ={Ids: []}
-    if(this.selectedItems?.length>0)obj.Ids = this.selectedItems.map(i=>i.Id);
-    this.providerService.commonService.connect('PUT','BANK/Transaction/FindMatchingCriteria',obj).toPromise()
-    .then((res) => {
-      if(res)  this.env.showMessage('saved', 'success');
-      this.submitAttempt = false;
-
-    })
-    .catch((err) => {
-      this.env.showMessage(err, 'danger');
-      this.submitAttempt = false;
-    })
-    .finally(() => {
-      super.loadedData();
-      this.submitAttempt = false;
-    });
+  FindMatchingCriteria() {
+    let obj = { Ids: [] };
+    if (this.selectedItems?.length > 0) obj.Ids = this.selectedItems.map((i) => i.Id);
+    this.providerService.commonService
+      .connect('PUT', 'BANK/Transaction/FindMatchingCriteria', obj)
+      .toPromise()
+      .then((res) => {
+        if (res) this.env.showMessage('saved', 'success');
+        this.submitAttempt = false;
+      })
+      .catch((err) => {
+        this.env.showMessage(err, 'danger');
+        this.submitAttempt = false;
+      })
+      .finally(() => {
+        super.loadedData();
+        this.submitAttempt = false;
+      });
   }
   onGroupChange(g) {
     this.pageConfig.isSubActive = true;
@@ -209,19 +219,18 @@ loadedData(event){
     } else {
       delete this.query.IDAccount;
     }
-  
+
     this.refresh();
   }
 
-  changeBP(event){
-    this._contactDataSource.selected.push({...event});
+  changeBP(event) {
+    this._contactDataSource.selected.push({ ...event });
     this.formGroup.get('IDContact').markAsPristine();
   }
-  changeIDBranch(){
+  changeIDBranch() {
     this.formGroup.get('IDBranch').markAsPristine();
-
   }
- 
+
   markNestedNode(ls, Id) {
     ls.filter((d) => d.IDParent == Id).forEach((i) => {
       if (i.Type != 'TitlePosition') i.disabled = false;
