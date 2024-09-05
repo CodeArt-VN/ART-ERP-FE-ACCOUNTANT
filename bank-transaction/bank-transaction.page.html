@@ -50,17 +50,17 @@
             <ion-label>{{g.Code}}</ion-label>
           </ion-item>
           <ion-item lines="inset" [color]="g.Id == groupControl.selectedGroup?.Id? 'primary': '' ">
-            <ion-icon color="danger" slot="start" name="list-circle" size="small"></ion-icon>
+            <ion-icon slot="start" name="radio-button-on-outline" size="small"></ion-icon>
             <ion-label>{{'Working balance' | translate}}</ion-label>
             <ion-badge color="primary">{{g.WorkingBalance | number: '1.0-0' }}</ion-badge>
           </ion-item>
           <ion-item lines="inset" [color]="g.Id == groupControl.selectedGroup?.Id? 'primary': '' ">
-            <ion-icon color="danger" slot="start" name="list-circle" size="small"></ion-icon>
+            <ion-icon slot="start" name="radio-button-on-outline" size="small"></ion-icon>
             <ion-label>{{'Transactions total' | translate}}</ion-label>
             <ion-badge color="danger">{{g._TransactionTotal | number: '1.0-0' }}</ion-badge>
           </ion-item>
           <ion-item lines="inset" [color]="g.Id == groupControl.selectedGroup?.Id? 'primary': '' ">
-            <ion-icon color="danger" slot="start" name="list-circle" size="small"></ion-icon>
+            <ion-icon slot="start" name="radio-button-on-outline" size="small"></ion-icon>
             <ion-label>{{'Unrecognized count' | translate}}</ion-label>
             <ion-badge color="warning">{{g._UnrecognizedCount | number: '1.0-0' }}</ion-badge>
           </ion-item>
