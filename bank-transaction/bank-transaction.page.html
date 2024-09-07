@@ -19,10 +19,6 @@
   </app-toolbar>
 </ion-header>
 <ion-content appScrollbarTheme class="left" [ngClass]="{withFeature: pageConfig.isShowFeature}" forceOverscroll="false">
-  <ion-refresher [disabled]="!pageConfig.refresher" slot="fixed" (ionRefresh)="refresh($event)">
-    <ion-refresher-content></ion-refresher-content>
-  </ion-refresher>
-
   <ion-fab
     *ngIf="pageConfig.isShowFeature && groupControl.groupList.length>1"
     [ngClass]="{'ion-hide-md-down' : pageConfig.isSubActive}"
@@ -46,7 +42,12 @@
         </ion-item-divider>
 
         <ng-container *ngIf="g.IDParent">
-          <ion-item lines="full" button (click)="onGroupChange(g)" [color]="g.Id == groupControl.selectedGroup?.Id? 'primary': '' ">
+          <ion-item
+            lines="full"
+            button
+            (click)="onGroupChange(g)"
+            [color]="g.Id == groupControl.selectedGroup?.Id? 'primary': '' "
+          >
             <ion-label>{{g.Code}}</ion-label>
           </ion-item>
           <ion-item lines="inset" [color]="g.Id == groupControl.selectedGroup?.Id? 'primary': '' ">
@@ -54,24 +55,25 @@
             <ion-label>{{'Working balance' | translate}}</ion-label>
             <ion-badge color="primary">{{g.WorkingBalance | number: '1.0-0' }}</ion-badge>
           </ion-item>
-          <ion-item lines="inset" [color]="g.Id == groupControl.selectedGroup?.Id? 'primary': '' ">
+          <ion-item
+            lines="inset"
+            [color]="g.Id == groupControl.selectedGroup?.Id? 'primary': '' "
+            *ngIf="g._TransactionTotal != g.WorkingBalance"
+          >
             <ion-icon slot="start" name="radio-button-on-outline" size="small"></ion-icon>
             <ion-label>{{'Transactions total' | translate}}</ion-label>
             <ion-badge color="danger">{{g._TransactionTotal | number: '1.0-0' }}</ion-badge>
           </ion-item>
-          <ion-item lines="inset" [color]="g.Id == groupControl.selectedGroup?.Id? 'primary': '' ">
+          <ion-item
+            lines="inset"
+            [color]="g.Id == groupControl.selectedGroup?.Id? 'primary': '' "
+            *ngIf="g._UnrecognizedCount > 0"
+          >
             <ion-icon slot="start" name="radio-button-on-outline" size="small"></ion-icon>
             <ion-label>{{'Unrecognized count' | translate}}</ion-label>
             <ion-badge color="warning">{{g._UnrecognizedCount | number: '1.0-0' }}</ion-badge>
           </ion-item>
         </ng-container>
-
-      
-
-        
-
-
-
       </ng-container>
     </ion-list>
   </ion-fab>
@@ -106,6 +108,7 @@
         format="yyyy-MM-dd HH:mm"
         name="Transaction date"
         property="TransactionDate"
+        filterControlType="time-frame"
       ></datatable-column>
       <datatable-column class="col-name flex-break" name="Remark" property="Remark">
         <ng-template let-i="row" datatable-cell-template>

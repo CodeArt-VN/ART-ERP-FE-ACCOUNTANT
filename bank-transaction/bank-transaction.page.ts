@@ -1,19 +1,17 @@
+import { Location } from '@angular/common';
 import { Component, ViewChild } from '@angular/core';
-import { NavController, ModalController, AlertController, LoadingController, PopoverController } from '@ionic/angular';
-import { EnvService } from 'src/app/services/core/env.service';
+import { FormBuilder } from '@angular/forms';
+import { AlertController, LoadingController, ModalController, NavController, PopoverController } from '@ionic/angular';
+import { Subject, catchError, concat, distinctUntilChanged, of, switchMap, tap } from 'rxjs';
 import { PageBase } from 'src/app/page-base';
+import { EnvService } from 'src/app/services/core/env.service';
+import { lib } from 'src/app/services/static/global-functions';
 import {
   BANK_AccountProvider,
   BANK_TransactionProvider,
   BRA_BranchProvider,
   CRM_ContactProvider,
 } from 'src/app/services/static/services.service';
-import { Location } from '@angular/common';
-import { SortConfig } from 'src/app/models/options-interface';
-import { J } from '@fullcalendar/core/internal-common';
-import { FormBuilder } from '@angular/forms';
-import { lib } from 'src/app/services/static/global-functions';
-import { Subject, catchError, concat, distinctUntilChanged, of, switchMap, tap } from 'rxjs';
 
 @Component({
   selector: 'app-bank-transaction',
@@ -86,14 +84,14 @@ export class BankTransactionPage extends PageBase {
     },
   };
   preLoadData(event?: any): void {
+    this.query.SortBy = 'TransactionDate_desc';
     this.selectedItems = [];
     this.statusList = [
       { Code: 'Unrecognized', Name: 'Unrecognized', Color: 'warning' },
       { Code: 'Suggested', Name: 'Suggested entry', Color: 'danger' },
       { Code: 'RecordFound', Name: 'Record found', Color: 'success' },
     ];
-    let sorted: SortConfig[] = [{ Dimension: 'Id', Order: 'DESC' }];
-    this.pageConfig.sort = sorted;
+    
     this.pageConfig.pageIcon = 'flash-outline';
 
     this.providerService
