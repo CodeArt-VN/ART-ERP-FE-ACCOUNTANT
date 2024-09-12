@@ -104,7 +104,7 @@
             <ion-text *ngIf="!i.IDParent" class="clickable" (click)="showModal(i)" [color]="i.Color">{{i.Name}}</ion-text>
             <ion-text *ngIf="i.IDParent" class="clickable" (click)="showModal(i)" [color]="i.Color">{{i.Code}}</ion-text>
           </div>
-          <div class="col-money bold cell"><span *ngIf="i.WorkingBalance">{{i.WorkingBalance | number: '1.0-0'}}</span></div>
+          <div class="col-money bold cell"><span *ngIf="i.IDParent">{{i.WorkingBalance | number: '1.0-0'}}</span></div>
         </div>
       </ng-container>
     </section>

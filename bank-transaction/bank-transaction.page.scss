@@ -4,6 +4,16 @@
 }
 
 ::ng-deep {
+    app-data-table.responsive.small-width .row.header.filter .cell.col-date {
+        //order: 3 !important;
+        max-width: unset !important;
+        min-width: fit-content !important;
+    }
+    .header{
+        &.row{
+            padding: 16px !important;
+        }
+    }
     .row{
         padding: 16px 170px 16px 35px !important;
     }
