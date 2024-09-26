@@ -2,23 +2,29 @@
   width: 30px;
 }
 
-ion-card.clickable.ion-color-primary {
-  //   background:
-  //     url(/assets/bg-layers.svg) 0% 0% / cover,
-  //     linear-gradient(90deg, rgb(127, 108, 248) 0%, rgb(120, 175, 249) 100%) 0% 0% / 100%;
 
-  background:
-    url(/assets/bg-layers.svg) 0% 0% / cover,
-    linear-gradient(
-        90deg,
-        rgba(var(--ion-color-secondary-rgb, 0, 0, 0), 1) -100%,
-        rgba(var(--ion-color-primary-rgb, 0, 0, 0), 1) 100%
-      )
-      0% 0% / 100%;
-}
 
 ion-item.item-label {
   --color: var(--ion-color-contrast);
+}
+
+ion-card{
+    background: var(--table-row-background);
+
+    &.ion-color-primary {
+        //   background:
+        //     url(/assets/bg-layers.svg) 0% 0% / cover,
+        //     linear-gradient(90deg, rgb(127, 108, 248) 0%, rgb(120, 175, 249) 100%) 0% 0% / 100%;
+      
+        background:
+          url(/assets/bg-layers.svg) 0% 0% / cover,
+          linear-gradient(
+              90deg,
+              rgba(var(--ion-color-light-rgb, 0, 0, 0), 0.5) -100%,
+              rgba(var(--ion-color-primary-rgb, 0, 0, 0), 1) 100%
+            )
+            0% 0% / 100%;
+      }
 }
 
 ::ng-deep {
