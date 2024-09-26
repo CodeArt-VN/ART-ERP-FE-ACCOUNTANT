@@ -141,6 +141,7 @@ export class BankTransactionPage extends PageBase {
   refresh(event?: any): void {
     this.clearData();
     this.preLoadData(event);
+    //super.refresh(event);
   }
 
   @ViewChild('popover') popover;
@@ -218,7 +219,11 @@ export class BankTransactionPage extends PageBase {
       delete this.query.IDAccount;
     }
 
-    this.refresh();
+    this.selectedItems = [];
+    if (!this.pageConfig.showSpinner) {
+      this.clearData();
+      this.loadData(null);
+    }
   }
 
   changeBP(event) {

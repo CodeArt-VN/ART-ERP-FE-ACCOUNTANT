@@ -20,6 +20,7 @@
 </ion-header>
 <ion-content appScrollbarTheme class="left" [ngClass]="{withFeature: pageConfig.isShowFeature}" forceOverscroll="false">
   <ion-fab
+    style="background: transparent"
     *ngIf="pageConfig.isShowFeature && groupControl.groupList.length>1"
     [ngClass]="{'ion-hide-md-down' : pageConfig.isSubActive}"
     class="feature no-print"
@@ -27,12 +28,51 @@
     horizontal="start"
     slot="fixed"
   >
+    <ng-container *ngFor="let g of groupControl.groupList">
+      <ion-list *ngIf="!g.IDParent">
+        <!-- <ion-item-divider *ngIf="!g.IDParent">
+          <ion-label>{{g.Name}}</ion-label>
+        </ion-item-divider> -->
 
+        <ion-list-header lines="full">
+          <ion-label color="dark">{{g.Name}}</ion-label>
+        </ion-list-header>
+      </ion-list>
+      <ion-card
+        *ngIf="g.IDParent"
+        (click)="onGroupChange(g)"
+        class="clickable"
+        [color]="g.Id == groupControl.selectedGroup?.Id? 'primary': 'light' "
+      >
+        <ion-card-header>
+          <ion-card-title title="{{'Working balance' | translate}}">
+            {{g.WorkingBalance | number: '1.0-0' }}
+            <small
+              ><small><small> {{g.Currency}} </small></small></small
+            >
+          </ion-card-title>
+          <ion-card-subtitle style="display: flex; justify-content: space-between">
+            <span title="{{'Bank account' | translate}}">{{g.Code}}</span>
+            <span title="{{'Last checked date' | translate}}">{{g.LastCheckedDate | date: 'HH:mm dd/MM'}}</span>
+          </ion-card-subtitle>
+        </ion-card-header>
 
-  
+        <ion-item lines="none" *ngIf="g._TransactionTotal != g.WorkingBalance">
+          <ion-icon slot="start" name="flash-outline" size="small"></ion-icon>
+          <ion-label>{{'Transactions' | translate}}</ion-label>
+          <ion-badge [color]="g._TransactionTotal > 0 ? 'success':'danger'"
+            >{{g._TransactionTotal | number: '1.0-0' }}</ion-badge
+          >
+        </ion-item>
+        <ion-item lines="full" *ngIf="g._UnrecognizedCount > 0">
+          <ion-icon slot="start" name="git-compare-outline" size="small"></ion-icon>
+          <ion-label>{{'Unrecognized' | translate}}</ion-label>
+          <ion-badge color="warning">{{g._UnrecognizedCount | number: '1.0-0' }}</ion-badge>
+        </ion-item>
+      </ion-card>
+    </ng-container>
 
-
-  <!-- <ion-card color="blue">
+    <!-- <ion-card color="blue">
     <ion-card-header>
       <ion-card-title>{{1000000 | number: '1.0-0' }}</ion-card-title>
       <ion-card-subtitle style="display: flex; justify-content: space-between;"> 
@@ -47,59 +87,6 @@
       <ion-note color="warning" slot="end">10:34 30/04</ion-note>
     </ion-item>
   </ion-card> -->
-
-
-
-
-    <ion-list>
-      <ion-list-header lines="full">
-        <ion-label color="dark">{{'Bank accounts' | translate}}</ion-label>
-      </ion-list-header>
-      <ion-item [color]="!groupControl.selectedGroup? 'primary': '' " lines="full" button (click)="onGroupChange(null)">
-        <!-- <ion-icon aria-hidden="true" name="layers" slot="start"></ion-icon> -->
-        <ion-label>{{'All' | translate}}</ion-label>
-      </ion-item>
-
-      <ng-container *ngFor="let g of groupControl.groupList">
-        <ion-item-divider *ngIf="!g.IDParent">
-          <ion-label>{{g.Name}}</ion-label>
-        </ion-item-divider>
-
-        <ng-container *ngIf="g.IDParent">
-          <ion-item
-            lines="none"
-            button
-            (click)="onGroupChange(g)"
-            [color]="g.Id == groupControl.selectedGroup?.Id? 'primary': '' "
-          >
-            <ion-label class="bold">{{g.Code}}</ion-label>
-          </ion-item>
-          <ion-item lines="none" [color]="g.Id == groupControl.selectedGroup?.Id? 'primary': '' ">
-            <ion-icon slot="start" name="wallet-outline" size="small"></ion-icon>
-            <ion-label>{{'Working balance' | translate}}</ion-label>
-            <ion-badge color="primary">{{g.WorkingBalance | number: '1.0-0' }}</ion-badge>
-          </ion-item>
-          <ion-item
-            lines="none"
-            [color]="g.Id == groupControl.selectedGroup?.Id? 'primary': '' "
-            *ngIf="g._TransactionTotal != g.WorkingBalance"
-          >
-            <ion-icon slot="start" name="flash-outline" size="small"></ion-icon>
-            <ion-label>{{'Transactions total' | translate}}</ion-label>
-            <ion-badge color="danger">{{g._TransactionTotal | number: '1.0-0' }}</ion-badge>
-          </ion-item>
-          <ion-item
-            lines="full"
-            [color]="g.Id == groupControl.selectedGroup?.Id? 'primary': '' "
-            *ngIf="g._UnrecognizedCount > 0"
-          >
-            <ion-icon slot="start" name="git-compare-outline" size="small"></ion-icon>
-            <ion-label>{{'Unrecognized count' | translate}}</ion-label>
-            <ion-badge color="warning">{{g._UnrecognizedCount | number: '1.0-0' }}</ion-badge>
-          </ion-item>
-        </ng-container>
-      </ng-container>
-    </ion-list>
   </ion-fab>
 
   <div style="max-width: 1440px; margin: auto; width: 100%; position: sticky; left: 0" class="ion-padding">
