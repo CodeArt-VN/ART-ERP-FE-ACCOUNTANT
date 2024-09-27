@@ -13,6 +13,9 @@ export const ACCOUNTTANTRoutes: Routes = [
 
   { path: 'incoming-payment', loadChildren: () => import('./incoming-payment/incoming-payment.module').then(m => m.IncomingPaymentPageModule), canActivate: [AuthGuard] },
   { path: 'incoming-payment/:id', loadChildren: () => import('./incoming-payment-detail/incoming-payment-detail.module').then(m => m.IncomingPaymentDetailPageModule), canActivate: [AuthGuard] },
+ 
+  { path: 'outgoing-payment', loadChildren: () => import('./outgoing-payment/outgoing-payment.module').then(m => m.OutgoingPaymentPageModule), canActivate: [AuthGuard] },
+  { path: 'outgoing-payment/:id', loadChildren: () => import('./outgoing-payment-detail/outgoing-payment-detail.module').then(m => m.OutgoingPaymentDetailPageModule), canActivate: [AuthGuard] },
 
    { path: 'bank-statement', loadChildren: () => import('./bank-statement/bank-statement.module').then(m => m.BankStatementPageModule), canActivate: [AuthGuard] },
    { path: 'bank-statement/:id', loadChildren: () => import('./bank-statement-detail/bank-statement-detail.module').then(m => m.BankStatementDetailPageModule), canActivate: [AuthGuard] },

@@ -1,0 +1,74 @@
+<ion-header>
+	<app-toolbar [page]="this"></app-toolbar>
+</ion-header>
+
+<ion-content appScrollbarTheme class="scrollx">
+	<ion-refresher [disabled]="!pageConfig.refresher" [disabled]="!pageConfig.refresher" slot="fixed" (ionRefresh)="refresh($event)">
+		<ion-refresher-content></ion-refresher-content>
+	</ion-refresher>
+	<ion-fab *ngIf="pageConfig.isShowFeature" class="feature" vertical="top" horizontal="end" slot="fixed">
+		<div class="ion-padding">
+
+		</div>
+	</ion-fab>
+	<app-data-table class="box-shadow responsive" [rows]="items" [trackBy]="'Id'" [(selectedRows)]="selectedItems" [showSpinner]="pageConfig.showSpinner" [showFilter]="pageConfig.isShowSearch" [(query)]="query" (dataInfinite)="loadData($event)" (filter)="onDatatableFilter($event)" (sort)="onSort($event)">
+		<datatable-column [checkbox]="true"></datatable-column>
+		<datatable-column class="col-id" name="Id" property="Id">
+			<ng-template let-i="row" datatable-cell-template>
+				<a [routerLink]="['/'+pageConfig.pageName+'/'+i.Id]">{{i.Id}}</a>
+			</ng-template>
+		</datatable-column>
+
+		<datatable-column class="col-date" format="yyyy-MM-dd" name="Document date" property="DocumentDate" filterControlType="date"></datatable-column>
+
+		<datatable-column class="col-code" name="Type" property="Type">
+		</datatable-column>
+
+		<datatable-column class="col-code" name="SubType" property="SubType">	
+		</datatable-column>
+
+		<datatable-column class="col-name" name="Business partner" property="_BusinessPartner">
+			<ng-template let-i="row" datatable-cell-template>
+				{{i?._BusinessPartner?.Name}}
+			</ng-template>	
+		</datatable-column>
+
+		<!-- <datatable-column class="col-name" name="Invoices" property="_ARInvoices">
+			<ng-template let-i="row" datatable-cell-template>
+				<div *ngFor="let idArInvoice of i._ARInvoices; let isLast = last">
+					<a [routerLink]="['/arinvoice/' + idArInvoice]">{{ idArInvoice }}</a><span *ngIf="!isLast">, </span>
+				</div>
+			</ng-template>
+		</datatable-column> -->
+
+		<!-- <datatable-column class="col-name" name="Sale orders" property="_SaleOrders">
+			<ng-template let-i="row" datatable-cell-template>
+				<div *ngFor="let idOrder of i._SaleOrders; let isLast = last">
+					<a [routerLink]="['/sale-order/' + idOrder]">{{ idOrder }}</a><span *ngIf="!isLast">, </span>
+				</div>
+			</ng-template>			
+		</datatable-column> -->
+
+		<datatable-column class="col-code" name="Remark" property="Remark">
+		</datatable-column>
+
+		<datatable-column class="col-number bold" format="1.0-0" name="Amount" property="Amount"></datatable-column>
+		
+		<datatable-column class="col-status" name="Status" property="Status">
+			<ng-template let-i="row" datatable-cell-template>
+				<span class="bar-holder">
+					<ng-container *ngFor="let s of statusList">
+						<ion-text *ngIf="s.Code==i.Status" class="bar-title" [color]="s.Color">{{s.Name}}</ion-text>
+					</ng-container>
+					<span class="bar" [ngClass]="{active: s.Code==i.Status}" [ngStyle]="{'background-color': 'var(--ion-color-'+s.Color+')'}" *ngFor="let s of statusList" [title]="s.Name"></span>
+				</span>
+			</ng-template>
+			
+		</datatable-column>
+
+	</app-data-table>
+
+	<ion-infinite-scroll color="primary" threshold="20%" (ionInfinite)="loadData($event)" [disabled]="!pageConfig.infiniteScroll || pageConfig.isEndOfData">
+		<ion-infinite-scroll-content loadingSpinner="dots"></ion-infinite-scroll-content>
+	</ion-infinite-scroll>
+</ion-content>
