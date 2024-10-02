@@ -87,14 +87,21 @@
                 >
                 </app-form-control>
 
-                <app-form-control
-                  [field]="{id:'Status', type : 'ng-select-status', form : formGroup,  dataSource: statusList,  bindValue: 'Code' }"
-                  (change)="saveChange()"
-                >
-                </app-form-control>
+                
+                  <div class="c-control">
+                    <label class="c-label" for="IDCustomer"
+                      >{{'Status' | translate}}
+                    </label>
+                    <div class="col-status cell">
+                      <div class="c-input" disabled>
+                        <ion-text [color]="item?._Status?.Color" [title]="item?._Status?.Name"> {{item?._Status?.Name | translate}} </ion-text>
+                      </div>
+                    </div>
+                </div>
+
                 <app-form-control
                   [field]="{id:'Amount', label: 'Amount', type : 'number', form : formGroup }" 
-                  (change)="saveChange()"
+                  (change)="changeAmount()"
                 >
                 </app-form-control>
                 <div class="c-control" *ngIf="item.IDTransaction">
@@ -144,7 +151,7 @@
             <ion-row class="hr-group">
               <ion-col size="12" size-sm="12" size-md="12" size-xl="3">
                 <ion-list-header class="ion-no-padding">
-                  <ion-label color="primary">{{'Orders' | translate}}</ion-label>
+                  <ion-label color="primary">{{'Purchase orders' | translate}}</ion-label>
                 </ion-list-header>
               </ion-col>
               <ion-col size="12" size-sm size-xl="8">
@@ -156,7 +163,7 @@
                       <div class="col-name cell">{{'Name' | translate}}</div>
                       <div class="col-number cell">{{'Amount' | translate}}</div>
                       <div class="col-remark cell">{{'Remark' | translate}}</div>
-                      <div class="col-del cell"></div>
+                      <div class="col-del cell"  *ngIf="pageConfig.canEdit"></div>
                     </header>
                   </section>
                   <section class="table table-scroll">
@@ -180,7 +187,7 @@
                         </div>
                         <div class="col-number bold cell">{{c.get('Amount').value | number: '1.0-0'}}</div>
                         <div class="col-remark cell">{{c.get('Remark').value}}</div>
-                        <div class="col-del cell" (click)="removeItem(j)">
+                        <div class="col-del cell" (click)="removeItem(j)" *ngIf="pageConfig.canEdit">
                           <ion-icon color="danger" class="min-btn" name="trash-outline"></ion-icon>
                         </div>
                       </div>
@@ -190,7 +197,8 @@
                 <div class="c-control" *ngIf="formGroup.controls.IDBusinessPartner.value">
                   <ion-button (click)="showOrderModal(i)" size="small" fill="outline">
                     <ion-icon slot="start" name="add-outline"></ion-icon>
-                    {{ 'Add order' | translate }}
+                    <ng-container *ngIf="pageConfig.canEdit">{{ 'Add order' | translate }}</ng-container>
+                    <ng-container *ngIf="!pageConfig.canEdit">{{ 'View' | translate }}</ng-container>
                   </ion-button>
                 </div>
               </ion-col>
@@ -200,7 +208,7 @@
             <ion-row class="hr-group">
               <ion-col size="12" size-sm="12" size-md="12" size-xl="3">
                 <ion-list-header class="ion-no-padding">
-                  <ion-label color="primary">Invoice</ion-label>
+                  <ion-label color="primary">{{'AP invoices' | translate}}</ion-label>
                 </ion-list-header>
               </ion-col>
               <ion-col size="12" size-sm size-xl="8">
@@ -212,7 +220,7 @@
                       <div class="col-name cell">{{'Name' | translate}}</div>
                       <div class="col-number cell">{{'Amount' | translate}}</div>
                       <div class="col-remark cell">{{'Remark' | translate}}</div>
-                      <div class="col-del cell"></div>
+                      <div class="col-del cell" *ngIf="pageConfig.canEdit"></div>
                     </header>
                   </section>
                   <section class="table table-scroll">
@@ -234,7 +242,7 @@
                         </div>
                         <div class="col-number bold cell">{{c.get('Amount').value | number: '1.0-0'}}</div>
                         <div class="col-remark cell">{{c.get('Remark').value}}</div>
-                        <div class="col-del cell" (click)="removeItem(k)">
+                        <div class="col-del cell" (click)="removeItem(k)" *ngIf="pageConfig.canEdit">
                           <ion-icon color="danger" class="min-btn" name="trash-outline"></ion-icon>
                         </div>
                       </div>
@@ -244,7 +252,8 @@
                 <div class="c-control" *ngIf="formGroup.controls.IDBusinessPartner.value">
                   <ion-button (click)="showInvoiceModal(i)" size="small" fill="outline">
                     <ion-icon slot="start" name="add-outline"></ion-icon>
-                    {{ 'Add invoice' | translate }}
+                    <ng-container *ngIf="pageConfig.canEdit">{{'Add invoice' | translate }}</ng-container>
+                    <ng-container *ngIf="!pageConfig.canEdit">{{ 'View' | translate }}</ng-container>
                   </ion-button>
                 </div>
               </ion-col>

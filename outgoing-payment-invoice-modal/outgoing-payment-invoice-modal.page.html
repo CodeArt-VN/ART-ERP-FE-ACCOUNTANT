@@ -7,20 +7,30 @@
     <ion-buttons slot="primary">
       <div class="total">
         <span>{{'Total: ' | translate}}</span>
-        <input
+        <input *ngIf="!this.canEditAmount"
+          [ngModelOptions]="{standalone: true}"
+          [(ngModel)]="total.Amount"
+          class="c-input"
+          [ngClass]="{active: total.Amount}"
+          type="number"
+          [disabled]="true"
+        />
+        <input *ngIf="this.canEditAmount"
           [ngModelOptions]="{standalone: true}"
           (change)="autoSelect()"
           [(ngModel)]="total.Amount"
           class="c-input"
           [ngClass]="{active: total.Amount}"
           type="number"
-          [disabled]="!this.canEditAmount"
+          [disabled]="this.isLockAmount"
         />
+        <ion-icon class="clickable" name="lock-closed-outline" (click)="this.isLockAmount = false"*ngIf="this.isLockAmount && this.canEdit"></ion-icon>
+        <ion-icon class="clickable" name="lock-open-outline" (click)="this.isLockAmount = true" *ngIf="!this.isLockAmount &&  this.canEdit"></ion-icon>
       </div>
       <span class="split ion-hide-sm-down">|</span>
 
       <ion-button
-        [disabled]="selectedItems.length==0"
+        [disabled]="selectedItems.length==0|| !this.canEdit"
         fill="solid"
         size="small"
         color="primary"
@@ -45,10 +55,10 @@
   <section class="table">
     <header class="bold">
       <div class="col-checkbox cell">
-        <input (change)="toggleSelectAll()" [(ngModel)]="isAllChecked" class="c-checkbox" type="checkbox" />
+        <input *ngIf="!this.isLockAmount" (change)="toggleSelectAll()" [(ngModel)]="isAllChecked" class="c-checkbox" type="checkbox" />
       </div>
       <div class="col-id cell" (click)="sortToggle('Id')">
-        #{{'Sale order' | translate}}
+        #{{'AP invoice' | translate}}
         <ion-icon class="min-btn" *ngIf="sort.Id" [name]="sort.Id == 'Id'?'arrow-down': 'arrow-up'"></ion-icon>
         <ion-icon
           class="min-btn"
@@ -59,17 +69,17 @@
         ></ion-icon>
       </div>
 
-      <div class="col-code cell" (click)="sortToggle('OrderDate')">
+      <div class="col-code cell" (click)="sortToggle('InvoiceDate')">
         {{'Daily order' | translate}}
         <ion-icon
           class="min-btn"
-          *ngIf="sort.OrderDate"
-          [name]="sort.OrderDate == 'OrderDate'?'arrow-down': 'arrow-up'"
+          *ngIf="sort.InvoiceDate"
+          [name]="sort.InvoiceDate == 'InvoiceDate'?'arrow-down': 'arrow-up'"
         ></ion-icon>
         <ion-icon
           class="min-btn"
           (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch"
-          *ngIf="query.OrderDate"
+          *ngIf="query.InvoiceDate"
           name="search"
           color="primary"
         ></ion-icon>
@@ -147,15 +157,15 @@
           <input
             (change)="refresh()"
             [ngModelOptions]="{standalone: true}"
-            [(ngModel)]="query.OrderDate"
+            [(ngModel)]="query.InvoiceDate"
             class="c-input"
-            [ngClass]="{active: query.OrderDate}"
+            [ngClass]="{active: query.InvoiceDate}"
             type="date"
           />
           <ion-icon
             class="min-btn"
-            (click)="query.OrderDate=''; refresh()"
-            *ngIf="query.OrderDate"
+            (click)="query.InvoiceDate=''; refresh()"
+            *ngIf="query.InvoiceDate"
             name="close-circle-outline"
           ></ion-icon>
         </div>
@@ -212,31 +222,33 @@
           class="c-checkbox"
           [(ngModel)]="i.checked"
           type="checkbox"
+          [disabled]="this.isLockAmount || i.isDisabled"
         />
       </div>
       <div class="col-id cell">{{i.Id}}</div>
-      <div class="col-code cell" (click)="query.OrderDate=i.Query; pageConfig.isShowSearch=true; refresh()">
-        {{i.OrderDateText}}
-        <small *ngIf="i.OrderTimeText ">{{i.OrderTimeText}}</small>
+      <div class="col-code cell" (click)="query.InvoiceDate=i.Query; pageConfig.isShowSearch=true; refresh()">
+        {{i.InvoiceDateText}}
+        <small *ngIf="i.InvoiceTimeText ">{{i.InvoiceDateTimeText}}</small>
       </div>
       <div class="col-name cell">
-        <span [ngOptionHighlight]="query.VendorName">{{i._Seller.Name}}</span>
+        <span [ngOptionHighlight]="query.VendorName">{{i._Seller?.Name}}</span>
         <small>#{{i.IDBusinessPartner}}</small>
         <small class="right">
           <ion-text color="dark">
             <span>{{i.BuyerAddress}}</span>
           </ion-text>
         </small>
+        <span  class="danger" *ngIf="i.title">{{i.title}}</span>
       </div>
       <div class="col-code cell money">
         <input
           [(ngModel)]="i.PaidAmount"
           [min]="0"
           [max]="i.OriginalDebt"
-          (change)="changeDebtAmountSelection(i, $event)"
+          (change)="changePaidAmount(i)"
           class="c-input"
           type="number"
-          [disabled]="!i.checked"
+          [disabled]="!i.checked || this.isLockAmount || i.isDisabled"
         />
       </div>
       <div class="col-code cell money">{{i.Debt}}</div>

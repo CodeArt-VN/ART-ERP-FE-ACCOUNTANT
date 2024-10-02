@@ -18,6 +18,9 @@ export class OutgoingPaymentInvoiceModalPage extends PageBase {
   amount;
   SelectedInvoiceList: any;
   canEditAmount;
+  isLockAmount = true;
+  canEdit;
+  validateAmount;
   amountOrder;
   constructor(
     public pageProvider: AC_APInvoiceProvider,
@@ -41,7 +44,8 @@ export class OutgoingPaymentInvoiceModalPage extends PageBase {
     this.query.IDOutgoingPayment = this.navParams.get('IDOutgoingPayment');
     this.SelectedInvoiceList = this.route.snapshot.paramMap.get('SelectedInvoiceList');
     this.canEditAmount = this.route.snapshot.paramMap.get('canEditAmount');
-    this.amountOrder = this.route.snapshot.paramMap.get('amountInvoice');
+    this.canEdit = this.navParams.get('canEdit');
+    this.amountOrder = this.route.snapshot.paramMap.get('amountOrder');
   }
 
   preLoadData(event) {
@@ -102,8 +106,8 @@ export class OutgoingPaymentInvoiceModalPage extends PageBase {
   loadedData(event) {
     this.selectedItems = [];
     this.items.forEach((i) => {
-      i.OrderTimeText = i.InvoiceDate ? lib.dateFormat(i.InvoiceDate, 'hh:MM') : '';
-      i.OrderDateText = i.InvoiceDate ? lib.dateFormat(i.InvoiceDate, 'dd/mm/yy') : '';
+      i.InvoiceTimeText = i.InvoiceDate ? lib.dateFormat(i.InvoiceDate, 'hh:MM') : '';
+      i.InvoiceDateText = i.InvoiceDate ? lib.dateFormat(i.InvoiceDate, 'dd/mm/yy') : '';
       i.Query = i.InvoiceDate ? lib.dateFormat(i.InvoiceDate, 'yyyy-mm-dd') : '';
       i.OriginalDebt = i._Debt;
       i.PaidAmount = '';
@@ -113,44 +117,70 @@ export class OutgoingPaymentInvoiceModalPage extends PageBase {
     super.loadedData(event);
     if (this.SelectedInvoiceList.length) {
       this.SelectedInvoiceList.forEach((s) => {
-        let so = this.items.find((i) => i.Id == s.DocumentEntry);
-        if (so) {
-          so.checked = true;
-          so.PaidAmount = s.Amount ? s.Amount : s.PaidAmount;
-          so.IDOutgoingPaymentDetail = s.Id;
-          this.selectedItems.push(so);
+        let invoice = this.items.find((i) => i.Id == s.DocumentEntry);
+        if (invoice) {
+          invoice.checked = true;
+          invoice.PaidAmount = s.Amount ? s.Amount : s.PaidAmount;
+          invoice.IDOutgoingPaymentDetail = s.Id;
+          this.selectedItems.push(invoice);
+        }
+        else {
+          s.isDisabled = true;
+          s.title = 'This invoice has been paid!'
+          s.checked = false;
+          s.PaidAmount = 0;
+          this.items.unshift(s);
+
         }
       });
     } else {
       this.autoSelect();
     }
+    if(!this.canEdit) this.canEditAmount = false;
+    // canEditAmount false will lock all 
+    // canEditAmount true and canEdit true  can edit
+    
   }
 
   changeSelection(i, e = null) {
-    let validAmount = this.amount - this.selectedItems.reduce((sum, item) => sum + (item.PaidAmount || 0), 0);
-    if (!this.canEditAmount && !i.checked) {
-      //let amount =  parseFloat(this.amountOrder || 0)  +parseFloat( i.OriginalDebt|| 0 )+ parseFloat( this.selectedItems.map((x) => x.PaidAmount).reduce((a, b) => +a + +b, 0)|| 0);
-      if (!(validAmount > 0)) {
-        i.checked = false;
-        e?.preventDefault();
-        this.env.showMessage('Số tiền thanh toán khả dụng không đủ', 'danger');
-        return;
+    let validAmount = parseFloat(this.amount) - parseFloat(this.selectedItems.reduce((sum, item) => sum + (item.PaidAmount || 0), 0));
+    if(!this.canEditAmount){
+      if (!i.checked) {
+        //let amount =  parseFloat(this.amountOrder || 0)  +parseFloat( i.OriginalDebt|| 0 )+ parseFloat( this.selectedItems.map((x) => x.PaidAmount).reduce((a, b) => +a + +b, 0)|| 0);
+        if (!(validAmount > 0)) {
+          i.checked = false;
+          e?.preventDefault();
+          this.env.showMessage('Số tiền thanh toán khả dụng không đủ', 'danger');
+          return;
+        }
       }
     }
-
     super.changeSelection(i, e);
     if (i.checked) {
       i.checked = false;
       i.PaidAmount = '';
     } else {
       i.checked = true;
-      if(validAmount > i.OriginalDebt) i.PaidAmount = i.OriginalDebt;
-      else i.PaidAmount = validAmount;
+      if(validAmount > 0 && !this.canEditAmount){
+        i.PaidAmount = validAmount;
+        if(i.PaidAmount >i.OriginalDebt) i.PaidAmount = i.OriginalDebt
+      }
+      else i.PaidAmount = i.OriginalDebt;
     }
     this.autoCalculateTotalAmount();
   }
 
   SaveSelectedOrders() {
+    if(this.canEditAmount && parseFloat(this.total.Amount)  > parseFloat(this.selectedItems.reduce((sum, item) => sum + (item.PaidAmount || 0), 0))){
+      this.env
+      .showPrompt('Số tiền thanh toán lớn hơn tổng tiền các hóa đơn', null, 'Không thể lưu','Adjusted', 'Close')
+      .then((_) => {
+
+      }).catch(err=>{
+        this.modalController.dismiss(null);
+      });
+    }
+   
     this.selectedItems.forEach((i) => {
       (i.IDInvoice = i.Id),
         (i.Id = 0),
@@ -161,28 +191,55 @@ export class OutgoingPaymentInvoiceModalPage extends PageBase {
     });
     this.selectedItems.Amount = this.total.Amount;
     this.modalController.dismiss(this.selectedItems);
+   
   }
 
   isAllChecked = false;
   toggleSelectAll() {
     let total = 0;
-    this.items.forEach((i) => {
-      i.checked = this.isAllChecked;
-      if (i.checked) {
-        total += i.OriginalDebt;
-        this.total.Amount = total;
-        i.PaidAmount = i.OriginalDebt;
+    if(!this.canEditAmount){
+      if(this.isAllChecked){
+        total = parseFloat(this.selectedItems.reduce((sum, item) => sum + (item.PaidAmount || 0), 0))
+        let validAmount = this.amount - total;
+        if(validAmount  >0) {
+          this.items.filter(s=> !this.selectedItems.includes(s.Id) && !s.isDisabled).forEach((i)=>{
+            if(validAmount  >0) {
+            if(validAmount >= i.OriginalDebt ) i.PaidAmount = i.OriginalDebt;
+            else i.PaidAmount = validAmount;
+            validAmount -= i.PaidAmount;
+            i.checked=true;
+            super.changeSelection(i);
+            }
+          })
+        }
       } else {
-        i.PaidAmount = '';
-        this.total.Amount = 0;
-      }
-    });
-    this.selectedItems = this.isAllChecked ? [...this.items] : [];
+        this.items.forEach((i)=>{
+          i.checked=false;
+        })
+        this.selectedItems = [];
+    }
+    }
+    else{
+      this.items.filter(d=> !d.isDisabled).forEach((i) => {
+        i.checked = this.isAllChecked;
+        if (i.checked) {
+          total += i.OriginalDebt;
+          this.total.Amount = total;
+          i.PaidAmount = i.OriginalDebt;
+        } else {
+          i.PaidAmount = '';
+          this.total.Amount = 0;
+        }
+      });
+      this.selectedItems = this.isAllChecked ? [...this.items] : [];
+    }    
+   
     super.changeSelection({});
   }
 
   autoSelect() {
     let totalDebt = this.total.Amount;
+    this.selectedItems = [];
     this.items.forEach((i) => {
       if(totalDebt > 0){
         i.checked = true;
@@ -194,12 +251,23 @@ export class OutgoingPaymentInvoiceModalPage extends PageBase {
         }
         totalDebt = totalDebt - i.PaidAmount;
       }
+      else i.checked = false;
     });
     this.selectedItems = this.items.filter((d) => d.checked);
   }
 
-  changeDebtAmountSelection(i, e = null) {
-    if (i.PaidAmount <= 0 || i.PaidAmount >= i.OriginalDebt || i.PaidAmount == null) {
+  changePaidAmount(i, e = null) {
+    if (!this.canEditAmount) {
+      let validAmount = parseFloat(this.amount) - parseFloat(this.selectedItems.filter(a=> a.Id != i.Id).reduce((sum, item) => sum + (item.PaidAmount || 0), 0));
+      if(validAmount >0 ){
+        if( i.PaidAmount >= validAmount ){
+          i.PaidAmount = validAmount;
+          if(i.PaidAmount >i.OriginalDebt) i.PaidAmount = i.OriginalDebt
+        }
+      }else   i.PaidAmount ='';
+      return;
+    }
+    else if (i.PaidAmount <= 0 || i.PaidAmount >= i.OriginalDebt || i.PaidAmount == null) {
       i.PaidAmount = i.OriginalDebt;
     } 
     this.autoCalculateTotalAmount();

@@ -1,5 +1,5 @@
 <ion-header>
-	<app-toolbar [page]="this"></app-toolbar>
+	<app-toolbar [page]="this" [ShowApprove]="pageConfig.ShowApprove" [ShowDisapprove]="pageConfig.ShowDisapprove" [ShowCancel]="pageConfig.ShowCancel" [ShowSubmit]="pageConfig.ShowSubmit"></app-toolbar>
 </ion-header>
 
 <ion-content appScrollbarTheme class="scrollx">
@@ -11,7 +11,13 @@
 
 		</div>
 	</ion-fab>
-	<app-data-table class="box-shadow responsive" [rows]="items" [trackBy]="'Id'" [(selectedRows)]="selectedItems" [showSpinner]="pageConfig.showSpinner" [showFilter]="pageConfig.isShowSearch" [(query)]="query" (dataInfinite)="loadData($event)" (filter)="onDatatableFilter($event)" (sort)="onSort($event)">
+	<app-data-table class="box-shadow responsive"
+	 [rows]="items" [trackBy]="'Id'" 
+	 [(selectedRows)]="selectedItems" 
+	 [showSpinner]="pageConfig.showSpinner" 
+	 [showFilter]="pageConfig.isShowSearch" 
+	 (activate)="changeSelection($event)"
+	 [(query)]="query" (dataInfinite)="loadData($event)" (filter)="onDatatableFilter($event)" (sort)="onSort($event)">
 		<datatable-column [checkbox]="true"></datatable-column>
 		<datatable-column class="col-id" name="Id" property="Id">
 			<ng-template let-i="row" datatable-cell-template>

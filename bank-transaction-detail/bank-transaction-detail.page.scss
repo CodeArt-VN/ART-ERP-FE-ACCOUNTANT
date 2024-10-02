@@ -10,3 +10,6 @@
   white-space: pre-wrap;
   overflow-wrap: break-word;
 }
+app-data-table .row, .table .row{
+  padding : 0 !important;
+}
