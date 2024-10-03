@@ -19,7 +19,6 @@ export class OutgoingPaymentPurchaseOrderModalPage extends PageBase {
   SelectedOrderList: any;
   canEditAmount;
   canEdit;
-  amountInvoice;
   isLockAmount = true;
   constructor(
     public pageProvider: PURCHASE_OrderProvider,
@@ -43,7 +42,6 @@ export class OutgoingPaymentPurchaseOrderModalPage extends PageBase {
     this.canEdit = this.navParams.get('canEdit');
     this.query.IDOutgoingPayment = this.navParams.get('IDOutgoingPayment');
     this.canEditAmount = this.navParams.get('canEditAmount');
-    this.amountInvoice= this.navParams.get('amountInvoice');
   }
 
   preLoadData(event) {

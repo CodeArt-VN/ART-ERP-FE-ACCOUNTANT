@@ -166,8 +166,9 @@ export class OutgoingPaymentDetailPage extends PageBase {
   async showOrderModal() {
     this.outgoingPaymentOrderDetails = [...this.formGroup.controls.OutgoingPaymentDetails.value];
     this.formGroup.controls.OutgoingPaymentDetails?.value?.forEach(s=> s.IDOrder = s.DocumentEntry);
-    this.SelectedOrderList = this.formGroup.controls.OutgoingPaymentDetails?.value.filter(d=>d.DocumentType == 'Order');
-    let amountOrder =  this.SelectedOrderList.reduce((sum, item) => sum + (item.Amount || 0), 0)
+    this.SelectedInvoiceList = this.formGroup.controls.OutgoingPaymentDetails?.value.filter(d=> d.DocumentType=='Invoice');
+    this.SelectedOrderList = this.formGroup.controls.OutgoingPaymentDetails?.value.filter(d=> d.DocumentType=='Order');
+    let amountOrder = this.formGroup.get('Amount').value - parseFloat(this.SelectedInvoiceList.reduce((sum, item) => sum + (item.Amount || 0), 0)) 
     const modal = await this.modalController.create({
       component: OutgoingPaymentPurchaseOrderModalPage,
       componentProps: {
@@ -178,7 +179,6 @@ export class OutgoingPaymentDetailPage extends PageBase {
         IDOutgoingPayment: this.formGroup.controls.Id.value,
         SelectedOrderList: this.SelectedOrderList,
         canEditAmount: true,
-        amountInvoice: this.amountInvoice
       },
       cssClass: 'modal90',
     });
@@ -236,7 +236,8 @@ export class OutgoingPaymentDetailPage extends PageBase {
     this.outgoingPaymentOrderDetails = [...this.formGroup.controls.OutgoingPaymentDetails.value];
     this.formGroup.controls.OutgoingPaymentDetails?.value?.forEach(s=> s.IDOrder = s.DocumentEntry);
     this.SelectedInvoiceList = this.formGroup.controls.OutgoingPaymentDetails?.value.filter(d=> d.DocumentType=='Invoice');
-    let amountInvoice =  this.SelectedInvoiceList.reduce((sum, item) => sum + (item.Amount || 0), 0)
+    this.SelectedOrderList = this.formGroup.controls.OutgoingPaymentDetails?.value.filter(d=> d.DocumentType=='Order');
+    let amountInvoice = this.formGroup.get('Amount').value - parseFloat(this.SelectedOrderList.reduce((sum, item) => sum + (item.Amount || 0), 0)) 
     const modal = await this.modalController.create({
       component: OutgoingPaymentInvoiceModalPage,
       componentProps: {
@@ -247,7 +248,6 @@ export class OutgoingPaymentDetailPage extends PageBase {
         amount: amountInvoice,
         canEditAmount: true,
         SelectedInvoiceList: this.SelectedInvoiceList,
-        amountOrder: this.amountOrder
       },
       cssClass: 'modal90',
     });
