@@ -53,8 +53,44 @@
 
                 <app-form-control [field]="{id:'IDBusinessPartner',label:'Contact', type : 'ng-select-bp', form : formGroup,  dataSource: _contactDataSource, bindLabel:'Name',  bindValue: 'Id' }" (change)="changeBP($event)">
                 </app-form-control>
+                <!-- <app-form-control [field]="{id:'IDAccount',label:'Account', type : 'ng-select-level', form : formGroup,  dataSource: accountList, bindLabel:'Code',  bindValue: 'Id' }" (change)="changeBP($event)">
+                </app-form-control> -->
+                <div class="c-control">
+                  <label class="c-label">
+                    {{'Account' | translate }}
+                  </label>
+                <ng-select
+                  class="c-input"
+                  formControlName="IDAccount"
+                  labelForId="IDAccount"
+                  [items]="accountList"
+                  bindValue="Id"
+                  bindLabel="Code"
+                  clearable="true"
+                  (change)="saveChange()"
+                  appendTo="#ng-select-holder"
+                >
+                <ng-template ng-label-tmp let-i="item">
+                  {{ i.Name | translate }} | {{i.Code}}
+                
+                
+                 
+                    <!-- {{ i.Name | translate }}<small color="primary"><ion-text>{{ i.Code }}</ion-text></small>  -->
+                </ng-template>
+                <ng-template ng-option-tmp let-i="item" let-search="searchTerm">
+                  <div *ngIf="i">
+                    <div>
+                      <span *ngFor="let l of i.levels">&nbsp;&nbsp;&nbsp;</span>
+                      <ion-text [ngOptionHighlight]="search">{{ i.Code }} - 
+                       {{i.Name }}
+                     </ion-text>
+                    </div>
+                  </div>
+                </ng-template>
 
-                <app-form-control [field]="{id:'TransactionStatus', type : 'ng-select-status', form : formGroup,  dataSource: statusList, bindLabel:'Name',  bindValue: 'Code' }" (change)="changeTransactionStatus()">
+                </ng-select>
+                </div>
+                <app-form-control [field]="{id:'TransactionStatus', type : 'ng-select-status', form : formGroup,  dataSource: statusList, bindLabel:'Name',  bindValue: 'Code', clearable:true }" (change)="changeTransactionStatus()">
                 </app-form-control>
                 <app-form-control [field]="{id:'Amount', label: 'Amount', type : 'number', form : formGroup }" (change)="saveChange()">
                 </app-form-control>
@@ -74,6 +110,7 @@
 
                 <app-form-control [field]="{id:'TransactionDate', label: 'Transaction date', type : 'datetime-local', form : formGroup }" (change)="saveChange()">
                 </app-form-control>
+                <app-form-control [field]="{id:'Remark', type : 'textarea', label: 'Remark', form : formGroup }" (change)="saveChange()"></app-form-control>
                 <div class="c-control" *ngIf="item.PaymentIds?.length >0">
                   <label class="c-label">
                     {{'Payment list' | translate }}
@@ -86,13 +123,15 @@
                     </div>
                   </div>
                 </div>
+
               </ion-col>
             </ion-row>
             <!-- Sale order list -->
             <ion-row class="hr-group" *ngIf="formGroup.get('TransactionStatus').value == 'Success' ">
               <ion-col size="12" size-sm="12" size-md="12" size-xl="3">
                 <ion-list-header class="ion-no-padding">
-                  <ion-label color="primary">{{'Orders' | translate}}</ion-label>
+                  <ion-label color="primary" *ngIf="formGroup.get('Amount').value >=0">{{'Sale orders' | translate}}</ion-label>
+                  <ion-label color="primary" *ngIf="formGroup.get('Amount').value <0">{{'Purchase orders' | translate}}</ion-label>
                 </ion-list-header>
               </ion-col>
               <ion-col size="12" size-sm size-xl="8">
@@ -129,10 +168,14 @@
                     </ng-container>
                   </section>
                 </div>
-                <div class="c-control" *ngIf="pageConfig.canEdit && formGroup.controls.IDBusinessPartner.value && canDeletePaymentDetail && formGroup.controls.Amount.value>0">
-                  <ion-button (click)="showOrderModal(i)" size="small" fill="outline">
+                <div class="c-control" *ngIf="pageConfig.canEdit && formGroup.controls.IDBusinessPartner.value && canDeletePaymentDetail">
+                  <ion-button *ngIf="formGroup.controls.Amount.value>=0" (click)="showSaleOrderModal(i)" size="small" fill="outline">
                     <ion-icon slot="start" name="add-outline"></ion-icon>
-                    {{ 'Add order' | translate }}
+                    <ion-label color="primary" >{{ 'Add sale orders' | translate }}</ion-label>
+                  </ion-button>
+                  <ion-button *ngIf="formGroup.controls.Amount.value<0" (click)="showPurchaseOrderModal(i)" size="small" fill="outline">
+                    <ion-icon slot="start" name="add-outline"></ion-icon>
+                    <ion-label color="primary" >{{ 'Add purchase orders' | translate }}</ion-label>
                   </ion-button>
                 </div>
               </ion-col>
@@ -141,7 +184,8 @@
             <ion-row class="hr-group"*ngIf="formGroup.get('TransactionStatus').value == 'Success'">
               <ion-col size="12" size-sm="12" size-md="12" size-xl="3">
                 <ion-list-header class="ion-no-padding">
-                  <ion-label color="primary">Invoice</ion-label>
+                  <ion-label color="primary" *ngIf="formGroup.get('Amount').value >=0">{{'AR invoices' | translate}}</ion-label>
+                  <ion-label color="primary" *ngIf="formGroup.get('Amount').value <0">{{'AP invoices' | translate}}</ion-label>
                 </ion-list-header>
               </ion-col>
               <ion-col size="12" size-sm size-xl="8">
@@ -178,11 +222,16 @@
                     </ng-container>
                   </section>
                 </div>
-                <div class="c-control" *ngIf="pageConfig.canEdit && formGroup.controls.IDBusinessPartner.value && canDeletePaymentDetail && formGroup.controls.Amount.value>0">
-                  <ion-button (click)="showInvoiceModal(i)" size="small" fill="outline">
+                <div class="c-control" *ngIf="pageConfig.canEdit && formGroup.controls.IDBusinessPartner.value && canDeletePaymentDetail">
+                  <ion-button (click)="showARInvoiceModal(i)" *ngIf="formGroup.controls.Amount.value>=0" size="small" fill="outline">
                     <ion-icon slot="start" name="add-outline"></ion-icon>
-                    {{ 'Add invoice' | translate }}
+                    <span>{{ 'Add AR invoices' | translate }}</span>
                   </ion-button>
+                  <ion-button (click)="showAPInvoiceModal(i)" *ngIf="formGroup.controls.Amount.value<0" size="small" fill="outline">
+                    <ion-icon slot="start" name="add-outline"></ion-icon>
+                    <span>{{ 'Add AP invoices' | translate }}</span>
+                  </ion-button>
+
                 </div>
               </ion-col>
             </ion-row>
@@ -200,7 +249,6 @@
               </ion-col>
               <ion-col size="12" size-sm size-xl="4">
                 <app-form-control [field]="{id:'IDBranch', type : 'branch-breadcrumbs', label: 'Branch', form : formGroup, dataSource:env.branchList }"></app-form-control>
-                <app-form-control [field]="{id:'Remark', type : 'textarea', label: 'Remark', form : formGroup }" (change)="saveChange()"></app-form-control>
               </ion-col>
             </ion-row>
           </form>

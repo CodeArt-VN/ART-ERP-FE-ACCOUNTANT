@@ -460,6 +460,8 @@ export class IncomingPaymentDetailPage extends PageBase {
       this.env
         .showPrompt('Khi thay đổi đổi khách hàng sẽ xóa toàn bộ hóa đơn trước đó', null, 'Bạn có muốn thay đổi không?')
         .then((_) => {
+          this.formGroup.get('DeletedFields').setValue([this.formGroup.controls.IncomingPaymentDetails['Controls'].value.map(s=>s.Id)]);
+          this.formGroup.get('DeletedFields').markAsDirty();
           this.saveChange();
         })
         .catch((_) => {

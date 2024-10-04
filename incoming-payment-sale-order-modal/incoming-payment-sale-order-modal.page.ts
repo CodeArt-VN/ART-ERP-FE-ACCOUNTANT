@@ -76,7 +76,7 @@ export class IncomingPaymentSaleOrderModalPage extends PageBase {
     super.loadedData(event);
     if (this.SelectedOrderList.length) {
       this.SelectedOrderList.forEach((s) => {
-        let so = this.items.find((i) => i.Id == s.IDSaleOrder);
+        let so = this.items.find((i) => i.Id == (s.IDSaleOrder||s.IDOrder));
         if (so) {
           so.checked = true;
           so.DebtAmount = s.Amount ? s.Amount : s.DebtAmount;
@@ -116,6 +116,7 @@ export class IncomingPaymentSaleOrderModalPage extends PageBase {
   SaveSelectedOrders() {
     this.selectedItems.forEach((i) => {
       (i.IDSaleOrder = i.Id),
+      (i.IDOrder = i.Id),
         (i.Id = 0),
         (i.IDCustomer = i._Customer.Id),
         (i.IDIncomingPaymentDetail = i.IDIncomingPaymentDetail),
@@ -137,9 +138,9 @@ export class IncomingPaymentSaleOrderModalPage extends PageBase {
         i.DebtAmount = i.DebtAmountBefore;
       } else {
         i.DebtAmount = '';
-        this.total.Amount = 0;
       }
     });
+    if(this.canEditAmount) this.total.Amount = 0;
     this.selectedItems = this.isAllChecked ? [...this.items] : [];
     super.changeSelection({});
   }
