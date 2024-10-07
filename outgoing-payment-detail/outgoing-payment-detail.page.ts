@@ -162,9 +162,9 @@ export class OutgoingPaymentDetailPage extends PageBase {
 
   outgoingPaymentDetails: any;
   async showOrderModal() {
-    this.outgoingPaymentDetails = [...this.formGroup.controls.OutgoingPaymentDetails.value.filter(d=> d.DocumentType=='Order')];
+    this.outgoingPaymentDetails = [...this.formGroup.controls.OutgoingPaymentDetails.value];
     this.outgoingPaymentDetails?.forEach(s=> s.IDOrder = s.DocumentEntry);
-    this.SelectedOrderList = [...this.outgoingPaymentDetails]
+    this.SelectedOrderList = [...this.outgoingPaymentDetails.filter(d=> d.DocumentType=='Order')]
     let amountOrder = this.formGroup.get('Amount').value - this.amountInvoice;
    //  let amountOrder = this.formGroup.get('Amount').value - this.amountInvoice; 
     const modal = await this.modalController.create({
@@ -192,6 +192,7 @@ export class OutgoingPaymentDetailPage extends PageBase {
         e.DocumentEntry = e.IDOrder;
         e.DocumentType = 'Order';
         this.SelectedOrderList.push(e);
+        
         if (!this.outgoingPaymentDetails.some((item) =>item.DocumentType == 'Order' && item.DocumentEntry == e.DocumentEntry)) {
           this.addField(e, true);
         } else {
@@ -235,8 +236,6 @@ export class OutgoingPaymentDetailPage extends PageBase {
     this.outgoingPaymentDetails = [...this.formGroup.controls.OutgoingPaymentDetails.value];
     this.outgoingPaymentDetails?.value?.forEach(s=> s.IDOrder = s.DocumentEntry);
     this.SelectedInvoiceList = this.outgoingPaymentDetails?.filter(d=> d.DocumentType=='Invoice');
-    this.SelectedOrderList = this.outgoingPaymentDetails?.filter(d=> d.DocumentType=='Order');
-   // let amountInvoice = this.formGroup.get('Amount').value - parseFloat(this.SelectedOrderList.reduce((sum, item) => sum + (item.Amount || 0), 0)) 
    let amountInvoice = this.formGroup.get('Amount').value - this.amountOrder;
     const modal = await this.modalController.create({
       component: OutgoingPaymentInvoiceModalPage,

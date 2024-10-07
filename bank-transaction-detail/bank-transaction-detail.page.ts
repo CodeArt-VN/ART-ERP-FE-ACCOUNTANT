@@ -442,9 +442,9 @@ export class BankTransactionDetailPage extends PageBase {
     }
   }
   async showPurchaseOrderModal() {
-    this.paymentDetails = [...this.formGroup.controls.PaymentDetails.value.filter(d=>d.IDOrder)];
+    this.paymentDetails = [...this.formGroup.controls.PaymentDetails.value];
     this.paymentDetails.forEach(s=> s.DocumentEntry = s.IDOrder);
-    this.SelectedOrderList =[...this.paymentDetails];
+    this.SelectedOrderList =[...this.paymentDetails.filter(d=>d.IDOrder)];
     // let amountInvoice = parseFloat(this.formGroup.controls.PaymentDetails.value.filter(d=>d.IDInvoice).reduce((sum,i)=>{
     //   return sum += (i.Amount||0);
     // },0))
@@ -505,9 +505,9 @@ export class BankTransactionDetailPage extends PageBase {
     }
   }
   async showAPInvoiceModal() {
-    this.paymentDetails = [...this.formGroup.controls.PaymentDetails.value.filter(d=> d.IDInvoice)];
+    this.paymentDetails = [...this.formGroup.controls.PaymentDetails.value];
     this.paymentDetails.forEach(s=> s.DocumentEntry = s.IDInvoice);
-    this.SelectedInvoiceList = [...this.paymentDetails];
+    this.SelectedInvoiceList = [...this.paymentDetails.filter(d=> d.IDInvoice)];
     let amountInvoice = -this.formGroup.controls.Amount.value - this.amountOrder;
     const modal = await this.modalController.create({
       component: OutgoingPaymentInvoiceModalPage,
@@ -590,6 +590,8 @@ export class BankTransactionDetailPage extends PageBase {
     );
     if (index != -1) {
       this.paymentDetails[index].Amount = updatedField.Amount;
+      const group = <FormArray>this.formGroup.controls.PaymentDetails;
+      group.at(index).get('Amount').setValue(updatedField.Amount);
       // const group = <FormArray>this.formGroup.controls.PaymentDetails;
       // group.at(index).get('Amount').setValue(updatedField.Amount);
       // group.at(index).get('IDIncomingPayment').markAsDirty();
