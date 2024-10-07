@@ -97,7 +97,6 @@ export class OutgoingPaymentPage extends PageBase {
         try{
           let messageObj = JSON.parse(err.error?.Message);
           if(messageObj && messageObj.Message1 && messageObj.Message2){
-            this.env.showMessage({code:  messageObj.Message2+ '{{value}}'}, 'danger')
             this.env.showPrompt(
               { code:  messageObj.Message2+ '{{value}}', value:messageObj.DocumentEntry.toString()  },
               null,
@@ -120,10 +119,24 @@ export class OutgoingPaymentPage extends PageBase {
         this.env.showMessage('Saved', 'success');
         this.refresh();
       }).catch(err=>{
-        this.env.showMessage(err.error?.Message?? err, 'danger');
-        console.log(err);
+        if(err.error?.Message){
+          try{
+            let messageObj = JSON.parse(err.error?.Message);
+            if(messageObj && messageObj.Message1 && messageObj.Message2){
+              this.env.showPrompt(
+                { code:  messageObj.Message2+ '{{value}}', value:messageObj.DocumentEntry.toString()  },
+                null,
+                { code: messageObj.Message1+ '{{value}}', value: messageObj.payments.join() },
+              )
+            }
+            else this.env.showMessage(err.error?.Message?? err, 'danger')
+          
+          }catch(e) { this.env.showMessage(err.error?.Message?? err, 'danger')} ;
+         
+        }
+        else    this.env.showMessage(err, 'danger');
       });
-  }
+    }
 
   disapprove(){
     if(!this.pageConfig.canApprove) return;
@@ -133,8 +146,22 @@ export class OutgoingPaymentPage extends PageBase {
       this.env.showMessage('Saved', 'success');
       this.refresh();
     }).catch(err=>{
-      this.env.showMessage(err.error?.Message?? err, 'danger');
-      console.log(err);
+      if(err.error?.Message){
+        try{
+          let messageObj = JSON.parse(err.error?.Message);
+          if(messageObj && messageObj.Message1 && messageObj.Message2){
+            this.env.showPrompt(
+              { code:  messageObj.Message2+ '{{value}}', value:messageObj.DocumentEntry.toString()  },
+              null,
+              { code: messageObj.Message1+ '{{value}}', value: messageObj.payments.join() },
+            )
+          }
+          else this.env.showMessage(err.error?.Message?? err, 'danger')
+        
+        }catch(e) { this.env.showMessage(err.error?.Message?? err, 'danger')} ;
+       
+      }
+      else    this.env.showMessage(err, 'danger');
     });
   }
   cancel(){
@@ -145,8 +172,22 @@ export class OutgoingPaymentPage extends PageBase {
       this.env.showMessage('Saved', 'success');
       this.refresh();
     }).catch(err=>{
-      this.env.showMessage(err.error?.Message?? err, 'danger');
-      console.log(err);
+      if(err.error?.Message){
+        try{
+          let messageObj = JSON.parse(err.error?.Message);
+          if(messageObj && messageObj.Message1 && messageObj.Message2){
+            this.env.showPrompt(
+              { code:  messageObj.Message2+ '{{value}}', value:messageObj.DocumentEntry.toString()  },
+              null,
+              { code: messageObj.Message1+ '{{value}}', value: messageObj.payments.join() },
+            )
+          }
+          else this.env.showMessage(err.error?.Message?? err, 'danger')
+        
+        }catch(e) { this.env.showMessage(err.error?.Message?? err, 'danger')} ;
+       
+      }
+      else    this.env.showMessage(err, 'danger');
     });
   }
 }
