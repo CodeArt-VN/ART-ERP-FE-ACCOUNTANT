@@ -661,8 +661,8 @@ export class BankTransactionDetailPage extends PageBase {
   calcDifferenceAmount(){
     this.amountOrder =  parseFloat( this.formGroup.get('PaymentDetails').value.filter(d=>d.IDOrder).reduce((sum, item) => sum + (item.Amount || 0), 0));
     this.amountInvoice = parseFloat( this.formGroup.get('PaymentDetails').value.filter(d=>d.IDInvoice).reduce((sum, item) => sum + (item.Amount || 0), 0)) ;
-    this.orderPaymentCount =this.formGroup.get('PaymentDetails').value.filter(d=>d.IDOrder) ;
-    this.invoicePaymentCount = this.formGroup.get('PaymentDetails').value.filter(d=>d.IDInvoice);
+    this.orderPaymentCount =this.formGroup.get('PaymentDetails').value.filter(d=>d.IDOrder).length ;
+    this.invoicePaymentCount = this.formGroup.get('PaymentDetails').value.filter(d=>d.IDInvoice).length;
     this.differenceAmount = Math.abs(this.formGroup.get('Amount').value) - (this.amountOrder + this.amountInvoice);
   }
 }

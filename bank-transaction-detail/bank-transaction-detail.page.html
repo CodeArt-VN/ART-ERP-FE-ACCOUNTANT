@@ -168,6 +168,14 @@
                         </div>
                       </div>
                     </ng-container>
+                    <div class="row" *ngIf="orderPaymentCount > 1">
+                      <div class="col-id cell"></div>
+                      <div class="col-id cell"></div>
+                      <div class="col-name bold cell">{{'Total :' |translate}}</div>
+                      <div class="col-number bold cell">{{amountOrder | number: '1.0-0'}}</div>
+                      <div class="col-remark cell"></div>
+                      <div class="col-del cell" *ngIf="canDeletePaymentDetail" ></div>
+                    </div>
                   </section>
                 </div>
                 <div class="c-control" *ngIf="pageConfig.canEdit && formGroup.controls.IDBusinessPartner.value && canDeletePaymentDetail">
@@ -223,6 +231,14 @@
                         </div>
                       </div>
                     </ng-container>
+                    <div class="row" *ngIf="invoicePaymentCount > 1">
+                      <div class="col-id cell"></div>
+                      <div class="col-id cell"></div>
+                      <div class="col-name bold cell">{{'Total :' |translate}}</div>
+                      <div class="col-number bold cell">{{amountInvoice | number: '1.0-0'}}</div>
+                      <div class="col-remark cell"></div>
+                      <div class="col-del cell" ></div>
+                    </div>
                   </section>
                 </div>
                 <div class="c-control" *ngIf="pageConfig.canEdit && formGroup.controls.IDBusinessPartner.value && canDeletePaymentDetail">
