@@ -88,45 +88,64 @@ export class OutgoingPaymentPage extends PageBase {
   submit(){
     if(!this.pageConfig.canSubmit) return;
      let ids= this.selectedItems.map(i => i.Id);
-    this.pageProvider.commonService.connect('POST','BANK/OutgoingPayment/Submit',ids).toPromise().then(rs=>{
+     this.env.showLoading('Please wait for a few moments',
+    this.pageProvider.commonService.connect('POST','BANK/OutgoingPayment/Submit',ids).toPromise()).then(rs=>{
       this.env.showMessage('Saved', 'success');
       this.refresh();
     }).catch(err=>{
-      this.env.showMessage(err.error?.ExceptionMessage?? err, 'danger');
-      console.log(err);
+      if(err.error?.Message){
+        try{
+          let messageObj = JSON.parse(err.error?.Message);
+          if(messageObj && messageObj.Message1 && messageObj.Message2){
+            this.env.showMessage({code:  messageObj.Message2+ '{{value}}'}, 'danger')
+            this.env.showPrompt(
+              { code:  messageObj.Message2+ '{{value}}', value:messageObj.DocumentEntry.toString()  },
+              null,
+              { code: messageObj.Message1+ '{{value}}', value: messageObj.payments.join() },
+            )
+          }
+          else this.env.showMessage(err.error?.Message?? err, 'danger')
+        
+        }catch(e) { this.env.showMessage(err.error?.Message?? err, 'danger')} ;
+       
+      }
+      else    this.env.showMessage(err, 'danger');
     });
   }
   approve(){
-    if(!this.pageConfig.canSubmit) return;
+    if(!this.pageConfig.canApprove) return;
      let ids= this.selectedItems.map(i => i.Id);
-    this.pageProvider.commonService.connect('POST','BANK/OutgoingPayment/approve',ids).toPromise().then(rs=>{
+     this.env.showLoading('Please wait for a few moments',
+    this.pageProvider.commonService.connect('POST','BANK/OutgoingPayment/approve',ids).toPromise()).then(rs=>{
         this.env.showMessage('Saved', 'success');
         this.refresh();
       }).catch(err=>{
-        this.env.showMessage(err.error?.ExceptionMessage?? err, 'danger');
+        this.env.showMessage(err.error?.Message?? err, 'danger');
         console.log(err);
       });
   }
 
   disapprove(){
-    if(!this.pageConfig.canCancel) return;
+    if(!this.pageConfig.canApprove) return;
      let ids= this.selectedItems.map(i => i.Id);
-    this.pageProvider.commonService.connect('POST','BANK/OutgoingPayment/disapprove',ids).toPromise().then(rs=>{
+     this.env.showLoading('Please wait for a few moments',
+    this.pageProvider.commonService.connect('POST','BANK/OutgoingPayment/disapprove',ids).toPromise()).then(rs=>{
       this.env.showMessage('Saved', 'success');
       this.refresh();
     }).catch(err=>{
-      this.env.showMessage(err.error?.ExceptionMessage?? err, 'danger');
+      this.env.showMessage(err.error?.Message?? err, 'danger');
       console.log(err);
     });
   }
   cancel(){
     if(!this.pageConfig.canCancel) return;
      let ids= this.selectedItems.map(i => i.Id);
-    this.pageProvider.commonService.connect('POST','BANK/OutgoingPayment/Cancel',ids).toPromise().then(rs=>{
+     this.env.showLoading('Please wait for a few moments',
+    this.pageProvider.commonService.connect('POST','BANK/OutgoingPayment/Cancel',ids).toPromise()).then(rs=>{
       this.env.showMessage('Saved', 'success');
       this.refresh();
     }).catch(err=>{
-      this.env.showMessage(err.error?.ExceptionMessage?? err, 'danger');
+      this.env.showMessage(err.error?.Message?? err, 'danger');
       console.log(err);
     });
   }

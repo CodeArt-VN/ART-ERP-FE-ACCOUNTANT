@@ -25,20 +25,20 @@
             <ion-row class="hr-group">
               <ion-col size="12" size-sm="12" size-md="12" size-xl="3">
                 <ion-list-header class="ion-no-padding">
-                  <ion-label color="primary">{{'Customer' | translate}}</ion-label>
+                  <ion-label color="primary">{{'Business partner' | translate}}</ion-label>
                 </ion-list-header>
               </ion-col>
               <ion-col size="12" size-sm size-xl="8">
                 <div class="c-control">
-                  <label class="c-label" for="IDCustomer"
-                    >{{'Customer' | translate}}
+                  <label class="c-label" for="IDBusinessPartner"
+                    >{{'Business partner' | translate}}
                     <small>#{{item.IDCustomer}}</small>
                   </label>
                   <ng-select
                     class="c-input"
                     (change)="IDCustomerChange()"
                     #IDCustomer
-                    labelForId="IDCustomer"
+                    labelForId="IDBusinessPartner"
                     formControlName="IDBusinessPartner"
                     [items]="_contactDataSource.items$ | async"
                     [typeahead]="_contactDataSource.input$"
@@ -89,7 +89,7 @@
 
                 
                   <div class="c-control">
-                    <label class="c-label" for="IDCustomer"
+                    <label class="c-label" for="Status"
                       >{{'Status' | translate}}
                     </label>
                     <div class="col-status cell">
@@ -103,6 +103,7 @@
                   [field]="{id:'Amount', label: 'Amount', type : 'number', form : formGroup }" 
                   (change)="changeAmount()"
                 >
+                <small label class="danger" *ngIf="differenceAmount>0">{{'Difference: ' | translate}}{{differenceAmount}} </small>
                 </app-form-control>
                 <div class="c-control" *ngIf="item.IDTransaction">
                   <label class="c-label">
@@ -131,17 +132,17 @@
 
                 <app-form-control
                   [field]="{id:'DocumentDate', label: 'Document date', type : 'datetime-local', form : formGroup }"
-                  (change)="saveChange()"
+                  (change)="changeDate($event)"
                 >
                 </app-form-control>
                 <app-form-control
                   [field]="{id:'PostingDate', label: 'Posting date', type : 'datetime-local', form : formGroup }"
-                  (change)="saveChange()"
+                  (change)="changeDate($event)"
                 >
                 </app-form-control>
                 <app-form-control
                   [field]="{id:'DueDate', label: 'Due date', type : 'datetime-local', form : formGroup }"
-                  (change)="saveChange()"
+                  (change)="changeDate($event)"
                 >
                 </app-form-control>
               </ion-col>
@@ -192,6 +193,14 @@
                         </div>
                       </div>
                     </ng-container>
+                    <div class="row" *ngIf="orderPaymentCount > 1">
+                      <div class="col-id cell"></div>
+                      <div class="col-id cell"></div>
+                      <div class="col-name bold cell">{{'Total :' |translate}}</div>
+                      <div class="col-number bold cell">{{amountOrder | number: '1.0-0'}}</div>
+                      <div class="col-remark cell"></div>
+                      <div class="col-del cell" ></div>
+                    </div>
                   </section>
                 </div>
                 <div class="c-control" *ngIf="formGroup.controls.IDBusinessPartner.value">
@@ -224,8 +233,8 @@
                     </header>
                   </section>
                   <section class="table table-scroll">
-                    <ng-container *ngFor="let c of formGroup.get('OutgoingPaymentDetails')['controls'] ;let k = index">
-                      <div *ngIf="c.get('DocumentEntry').value > 0 && c.get('DocumentType').value == 'Invoice'" class="row" [ngClass]="{odd: k % 2 != 0}">
+                    <ng-container *ngFor="let c of formGroup.get('OutgoingPaymentDetails')['controls'] ;let odd;let k = index;">
+                      <div *ngIf="c.get('DocumentEntry').value > 0 && c.get('DocumentType').value == 'Invoice'" class="row"  [ngClass]="{odd: k % 2 != 0}">
                         <div class="col-id cell">{{k+1}}</div>
                         <div class="col-id cell">
                           <a [routerLink]="['/apinvoice/'+ c.get('DocumentEntry').value]" [title]="c.get('DocumentEntry').value"
@@ -246,7 +255,17 @@
                           <ion-icon color="danger" class="min-btn" name="trash-outline"></ion-icon>
                         </div>
                       </div>
+                  
                     </ng-container>
+                    <div class="row" *ngIf="invoicePaymentCount > 1">
+                      <div class="col-id cell"></div>
+                      <div class="col-id cell"></div>
+                      <div class="col-name bold cell">{{'Total :' |translate}}</div>
+                      <div class="col-number bold cell">{{amountInvoice | number: '1.0-0'}}</div>
+                      <div class="col-remark cell"></div>
+                      <div class="col-del cell" ></div>
+                    </div>
+
                   </section>
                 </div>
                 <div class="c-control" *ngIf="formGroup.controls.IDBusinessPartner.value">
