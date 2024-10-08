@@ -93,6 +93,7 @@
                 <app-form-control [field]="{id:'TransactionStatus', type : 'ng-select-status', form : formGroup,  dataSource: statusList, bindLabel:'Name',  bindValue: 'Code', clearable:true }" (change)="changeTransactionStatus()">
                 </app-form-control>
                 <app-form-control [field]="{id:'Amount', label: 'Amount', type : 'number', form : formGroup }" (change)="saveChange()">
+                  <small label class="danger" *ngIf="differenceAmount!=0">{{'Difference: ' | translate}}{{differenceAmount}} </small>
                 </app-form-control>
 
                 <app-form-control [field]="{id:'Currency', label: 'Currency', type : 'text', form : formGroup }" (change)="saveChange()">
@@ -151,7 +152,8 @@
                       <div *ngIf="c.get('IDOrder').value > 0" class="row" [ngClass]="{odd: j % 2 != 0}">
                         <div class="col-id cell">{{j+1}}</div>
                         <div class="col-id cell">
-                          <a [routerLink]="['/sale-order/'+ c.get('IDOrder').value]" [title]="c.get('IDOrder').value">{{c.get('IDOrder').value}}</a>
+                          <a *ngIf="formGroup.get('Amount').value >=0" [routerLink]="['/sale-order/'+ c.get('IDOrder').value]" [title]="c.get('IDOrder').value">{{c.get('IDOrder').value}}</a>
+                          <a  *ngIf="formGroup.get('Amount').value <0" [routerLink]="['/purchase-order/'+ c.get('IDOrder').value]" [title]="c.get('IDOrder').value">{{c.get('IDOrder').value}}</a>
                         </div>
                         <div class="col-name cell">
                           <div>
@@ -166,6 +168,14 @@
                         </div>
                       </div>
                     </ng-container>
+                    <div class="row" *ngIf="orderPaymentCount > 1">
+                      <div class="col-id cell"></div>
+                      <div class="col-id cell"></div>
+                      <div class="col-name bold cell">{{'Total :' |translate}}</div>
+                      <div class="col-number bold cell">{{amountOrder | number: '1.0-0'}}</div>
+                      <div class="col-remark cell"></div>
+                      <div class="col-del cell" *ngIf="canDeletePaymentDetail" ></div>
+                    </div>
                   </section>
                 </div>
                 <div class="c-control" *ngIf="pageConfig.canEdit && formGroup.controls.IDBusinessPartner.value && canDeletePaymentDetail">
@@ -205,7 +215,8 @@
                       <div *ngIf="c.get('IDInvoice').value > 0" class="row" [ngClass]="{odd: k % 2 != 0}">
                         <div class="col-id cell">{{k+1}}</div>
                         <div class="col-id cell">
-                          <a [routerLink]="['/arinvoice/'+ c.get('IDInvoice').value]" [title]="c.get('IDInvoice').value">{{c.get('IDInvoice').value}}</a>
+                          <a  *ngIf="formGroup.get('Amount').value >= 0"[routerLink]="['/arinvoice/'+ c.get('IDInvoice').value]" [title]="c.get('IDInvoice').value">{{c.get('IDInvoice').value}}</a>
+                          <a  *ngIf="formGroup.get('Amount').value < 0"[routerLink]="['/ap-invoice/'+ c.get('IDInvoice').value]" [title]="c.get('IDInvoice').value">{{c.get('IDInvoice').value}}</a>
                         </div>
                         <div class="col-name cell">
                           <div>
@@ -220,6 +231,14 @@
                         </div>
                       </div>
                     </ng-container>
+                    <div class="row" *ngIf="invoicePaymentCount > 1">
+                      <div class="col-id cell"></div>
+                      <div class="col-id cell"></div>
+                      <div class="col-name bold cell">{{'Total :' |translate}}</div>
+                      <div class="col-number bold cell">{{amountInvoice | number: '1.0-0'}}</div>
+                      <div class="col-remark cell"></div>
+                      <div class="col-del cell" ></div>
+                    </div>
                   </section>
                 </div>
                 <div class="c-control" *ngIf="pageConfig.canEdit && formGroup.controls.IDBusinessPartner.value && canDeletePaymentDetail">

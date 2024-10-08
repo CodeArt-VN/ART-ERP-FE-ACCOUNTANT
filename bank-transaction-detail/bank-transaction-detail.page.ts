@@ -26,6 +26,10 @@ export class BankTransactionDetailPage extends PageBase {
   SelectedOrderList: any;
   SelectedInvoiceList: any;
   canDeletePaymentDetail = false;
+  defaultBusinessPartner;
+  invoicePaymentCount = 0;
+  orderPaymentCount = 0;
+  differenceAmount = 0;
   constructor(
     public pageProvider: BANK_TransactionProvider,
     public incomingPaymentProvider: BANK_IncomingPaymentProvider,
@@ -146,13 +150,12 @@ export class BankTransactionDetailPage extends PageBase {
     super.loadedData(event);
     let groups = <FormArray>this.formGroup.controls.PaymentDetails;
     groups.clear();
+    groups.valueChanges.subscribe(value => {
+      this.invoicePaymentCount = groups.value.filter(d=> d.Invoice).length;
+      this.orderPaymentCount = groups.value.filter(d=> d.IDOrder).length;
+      this.calcDifferenceAmount();
+    });
     this.item.PaymentDetails?.forEach((i) => {
-      if (i.IDOrder && i.IDInvoice == null) {
-        this.amountOrder += i.Amount;
-      }
-      if (i.IDInvoice) {
-        this.amountInvoice += i.Amount;
-      }
       this.addField(i);
     });
     if(this.formGroup.get('TransactionStatus').value == 'Success') {
@@ -172,14 +175,6 @@ export class BankTransactionDetailPage extends PageBase {
         this.formGroup.get('PaymentDetails').disable();
         this.canDeletePaymentDetail = false;
     }
-    this.formGroup.get('Amount').valueChanges.subscribe(value => {
-      if (value < 0) {
-        this.item.PaymentType = 'OutgoingPayment';
-      }
-      else   this.item.PaymentType =  'IncomingPayment';
-      console.log( this.item.PaymentType);
-    });
-
   }
   // #endregion
 
@@ -203,8 +198,6 @@ export class BankTransactionDetailPage extends PageBase {
       this.env.showPrompt('Thay đổi Contact sẽ mất thông tin đơn hàng và hoá đơn, bạn có muốn tiếp tục', null, 'Thay đổi').then((_) => {
         groups.clear();
         this.formGroup.get('_IDBusinessPartner').setValue(this.formGroup.get('IDBusinessPartner').value)
-        this.amountOrder = 0;
-        this.amountInvoice = 0;
         this.saveChange();
         if(this.item.PaymentIds?.some(i=> i>0)){
           let itemsDelete = this.item.PaymentIds.filter(i=> i>0).map(item =>({Id:item}))
@@ -238,7 +231,7 @@ export class BankTransactionDetailPage extends PageBase {
       return sum += (i.Amount||0);
     },0));
     if(this.formGroup.get('Amount').value<0 && total != Math.abs(this.formGroup.get('Amount').value)){
-      this.env.showMessage('Amount of transaction and total amount of payment details not match!', 'danger');
+      this.env.showMessage('Amount of transaction and total amount of payment details are not match!', 'danger');
       return;
     }
     if(this.formGroup.controls.Amount.value > 0){
@@ -283,7 +276,7 @@ export class BankTransactionDetailPage extends PageBase {
       let outgoingPayment = {
         IDBranch : this.formGroup.get('IDBranch').value,
         IDBusinessPartner : this.formGroup.get('IDBusinessPartner').value,
-        IDOriginalTransaction :this.formGroup.get('Id').value,
+        IDTransaction :this.formGroup.get('Id').value,
         Amount : total,
         Status : 'Paid',
         PostingDate : new Date(),
@@ -449,23 +442,24 @@ export class BankTransactionDetailPage extends PageBase {
     }
   }
   async showPurchaseOrderModal() {
-    this.paymentDetails = [...this.formGroup.controls.PaymentDetails.value.filter(d=>d.IDOrder)];
+    this.paymentDetails = [...this.formGroup.controls.PaymentDetails.value];
     this.paymentDetails.forEach(s=> s.DocumentEntry = s.IDOrder);
-    this.SelectedOrderList =[...this.paymentDetails];
-    let amountInvoice = parseFloat(this.formGroup.controls.PaymentDetails.value.filter(d=>d.IDInvoice).reduce((sum,i)=>{
-      return sum += (i.Amount||0);
-    },0))
-    let amountOrder = -this.formGroup.controls.Amount.value - amountInvoice;
+    this.SelectedOrderList =[...this.paymentDetails.filter(d=>d.IDOrder)];
+    // let amountInvoice = parseFloat(this.formGroup.controls.PaymentDetails.value.filter(d=>d.IDInvoice).reduce((sum,i)=>{
+    //   return sum += (i.Amount||0);
+    // },0))
+    let amountOrder = -this.formGroup.controls.Amount.value - this.amountInvoice;
     const modal = await this.modalController.create({
       component: OutgoingPaymentPurchaseOrderModalPage,
       componentProps: {
         IDBusinessPartner: this.formGroup.controls.IDBusinessPartner.value,
+        DefaultBusinessPartner : this.defaultBusinessPartner,
         //amount: this.amountOrder,
         canEdit: this.pageConfig.canEdit,
+        amount: amountOrder,
         //IDOutgoingPayment: this.formGroup.controls.Id.value,
         SelectedOrderList: this.SelectedOrderList,
         canEditAmount: false,
-        amount: amountOrder
       },
       cssClass: 'modal90',
     });
@@ -511,18 +505,16 @@ export class BankTransactionDetailPage extends PageBase {
     }
   }
   async showAPInvoiceModal() {
-    this.paymentDetails = [...this.formGroup.controls.PaymentDetails.value.filter(d=> d.IDInvoice)];
+    this.paymentDetails = [...this.formGroup.controls.PaymentDetails.value];
     this.paymentDetails.forEach(s=> s.DocumentEntry = s.IDInvoice);
-    this.SelectedInvoiceList = [...this.paymentDetails];
-    let amountOrder = parseFloat(this.formGroup.controls.PaymentDetails.value.filter(d=>d.IDOrder).reduce((sum,i)=>{
-      return  sum += (i.Amount || 0);
-    },0))
-    let amountInvoice = -this.formGroup.controls.Amount.value - amountOrder;
+    this.SelectedInvoiceList = [...this.paymentDetails.filter(d=> d.IDInvoice)];
+    let amountInvoice = -this.formGroup.controls.Amount.value - this.amountOrder;
     const modal = await this.modalController.create({
       component: OutgoingPaymentInvoiceModalPage,
       componentProps: {
         IDBusinessPartner: this.formGroup.controls.IDBusinessPartner.value,
         canEdit: this.pageConfig.canEdit,
+        DefaultBusinessPartner : this.defaultBusinessPartner,
         //amount: this.amountInvoice,
        // IDOutgoingPayment: this.formGroup.controls.Id.value,
         canEditAmount : false,
@@ -598,6 +590,8 @@ export class BankTransactionDetailPage extends PageBase {
     );
     if (index != -1) {
       this.paymentDetails[index].Amount = updatedField.Amount;
+      const group = <FormArray>this.formGroup.controls.PaymentDetails;
+      group.at(index).get('Amount').setValue(updatedField.Amount);
       // const group = <FormArray>this.formGroup.controls.PaymentDetails;
       // group.at(index).get('Amount').setValue(updatedField.Amount);
       // group.at(index).get('IDIncomingPayment').markAsDirty();
@@ -662,5 +656,13 @@ export class BankTransactionDetailPage extends PageBase {
       if (i.Type != 'TitlePosition') i.disabled = false;
       this.markNestedNode(ls, i.Id);
     });
+  }
+
+  calcDifferenceAmount(){
+    this.amountOrder =  parseFloat( this.formGroup.get('PaymentDetails').value.filter(d=>d.IDOrder).reduce((sum, item) => sum + (item.Amount || 0), 0));
+    this.amountInvoice = parseFloat( this.formGroup.get('PaymentDetails').value.filter(d=>d.IDInvoice).reduce((sum, item) => sum + (item.Amount || 0), 0)) ;
+    this.orderPaymentCount =this.formGroup.get('PaymentDetails').value.filter(d=>d.IDOrder).length ;
+    this.invoicePaymentCount = this.formGroup.get('PaymentDetails').value.filter(d=>d.IDInvoice).length;
+    this.differenceAmount = Math.abs(this.formGroup.get('Amount').value) - (this.amountOrder + this.amountInvoice);
   }
 }

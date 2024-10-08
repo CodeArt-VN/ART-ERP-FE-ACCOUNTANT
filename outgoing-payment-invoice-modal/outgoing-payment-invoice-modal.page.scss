@@ -15,7 +15,10 @@
   max-width: 120px !important;
   min-width: 120px !important;
 }
-
+.col-number {
+  max-width: 120px !important;
+  min-width: 120px !important;
+}
 form {
   margin: 0;
 }
@@ -85,4 +88,10 @@ form {
   display: flex;
   justify-content: center;
   align-items: center;
+  input {
+    text-align: right;
+  }
+}
+app-data-table .row, .table .row{
+  padding : 0 ;
 }

@@ -5,32 +5,54 @@
     </ion-buttons>
 
     <ion-buttons slot="primary">
-      <div class="total">
-        <span>{{'Total: ' | translate}}</span>
-        <input *ngIf="!this.canEditAmount"
+        <div class="total"*ngIf="differenceAmount !=0">
+          <span >{{'Difference: ' | translate}}</span>
+          <input
+          mask="separator.2"
+          thousandSeparator=","
+          [allowNegativeNumbers]="true"
+          suffix=" ₫"
+          [ngModelOptions]="{standalone: true}"
+          [(ngModel)]="differenceAmount"
+          class="c-input danger"
+          [ngClass]="{active: differenceAmount}"
+          type="text"
+          [disabled]="true"
+        /></div>
+        <div class="total">
+          <span>{{'Total: ' | translate}}</span>
+          <input *ngIf="!canEditAmount"
+          mask="separator.2"
+          thousandSeparator=","
+          [allowNegativeNumbers]="true"
+          suffix=" ₫"
           [ngModelOptions]="{standalone: true}"
           [(ngModel)]="total.Amount"
           class="c-input"
           [ngClass]="{active: total.Amount}"
-          type="number"
+          type="text"
           [disabled]="true"
         />
-        <input *ngIf="this.canEditAmount"
+        <input *ngIf="canEditAmount"
+          mask="separator.2"
+          thousandSeparator=","
+          [allowNegativeNumbers]="true"
+          suffix=" ₫"
           [ngModelOptions]="{standalone: true}"
           (change)="autoSelect()"
           [(ngModel)]="total.Amount"
           class="c-input"
           [ngClass]="{active: total.Amount}"
-          type="number"
-          [disabled]="this.isLockAmount"
+          type="text"
+          [disabled]="isLockAmount"
         />
-        <ion-icon class="clickable" name="lock-closed-outline" (click)="this.isLockAmount = false"*ngIf="this.isLockAmount && this.canEdit"></ion-icon>
-        <ion-icon class="clickable" name="lock-open-outline" (click)="this.isLockAmount = true" *ngIf="!this.isLockAmount &&  this.canEdit"></ion-icon>
+        <ion-icon class="clickable" name="lock-closed-outline" (click)="isLockAmount = false"*ngIf="isLockAmount && canEdit && canEditAmount"></ion-icon>
+        <ion-icon class="clickable" name="lock-open-outline" (click)="isLockAmount = true" *ngIf="!isLockAmount &&  canEdit && canEditAmount"></ion-icon>
       </div>
       <span class="split ion-hide-sm-down">|</span>
 
       <ion-button
-        [disabled]="selectedItems.length==0|| !this.canEdit"
+        [disabled]="selectedItems.length==0|| !canEdit"
         fill="solid"
         size="small"
         color="primary"
@@ -55,7 +77,7 @@
   <section class="table">
     <header class="bold">
       <div class="col-checkbox cell">
-        <input *ngIf="!this.isLockAmount" (change)="toggleSelectAll()" [(ngModel)]="isAllChecked" class="c-checkbox" type="checkbox" />
+        <input *ngIf="!isLockAmount" (change)="toggleSelectAll()" [(ngModel)]="isAllChecked" class="c-checkbox" type="checkbox" />
       </div>
       <div class="col-id cell" (click)="sortToggle('Id')">
         #{{'AP invoice' | translate}}
@@ -105,7 +127,7 @@
           <ion-text color="dark"> {{'Address' | translate}}</ion-text>
         </small>
       </div>
-      <div class="col-code cell money" (click)="sortToggle('Debt')">
+      <div class="col-number cell money" (click)="sortToggle('Debt')">
         {{'Debt' | translate}}
         <ion-icon class="min-btn" *ngIf="sort.Debt" [name]="sort.Debt == 'Debt'?'arrow-down': 'arrow-up'"></ion-icon>
         <ion-icon
@@ -222,7 +244,7 @@
           class="c-checkbox"
           [(ngModel)]="i.checked"
           type="checkbox"
-          [disabled]="this.isLockAmount || i.isDisabled"
+          [disabled]="!canEdit || i.isDisabled"
         />
       </div>
       <div class="col-id cell">{{i.Id}}</div>
@@ -233,14 +255,14 @@
       <div class="col-name cell">
         <span [ngOptionHighlight]="query.VendorName">{{i._Seller?.Name}}</span>
         <small>#{{i.IDBusinessPartner}}</small>
-        <small class="right">
+        <small class="right" *ngIf="i.BillingAddress">
           <ion-text color="dark">
-            <span>{{i.BuyerAddress}}</span>
+            <span>{{i.BillingAddress}}</span>
           </ion-text>
         </small>
-        <span  class="danger" *ngIf="i.title">{{i.title}}</span>
+        <small  class="danger" *ngIf="i.title">{{i.title}}</small>
       </div>
-      <div class="col-code cell money">
+      <div class="col-number cell money">
         <input
           [(ngModel)]="i.PaidAmount"
           [min]="0"
@@ -248,10 +270,10 @@
           (change)="changePaidAmount(i)"
           class="c-input"
           type="number"
-          [disabled]="!i.checked || this.isLockAmount || i.isDisabled"
+          [disabled]="!i.checked || !canEdit  || i.isDisabled"
         />
       </div>
-      <div class="col-code cell money">{{i.Debt}}</div>
+      <div class="col-number cell money">{{i.Debt}}</div>
       <div class="col-code cell">{{i.Code}}</div>
     </div>
   </section>
