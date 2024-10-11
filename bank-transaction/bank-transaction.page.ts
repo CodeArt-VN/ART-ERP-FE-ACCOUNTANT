@@ -96,6 +96,17 @@ export class BankTransactionPage extends PageBase {
     this.pageConfig.sort = sorted;
     this.pageConfig.pageIcon = 'flash-outline';
 
+    if(!this.branchList || this.branchList.length == 0){
+      this.env.getBranch(this.env.selectedBranch,true)
+      .then((resp) => {
+        this.branchList = lib.cloneObject(resp);
+        this.branchList.forEach((i) => {
+          i.disabled = true;
+        });
+        this.markNestedNode(this.branchList, this.env.selectedBranch);
+      });
+    }
+    
     this.providerService
       .read({ Take: 5000 })
       .then((res) => {
@@ -117,17 +128,6 @@ export class BankTransactionPage extends PageBase {
   }
   loadedData(event) {
     super.loadedData(event);
-    if(!this.branchList || this.branchList.length == 0){
-      this.env.getBranch(this.env.selectedBranch,true)
-      .then((resp) => {
-        this.branchList = resp;
-        this.branchList.forEach((i) => {
-          i.disabled = true;
-        });
-        this.markNestedNode(this.branchList, this.env.selectedBranch);
-      });
-    }
- 
     this.items.forEach((i) => {
       i._ReconciliationStatus = this.statusList.find((d) => d.Code == i.ReconciliationStatus);
     });
