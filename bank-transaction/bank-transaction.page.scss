@@ -2,7 +2,9 @@
   width: 30px;
 }
 
-
+.feature{
+  background: linear-gradient(180deg, var(--main-background-top), var(--main-background-bottom));
+}
 
 ion-item.item-label {
   --color: var(--ion-color-contrast);
