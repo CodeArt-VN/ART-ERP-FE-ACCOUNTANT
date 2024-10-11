@@ -117,7 +117,8 @@ export class BankTransactionPage extends PageBase {
   }
   loadedData(event) {
     super.loadedData(event);
-    this.branchProvider
+    if(!this.branchList || this.branchList.length == 0){
+      this.branchProvider
       .read({ Skip: 0, Take: 5000, AllParent: true, Id: this.env.selectedBranchAndChildren })
       .then((resp) => {
         lib
@@ -133,6 +134,8 @@ export class BankTransactionPage extends PageBase {
             this.env.showMessage(err);
           });
       });
+    }
+  
     this.items.forEach((i) => {
       i._ReconciliationStatus = this.statusList.find((d) => d.Code == i.ReconciliationStatus);
     });
