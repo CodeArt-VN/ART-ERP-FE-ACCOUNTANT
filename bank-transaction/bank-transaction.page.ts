@@ -93,7 +93,17 @@ export class BankTransactionPage extends PageBase {
     ];
     
     this.pageConfig.pageIcon = 'flash-outline';
-
+    this.env.getBranch(this.env.selectedBranch,true)
+    .then((resp) => {
+      let currentBranch = this.env.branchList.find(d=> d.Id == this.env.selectedBranch);
+      this.branchList = lib.cloneObject(resp);
+      this.branchList.unshift(currentBranch);
+      this.branchList.forEach((i) => {
+        i.disabled = true;
+      });
+      this.markNestedNode(this.branchList, this.env.selectedBranch);
+    });
+    
     this.providerService
       .read({ Take: 5000 })
       .then((res) => {
@@ -115,22 +125,6 @@ export class BankTransactionPage extends PageBase {
   }
   loadedData(event) {
     super.loadedData(event);
-    this.branchProvider
-      .read({ Skip: 0, Take: 5000, AllParent: true, Id: this.env.selectedBranchAndChildren })
-      .then((resp) => {
-        lib
-          .buildFlatTree(resp['data'], this.branchList)
-          .then((result: any) => {
-            this.branchList = result;
-            this.branchList.forEach((i) => {
-              i.disabled = true;
-            });
-            this.markNestedNode(this.branchList, this.env.selectedBranch);
-          })
-          .catch((err) => {
-            this.env.showMessage(err);
-          });
-      });
     this.items.forEach((i) => {
       i._ReconciliationStatus = this.statusList.find((d) => d.Code == i.ReconciliationStatus);
     });
@@ -235,8 +229,9 @@ export class BankTransactionPage extends PageBase {
   }
 
   markNestedNode(ls, Id) {
-    ls.filter((d) => d.IDParent == Id).forEach((i) => {
-      if (i.Type != 'TitlePosition') i.disabled = false;
+    let currentBranch = ls.find((d) => d.Id == Id);
+    if (currentBranch.Type != 'TitlePosition') currentBranch.disabled = false;
+    ls.filter(s=> s.IDParent == currentBranch.Id).forEach(i=>{
       this.markNestedNode(ls, i.Id);
     });
   }

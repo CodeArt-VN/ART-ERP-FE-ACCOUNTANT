@@ -1,5 +1,22 @@
 <ion-header>
-  <app-detail-toolbar [page]="this"></app-detail-toolbar>
+  <app-toolbar [page]="this">
+    <ion-button
+    title="{{ 'Create E-Invoice' | translate }}"
+    *ngIf="pageConfig.canCreateEInvoice && this.formGroup.get('Status').value =='ARInvoiceApproved'"
+    (click)="createEInvoice()"
+  >
+    <ion-icon color="success" slot="icon-only" name="receipt-outline"></ion-icon>
+  </ion-button>
+
+    <ion-button
+    class="ion-hide-md-down"
+    title="{{ 'Approve' | translate }}"
+    *ngIf="pageConfig.canApproveInvoice && this.formGroup.get('Status').value =='ARInvoicePending'"
+    (click)="approveInvoices()"
+  >
+    <ion-icon color="success" slot="icon-only" name="thumbs-up-outline"></ion-icon>
+  </ion-button>
+  </app-toolbar>
 </ion-header>
 
 <ion-content appScrollbarTheme class="ion-padding">
@@ -25,7 +42,20 @@
               [field]="{id:'IDBusinessPartner', label: 'Customer', type : 'ng-select-bp', form : formGroup,  dataSource: IDBusinessPartnerDataSource,  bindValue: 'Id' }"
               (change)="IDBusinessPartnerChange($event);"
               (nav)="nav($event)"
-            ></app-form-control>
+            >
+            <small label><ion-button label
+            *ngIf=" pageConfig.canAddCustomer && isShowAddContactBtn"
+            style="position: absolute;top: -13px;"
+            class="ion-float-right"
+            size="small"
+            (click)="addContact()"
+          >
+            <ion-icon slot="start" name="add-circle-outline"></ion-icon>
+            {{'Create new customer' | translate}}
+          </ion-button></small
+          >
+        </app-form-control>
+   
             <app-form-control
               [field]="{id:'TypeCreateInvoice', label: 'A/R content type', type : 'ng-select', form : formGroup,  dataSource: contentTypeList,  bindLabel: 'Name',  bindValue: 'Code' }"
               (change)="TypeCreateInvoiceChange($event)"

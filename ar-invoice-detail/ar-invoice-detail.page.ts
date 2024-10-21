@@ -1,14 +1,18 @@
 import { Component, ChangeDetectorRef } from '@angular/core';
-import { NavController, LoadingController, AlertController } from '@ionic/angular';
+import { NavController, LoadingController, AlertController, ModalController } from '@ionic/angular';
 import { PageBase } from 'src/app/page-base';
 import { ActivatedRoute } from '@angular/router';
 import { EnvService } from 'src/app/services/core/env.service';
 import { AC_ARInvoiceProvider, CRM_ContactProvider, WMS_ItemProvider } from 'src/app/services/static/services.service';
 import { FormBuilder, Validators, FormControl, FormGroup, FormArray } from '@angular/forms';
 import { CommonService } from 'src/app/services/core/common.service';
+import { EInvoiceService } from 'src/app/services/einvoice.service';
 import { concat, of, Subject } from 'rxjs';
 import { catchError, distinctUntilChanged, switchMap, tap } from 'rxjs/operators';
 import { lib } from 'src/app/services/static/global-functions';
+import { SaleOrderMobileAddContactModalPage } from '../../SALE/sale-order-mobile-add-contact-modal/sale-order-mobile-add-contact-modal.page';
+import { ARContactModalPage } from './components/ar-contact-modal/ar-contact-modal.page';
+import { ApiSetting } from 'src/app/services/static/api-setting';
 
 @Component({
   selector: 'app-ar-invoice-detail',
@@ -17,7 +21,8 @@ import { lib } from 'src/app/services/static/global-functions';
 })
 export class ARInvoiceDetailPage extends PageBase {
   statusList = [];
-
+  ShowApprove = false;
+  ShowCreateEInvoice = false;
   lockItemsStatus = [
     'EInvoiceRelease',
     'EInvoiceCancel',
@@ -46,13 +51,15 @@ export class ARInvoiceDetailPage extends PageBase {
   contentTypeList = [];
   isBindingTaxCode = false
   defaultOutputTax = null;
-
+  isShowAddContactBtn = false;
   constructor(
     public pageProvider: AC_ARInvoiceProvider,
+    public EInvoiceService: EInvoiceService,
     public contactProvider: CRM_ContactProvider,
     public itemProvider: WMS_ItemProvider,
     public env: EnvService,
     public navCtrl: NavController,
+    public modalController: ModalController,
     public route: ActivatedRoute,
     public alertCtrl: AlertController,
     public formBuilder: FormBuilder,
@@ -194,6 +201,9 @@ export class ARInvoiceDetailPage extends PageBase {
     this.formGroup.get('BuyerName').setValue(i.IsPersonal ? i.Name : '');
     this.formGroup.get('BuyerName').markAsDirty();
     this.isBindingTaxCode = true;
+    if(this.item?.DefaultBusinessPartner?.Id !=  i?.Id){
+      this.isShowAddContactBtn = false;
+    }
     this.saveChange();
   }
 
@@ -250,7 +260,9 @@ export class ARInvoiceDetailPage extends PageBase {
       }
      
     }
-
+    if(this.item?.DefaultBusinessPartner?.Id ==  this.item.IDBusinessPartner){
+      this.isShowAddContactBtn = true;
+    }
     super.loadedData(event, ignoredFromGroup);
     this.LoadTaxCodeDataSource(this.item?._BusinessPartner,this.isBindingTaxCode);
     this.isBindingTaxCode = false;
@@ -609,6 +621,160 @@ export class ARInvoiceDetailPage extends PageBase {
   }
 
   calcOrder() {}
+  
+  async addContact() {
+    const modal = await this.modalController.create({
+      component: ARContactModalPage,
+      cssClass: 'my-custom-class',
+      componentProps: {
+        firstName: 'Douglas',
+        lastName: 'Adams',
+        middleInitial: 'N',
+      },
+    });
+    await modal.present();
+    const { data } = await modal.onWillDismiss();
+    if(data){
+      this.IDBusinessPartnerDataSource.selected = [data];
+      this.formGroup.get('IDBusinessPartner').setValue(data.Id);
+      this.formGroup.get('IDBusinessPartner').markAsDirty();
+      this.IDBusinessPartnerChange(data);
+    }
+  }
+
+  approveInvoices() {
+    if (!this.pageConfig.canApproveInvoice) {
+      return;
+    }
+    this.alertCtrl
+      .create({
+        header: 'Duyệt hóa đơn',
+        //subHeader: '---',
+        message: 'Bạn có chắc muốn xác nhận dyệt hóa đơn đang chọn?',
+        buttons: [
+          {
+            text: 'Không',
+            role: 'cancel',
+            handler: () => {
+              //console.log('Không xóa');
+            },
+          },
+          {
+            text: 'Duyệt',
+            cssClass: 'danger-btn',
+            handler: () => {
+              let publishEventCode = this.pageConfig.pageName;
+              let apiPath = {
+                method: 'POST',
+                url: function () {
+                  return ApiSetting.apiDomain('AC/ARInvoice/ApproveInvoices/');
+                },
+              };
+
+              if (this.submitAttempt == false) {
+                this.submitAttempt = true;
+
+                let postDTO = { Ids: [] };
+                postDTO.Ids = [this.formGroup.get('Id').value]
+
+                this.pageProvider.commonService
+                  .connect(apiPath.method, apiPath.url(), postDTO)
+                  .toPromise()
+                  .then((savedItem: any) => {
+                    if (publishEventCode) {
+                      this.env.publishEvent({
+                        Code: publishEventCode,
+                      });
+                    }
+                    this.loadedData();
+                    this.env.showMessage('Saving completed!', 'success');
+                    this.submitAttempt = false;
+                  })
+                  .catch((err) => {
+                    this.submitAttempt = false;
+                    //console.log(err);
+                  });
+              }
+            },
+          },
+        ],
+      })
+      .then((alert) => {
+        alert.present();
+      });
+  }
+
+  createEInvoice() {
+    if (!this.pageConfig.canCreateEInvoice) {
+      return;
+    }
+
+    this.alertCtrl
+    .create({
+      header: 'Xuất hóa đơn điện tử',
+      //subHeader: '---',
+      message: 'Bạn có chắc muốn xuất hóa đơn điện tử cho các hóa đơn này?',
+      buttons: [
+        {
+          text: 'Không',
+          role: 'cancel',
+          handler: () => {},
+        },
+        {
+          text: 'Có',
+          cssClass: 'success-btn',
+          handler: () => {
+            this.loadingController
+              .create({
+                cssClass: 'my-custom-class',
+                message: 'Vui lòng chờ cấp số hóa đơn...',
+              })
+              .then((loading) => {
+                loading.present();
+                this.EInvoiceService.CreateEInvoice([this.formGroup.get('Id').value])
+                  .toPromise()
+                  .then((resp: any) => {
+                    if (loading) loading.dismiss();
+                    this.submitAttempt = false;
+
+                    let errors = resp.filter((d) => d.Status == 1);
+                    let message = '';
+
+                    for (let i = 0; i < errors.length && i <= 5; i++)
+                      if (i == 5) message += '<br> Còn nữa...';
+                      else {
+                        const e = errors[i];
+                        message += '<br> #' + e.PartnerInvoiceID + ' lỗi: ' + e.MessLog;
+                      }
+                    if (message != '') {
+                      this.env.showAlert(message,{code:'Có {{value}} hóa đơn lỗi, vui lòng kiểm tra lại ghi chú của các hóa đơn không được duyệt.',value:errors.length},'Xuất hóa đơn',
+                      );
+                      this.refresh();
+                    } else {
+                      this.env.showMessage('Đã xuất hóa đơn điện tử!', 'success');
+                      this.submitAttempt = false;
+                      this.refresh();
+                    }
+                  })
+                  .catch((err: any) => {
+                    this.env.showMessage(
+                      'Không xuất hóa đơn được, xin vui lòng kiểm tra lại! \n' + err?.error?.ExceptionMessage,
+                      'danger',
+                    );
+                    console.log(err);
+                    this.submitAttempt = false;
+                    if (loading) loading.dismiss();
+                  });
+              });
+          },
+        },
+      ],
+    })
+    .then((alert) => {
+      alert.present();
+    });
+  }
+
 
   segmentView = 's3';
   segmentChanged(ev: any) {
