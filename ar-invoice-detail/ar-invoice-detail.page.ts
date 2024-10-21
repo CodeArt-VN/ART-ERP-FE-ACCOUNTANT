@@ -1,5 +1,5 @@
 import { Component, ChangeDetectorRef } from '@angular/core';
-import { NavController, LoadingController, AlertController } from '@ionic/angular';
+import { NavController, LoadingController, AlertController, ModalController } from '@ionic/angular';
 import { PageBase } from 'src/app/page-base';
 import { ActivatedRoute } from '@angular/router';
 import { EnvService } from 'src/app/services/core/env.service';
@@ -9,6 +9,8 @@ import { CommonService } from 'src/app/services/core/common.service';
 import { concat, of, Subject } from 'rxjs';
 import { catchError, distinctUntilChanged, switchMap, tap } from 'rxjs/operators';
 import { lib } from 'src/app/services/static/global-functions';
+import { SaleOrderMobileAddContactModalPage } from '../../SALE/sale-order-mobile-add-contact-modal/sale-order-mobile-add-contact-modal.page';
+import { ARContactModalPage } from './components/ar-contact-modal/ar-contact-modal.page';
 
 @Component({
   selector: 'app-ar-invoice-detail',
@@ -46,13 +48,14 @@ export class ARInvoiceDetailPage extends PageBase {
   contentTypeList = [];
   isBindingTaxCode = false
   defaultOutputTax = null;
-
+  isShowAddContactBtn = false;
   constructor(
     public pageProvider: AC_ARInvoiceProvider,
     public contactProvider: CRM_ContactProvider,
     public itemProvider: WMS_ItemProvider,
     public env: EnvService,
     public navCtrl: NavController,
+    public modalController: ModalController,
     public route: ActivatedRoute,
     public alertCtrl: AlertController,
     public formBuilder: FormBuilder,
@@ -194,6 +197,9 @@ export class ARInvoiceDetailPage extends PageBase {
     this.formGroup.get('BuyerName').setValue(i.IsPersonal ? i.Name : '');
     this.formGroup.get('BuyerName').markAsDirty();
     this.isBindingTaxCode = true;
+    if(this.item?.DefaultBusinessPartner?.Id !=  i?.Id){
+      this.isShowAddContactBtn = false;
+    }
     this.saveChange();
   }
 
@@ -250,7 +256,9 @@ export class ARInvoiceDetailPage extends PageBase {
       }
      
     }
-
+    if(this.item?.DefaultBusinessPartner?.Id ==  this.item.IDBusinessPartner){
+      this.isShowAddContactBtn = true;
+    }
     super.loadedData(event, ignoredFromGroup);
     this.LoadTaxCodeDataSource(this.item?._BusinessPartner,this.isBindingTaxCode);
     this.isBindingTaxCode = false;
@@ -609,6 +617,26 @@ export class ARInvoiceDetailPage extends PageBase {
   }
 
   calcOrder() {}
+  
+  async addContact() {
+    const modal = await this.modalController.create({
+      component: ARContactModalPage,
+      cssClass: 'my-custom-class',
+      componentProps: {
+        firstName: 'Douglas',
+        lastName: 'Adams',
+        middleInitial: 'N',
+      },
+    });
+    await modal.present();
+    const { data } = await modal.onWillDismiss();
+    if(data){
+      this.IDBusinessPartnerDataSource.selected = [data];
+      this.formGroup.get('IDBusinessPartner').setValue(data.Id);
+      this.formGroup.get('IDBusinessPartner').markAsDirty();
+      this.IDBusinessPartnerChange(data);
+    }
+  }
 
   segmentView = 's3';
   segmentChanged(ev: any) {

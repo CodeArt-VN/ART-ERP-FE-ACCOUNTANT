@@ -25,7 +25,20 @@
               [field]="{id:'IDBusinessPartner', label: 'Customer', type : 'ng-select-bp', form : formGroup,  dataSource: IDBusinessPartnerDataSource,  bindValue: 'Id' }"
               (change)="IDBusinessPartnerChange($event);"
               (nav)="nav($event)"
-            ></app-form-control>
+            >
+            <small label><ion-button label
+            *ngIf=" pageConfig.canAddCustomer && isShowAddContactBtn"
+            style="position: absolute;top: -13px;"
+            class="ion-float-right"
+            size="small"
+            (click)="addContact()"
+          >
+            <ion-icon slot="start" name="add-circle-outline"></ion-icon>
+            {{'Create new customer' | translate}}
+          </ion-button></small
+          >
+        </app-form-control>
+   
             <app-form-control
               [field]="{id:'TypeCreateInvoice', label: 'A/R content type', type : 'ng-select', form : formGroup,  dataSource: contentTypeList,  bindLabel: 'Name',  bindValue: 'Code' }"
               (change)="TypeCreateInvoiceChange($event)"

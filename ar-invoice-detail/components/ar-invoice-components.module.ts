@@ -9,6 +9,7 @@ import { GoogleMapsModule } from '@angular/google-maps';
 import { RouterModule } from '@angular/router';
 import { MapCompsModule } from 'src/app/components/map-comps/map-comps.module';
 import { ChildInvoiceComponent } from './child-invoice/child-invoice.component';
+import { ARContactModalPage } from './ar-contact-modal/ar-contact-modal.page';
 
 @NgModule({
   imports: [
@@ -21,7 +22,7 @@ import { ChildInvoiceComponent } from './child-invoice/child-invoice.component';
     ReactiveFormsModule,
     GoogleMapsModule,
   ],
-  declarations: [ChildInvoiceComponent],
-  exports: [ChildInvoiceComponent],
+  declarations: [ChildInvoiceComponent,ARContactModalPage],
+  exports: [ChildInvoiceComponent,ARContactModalPage],
 })
 export class ARInvoiceComponentsModule {}
