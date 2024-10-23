@@ -13,18 +13,37 @@
             </ion-list-header>
           </ion-col>
           <ion-col size="12" size-sm size-xl="4">
-            <app-form-control [field]="{id:'Id', label: 'Id', type : 'number', form : formGroup }" >
+            <app-form-control [field]="{id:'Id', label: 'Id', type : 'number', form : formGroup }">
               <!-- <small label *ngIf="item.IDSaleOrder"><a [routerLink]="['/sale-order/'+item.IDSaleOrder]">{{'From' | translate}} SO: {{item.IDSaleOrder}}</a></small> -->
             </app-form-control>
-            
+
             <div class="c-control">
-              <label class="c-label" for="IDBranch">{{'Branch' | translate}}
-                <span *ngIf="!formGroup.controls.IDBranch.valid && !formGroup.controls.IDBranch.pending && (formGroup.controls.IDBranch.dirty || submitAttempt)" ion-text color="danger">(*)</span>
+              <label class="c-label" for="IDBranch"
+                >{{'Branch' | translate}}
+                <span
+                  *ngIf="!formGroup.controls.IDBranch.valid && !formGroup.controls.IDBranch.pending && (formGroup.controls.IDBranch.dirty || submitAttempt)"
+                  ion-text
+                  color="danger"
+                  >(*)</span
+                >
               </label>
-              <ng-select class="c-input" (change)="saveChange()" labelForId="IDBranch" formControlName="IDBranch" [items]="branchList" [virtualScroll]="true" bindLabel="Name" bindValue="Id" placeholder="{{'Search...' | translate}}">
+              <ng-select
+                class="c-input"
+                (change)="saveChange()"
+                labelForId="IDBranch"
+                formControlName="IDBranch"
+                [items]="branchList"
+                [virtualScroll]="true"
+                bindLabel="Name"
+                bindValue="Id"
+                placeholder="{{'Search...' | translate}}"
+              >
                 <ng-template ng-option-tmp let-i="item" let-search="searchTerm">
                   <div *ngIf="i">
-                    <div> <span *ngFor="let l of i.levels">&nbsp;&nbsp;&nbsp;</span> <span [ngOptionHighlight]="search">{{i.Name}}</span></div>
+                    <div>
+                      <span *ngFor="let l of i.levels">&nbsp;&nbsp;&nbsp;</span>
+                      <span [ngOptionHighlight]="search">{{i.Name}}</span>
+                    </div>
                   </div>
                 </ng-template>
               </ng-select>
@@ -41,8 +60,12 @@
           <ion-segment-button value="s1">
             <ion-label>{{'BankAccount list' | translate}}</ion-label>
           </ion-segment-button>
+
           <ion-segment-button value="s2">
             <ion-label>{{'Other information' | translate}}</ion-label>
+          </ion-segment-button>
+          <ion-segment-button value="s3" *ngIf="formGroup.get('IsLoanAccount').value">
+            <ion-label>{{'Collection schedule' | translate}}</ion-label>
           </ion-segment-button>
         </ion-segment>
       </ion-toolbar>
@@ -243,6 +266,70 @@
           </form>
         </div>
       </div>
+      <div class="ion-padding" *ngIf="segmentView == 's3'">
+        <div class="table-contain" id="unit-specification">
+          <form [formGroup]="formGroup">
+            <section class="table">
+              <header class="bold" style="padding-right: 0">
+                <div class="col-id cell">{{'Period' | translate}}</div>
+                <div class="col-date cell">{{'Date' | translate}}</div>
+                <div class="col-number cell">{{'Principal payment' | translate}}</div>
+                <div class="col-number cell">{{'Interest paid' | translate}}</div>
+                <div class="col-number cell">{{'Have to pay' | translate}}</div>
+                <div class="col-number cell">{{'Outstanding debt ' | translate}}</div>
+                <div class="col-number cell">{{'Paid' | translate}}</div>
+                <div class="col-number cell">{{'Overpayment' | translate}}</div>
+                <div class="col-number cell">{{'Underpayment' | translate}}</div>
+                <div class="col-number cell">{{'Other fee' | translate}}</div>
+                <!-- <div class="col-number cell">{{'Have to pay' | translate}}</div>
+                  <div class="col-number cell">{{'Outstanding debt' | translate}}</div> -->
+              </header>
+              <div
+                class="row"
+                [ngStyle]="{'background-color':c.CurrentPeriod>=c.Period.PeriodNumber?'var(--menu-right-border-color)':''}"
+                *ngFor="let c of collectionSchedule"
+              >
+                <div class="col-id cell">
+                  <span>{{c.Period.PeriodNumber | number: '1.0-0'}}</span>
+                </div>
+                <div class="col-date cell">
+                  <span>{{c.Period.EndDate | date: 'dd-MM-yyyy' }}</span>
+                </div>
+                <div class="col-number cell">
+                  <span>{{c.Principal | number: '1.0-0'}}</span>
+                </div>
+                <div class="col-number cell">
+                  <span>{{c.InterestFee | number: '1.0-0'}}</span>
+                </div>
+                <div class="col-number cell">
+                  <span>{{c.HaveToPayInPlan | number: '1.0-0'}}</span>
+                </div>
+                <div class="col-number cell">
+                  <span>{{c.TotalOutstandingLoansInPlan | number: '1.0-0'}}</span>
+                </div>
+                <div class="col-number cell">
+                  <span>{{c.Paid | number: '1.0-0'}}</span>
+                </div>
+                <div class="col-number cell">
+                  <span *ngIf="c.CurrentPeriod>=c.Period.PeriodNumber">{{c.Overpayment | number: '1.0-0'}}</span>
+                </div>
+                <div class="col-number cell">
+                  <span *ngIf="c.CurrentPeriod>=c.Period.PeriodNumber">{{c.Underpayment | number: '1.0-0'}}</span>
+                </div>
+                <div class="col-number cell">
+                  <span *ngIf="c.OtherFee">{{c.OtherFee | number: '1.0-0'}}</span>
+                </div>
+                <!-- <div class="col-number cell">
+                      <span>{{c.HaveToPay | number: '1.0-0'}}</span>
+                    </div>
+                    <div class="col-number cell">
+                      <span>{{c.TotalOutstandingLoans | number: '1.0-0'}}</span>
+                    </div> -->
+              </div>
+            </section>
+          </form>
+        </div>
+      </div>
 
       <!-- Order information -->
       <div *ngIf="segmentView == 's2'">
@@ -264,6 +351,44 @@
                   [field]="{id:'Name', label: 'Name', type : 'text', form : formGroup }"
                   (change)="saveChange()"
                 ></app-form-control>
+
+                <div class="c-control">
+                  <label class="c-label" for="IDBank">{{'Bank' | translate}}</label>
+                  <ng-select
+                    [ngClass]="{ 'no-check-dirty': noCheckDirty }"
+                    class="c-input no-check-dirty"
+                    formControlName="IDBank"
+                    labelForId="IDBank"
+                    [items]="bankList"
+                    bindValue="Id"
+                    bindLabel="Name"
+                    [searchFn]="searchByNameCode"
+                    [clearable]="true"
+                    (change)="saveChange()"
+                    appendTo="#ng-select-holder"
+                  >
+                    <ng-template ng-label-tmp let-i="item">
+                      <div *ngIf="i" class="col-avatar-container">
+                        <ion-avatar class="col-avatar"
+                          ><ion-img #img [src]="i.Logo" (ionError)="img.src = 'assets/avartar-empty.jpg'"></ion-img
+                        ></ion-avatar>
+                        <span *ngIf="i.Code" class="bold">{{ i.Code }} </span><div *ngIf="i.Code" >&nbsp;-&nbsp;</div> <span>{{ i.Name }}</span><br />
+                      </div>
+                    </ng-template>
+
+                    <ng-template ng-option-tmp let-i="item" let-search="searchTerm">
+                      <div *ngIf="i">
+                        <ion-avatar
+                          ><ion-img #img [src]="i.Logo" (ionError)="img.src = 'assets/avartar-empty.jpg'"></ion-img
+                        ></ion-avatar>
+                        <span [ngOptionHighlight]="search">{{ i.Name }}</span><br />
+                        <small
+                          >#<b><span class="important" [ngOptionHighlight]="search">{{ i.Id }} - {{ i.Code }}</span></b>
+                        </small>
+                      </div>
+                    </ng-template>
+                  </ng-select>
+                </div>
                 <app-form-control
                   [field]="{id:'Type', label: 'Type', type : 'text', form : formGroup }"
                   (change)="saveChange()"
@@ -275,6 +400,10 @@
                 <app-form-control
                   [field]="{id:'LastCheckedDate', label: 'Last checked date', type : 'datetime-local', placeholder: 'yyyy-MM-dd', form : formGroup }"
                   (change)="saveChange()"
+                ></app-form-control>
+                <app-form-control
+                  [field]="{id:'IsLoanAccount', label: 'Loan account', type : 'checkbox', form : formGroup }"
+                  (change)="isLoanAccountChange()"
                 ></app-form-control>
               </ion-col>
               <ion-col size="12" size-sm size-xl="4">
@@ -300,6 +429,70 @@
                 ></app-form-control>
               </ion-col>
             </ion-row>
+
+            <!-- Account information -->
+            <ion-row class="hr-group" *ngIf="formGroup.get('IsLoanAccount').value">
+              <ion-col size="12" size-sm="12" size-md="12" size-xl="3">
+                <ion-list-header class="ion-no-padding">
+                  <ion-label color="primary">{{'Loan information' | translate}}</ion-label>
+                </ion-list-header>
+              </ion-col>
+              <ion-col size="12" size-sm size-xl="4">
+                <app-form-control
+                  [field]="{id:'TotalOutstandingLoans', label: 'TotalOutstandingLoans', type : 'number', form : formGroup }"
+                  (change)="saveChange()"
+                ></app-form-control>
+                <app-form-control
+                  [field]="{id:'PrincipalPaid', label: 'PrincipalPaid', type : 'number', form : formGroup }"
+                  (change)="saveChange()"
+                ></app-form-control>
+
+                <app-form-control
+                  [field]="{id:'FixedPeriod', label: 'Fixed period', type : 'number', form : formGroup }"
+                  (change)="saveChange()"
+                ></app-form-control>
+                <app-form-control
+                  [field]="{id:'InterestRate', label: 'Interest rate', type : 'text', form : formGroup }"
+                  (change)="saveChange()"
+                ></app-form-control>
+                <app-form-control
+                  [field]="{id:'CurentInterestRate', label: 'Curent interest rate', type : 'text', form : formGroup }"
+                  (change)="saveChange()"
+                ></app-form-control>
+                <app-form-control
+                  [field]="{id:'IDAccountDebtCollection', label: 'IDAccountDebtCollection', type : 'ng-select',dataSource: accountList , bindValue:'Id', bindLabel:'Name', form : formGroup }"
+                  (change)="saveChange()"
+                ></app-form-control>
+              </ion-col>
+              <ion-col size="12" size-sm size-xl="4">
+                <app-form-control
+                  [field]="{id:'LoanTenor', label: 'Loan  tenor', type : 'number', form : formGroup }"
+                  (change)="saveChange()"
+                ></app-form-control>
+                <app-form-control
+                  [field]="{id:'DisbursementDate', label: 'DisbursementDate', type : 'datetime-local', placeholder: 'yyyy-MM-dd', form : formGroup }"
+                  (change)="saveChange()"
+                ></app-form-control>
+                <app-form-control
+                  [field]="{id:'EndDate', label: 'EndDate', type : 'datetime-local', placeholder: 'yyyy-MM-dd', form : formGroup }"
+                  (change)="saveChange()"
+                ></app-form-control>
+
+                <app-form-control
+                  [field]="{id:'IsInDue', label: 'In due', type : 'checkbox', form : formGroup }"
+                  (change)="saveChange()"
+                ></app-form-control>
+                <app-form-control
+                  [field]="{id:'IsStepdownInterestRateScheme', label: 'Stepdown interest rate scheme', type : 'checkbox', form : formGroup }"
+                  (change)="saveChange()"
+                ></app-form-control>
+                <app-form-control
+                  [field]="{id:'IsEarlyRepayment', label: 'Early repayment', type : 'checkbox', form : formGroup }"
+                  (change)="saveChange()"
+                ></app-form-control>
+              </ion-col>
+            </ion-row>
+
             <!-- Other information -->
             <ion-row class="hr-group" *ngIf="item.Id">
               <ion-col size="12" size-sm="12" size-md="12" size-xl="3">
