@@ -272,28 +272,25 @@
             <section class="table">
               <header class="bold" style="padding-right: 0">
                 <div class="col-id cell">{{'Period' | translate}}</div>
-                <div class="col-date cell">{{'Date' | translate}}</div>
+                <div class="col-remark cell">{{'Date' | translate}}</div>
                 <div class="col-number cell">{{'Principal payment' | translate}}</div>
                 <div class="col-number cell">{{'Interest paid' | translate}}</div>
                 <div class="col-number cell">{{'Have to pay' | translate}}</div>
-                <div class="col-number cell">{{'Outstanding debt ' | translate}}</div>
-                <div class="col-number cell">{{'Paid' | translate}}</div>
-                <div class="col-number cell">{{'Overpayment' | translate}}</div>
-                <div class="col-number cell">{{'Underpayment' | translate}}</div>
-                <div class="col-number cell">{{'Other fee' | translate}}</div>
+                <div class="col-number cell">{{'Total outstanding loans' | translate}}</div>
                 <!-- <div class="col-number cell">{{'Have to pay' | translate}}</div>
                   <div class="col-number cell">{{'Outstanding debt' | translate}}</div> -->
               </header>
               <div
                 class="row"
-                [ngStyle]="{'background-color':c.CurrentPeriod>=c.Period.PeriodNumber?'var(--menu-right-border-color)':''}"
+                [ngClass]="{'selected':c.CurrentPeriod==c.Period.PeriodNumber}"
                 *ngFor="let c of collectionSchedule"
               >
                 <div class="col-id cell">
                   <span>{{c.Period.PeriodNumber | number: '1.0-0'}}</span>
                 </div>
-                <div class="col-date cell">
-                  <span>{{c.Period.EndDate | date: 'dd-MM-yyyy' }}</span>
+                <div class="col-remark cell">
+                  <span>{{c.Period.StartDate | date: 'dd/MM/yyyy' }}</span> &nbsp;-&nbsp;
+                  <span>{{c.Period.EndDate | date: 'dd/MM/yyyy' }}</span>
                 </div>
                 <div class="col-number cell">
                   <span>{{c.Principal | number: '1.0-0'}}</span>
@@ -306,18 +303,6 @@
                 </div>
                 <div class="col-number cell">
                   <span>{{c.TotalOutstandingLoansInPlan | number: '1.0-0'}}</span>
-                </div>
-                <div class="col-number cell">
-                  <span>{{c.Paid | number: '1.0-0'}}</span>
-                </div>
-                <div class="col-number cell">
-                  <span *ngIf="c.CurrentPeriod>=c.Period.PeriodNumber">{{c.Overpayment | number: '1.0-0'}}</span>
-                </div>
-                <div class="col-number cell">
-                  <span *ngIf="c.CurrentPeriod>=c.Period.PeriodNumber">{{c.Underpayment | number: '1.0-0'}}</span>
-                </div>
-                <div class="col-number cell">
-                  <span *ngIf="c.OtherFee">{{c.OtherFee | number: '1.0-0'}}</span>
                 </div>
                 <!-- <div class="col-number cell">
                       <span>{{c.HaveToPay | number: '1.0-0'}}</span>
@@ -401,7 +386,7 @@
                   [field]="{id:'LastCheckedDate', label: 'Last checked date', type : 'datetime-local', placeholder: 'yyyy-MM-dd', form : formGroup }"
                   (change)="saveChange()"
                 ></app-form-control>
-                <app-form-control
+                <app-form-control *ngIf="formGroup.get('IDParent').value"
                   [field]="{id:'IsLoanAccount', label: 'Loan account', type : 'checkbox', form : formGroup }"
                   (change)="isLoanAccountChange()"
                 ></app-form-control>
@@ -439,42 +424,77 @@
               </ion-col>
               <ion-col size="12" size-sm size-xl="4">
                 <app-form-control
-                  [field]="{id:'TotalOutstandingLoans', label: 'TotalOutstandingLoans', type : 'number', form : formGroup }"
+                  [field]="{id:'TotalOutstandingLoans', label: 'Total outstanding loans', type : 'number', form : formGroup }"
                   (change)="saveChange()"
                 ></app-form-control>
                 <app-form-control
-                  [field]="{id:'PrincipalPaid', label: 'PrincipalPaid', type : 'number', form : formGroup }"
+                  [field]="{id:'LoanTenor', label: 'Loan tenor', type : 'number', form : formGroup }"
                   (change)="saveChange()"
                 ></app-form-control>
-
                 <app-form-control
                   [field]="{id:'FixedPeriod', label: 'Fixed period', type : 'number', form : formGroup }"
                   (change)="saveChange()"
                 ></app-form-control>
                 <app-form-control
-                  [field]="{id:'InterestRate', label: 'Interest rate', type : 'text', form : formGroup }"
+                  [field]="{id:'InterestRate', label: 'Interest rate(%)', type : 'text', form : formGroup }"
                   (change)="saveChange()"
                 ></app-form-control>
                 <app-form-control
-                  [field]="{id:'CurentInterestRate', label: 'Curent interest rate', type : 'text', form : formGroup }"
+                  [field]="{id:'CurentInterestRate', label: 'Curent interest rate(%)', type : 'text', form : formGroup }"
                   (change)="saveChange()"
                 ></app-form-control>
-                <app-form-control
+                <div class="c-control">
+                  <label class="c-label">
+                    {{'Debt collection account' | translate }}
+                  </label>
+                <ng-select
+                  class="c-input"
+                  formControlName="IDAccountDebtCollection"
+                  labelForId="IDAccountDebtCollection"
+                  [items]="accountList"
+                  bindValue="Id"
+                  bindLabel="Code"
+                  clearable="true"
+                  (change)="saveChange()"
+                  appendTo="#ng-select-holder"
+                >
+                <ng-template ng-label-tmp let-i="item">
+                  {{ i.Name | translate }} | {{i.Code}}
+                
+                
+                 
+                    <!-- {{ i.Name | translate }}<small color="primary"><ion-text>{{ i.Code }}</ion-text></small>  -->
+                </ng-template>
+                <ng-template ng-option-tmp let-i="item" let-search="searchTerm">
+                  <div *ngIf="i">
+                    <div>
+                      <span *ngFor="let l of i.levels">&nbsp;&nbsp;&nbsp;</span>
+                      <ion-text [ngOptionHighlight]="search">{{ i.Code }} - 
+                       {{i.Name }}
+                     </ion-text>
+                    </div>
+                  </div>
+                </ng-template>
+
+                </ng-select>
+                </div>
+                <!-- <app-form-control
                   [field]="{id:'IDAccountDebtCollection', label: 'IDAccountDebtCollection', type : 'ng-select',dataSource: accountList , bindValue:'Id', bindLabel:'Name', form : formGroup }"
                   (change)="saveChange()"
-                ></app-form-control>
+                ></app-form-control> -->
               </ion-col>
               <ion-col size="12" size-sm size-xl="4">
                 <app-form-control
-                  [field]="{id:'LoanTenor', label: 'Loan  tenor', type : 'number', form : formGroup }"
+                [field]="{id:'PrincipalPaid', label: 'Principal paid', type : 'number', form : formGroup }"
+                (change)="saveChange()"
+              ></app-form-control>
+
+                <app-form-control
+                  [field]="{id:'DisbursementDate', label: 'Disbursement date', type : 'datetime-local', placeholder: 'yyyy-MM-dd', form : formGroup }"
                   (change)="saveChange()"
                 ></app-form-control>
                 <app-form-control
-                  [field]="{id:'DisbursementDate', label: 'DisbursementDate', type : 'datetime-local', placeholder: 'yyyy-MM-dd', form : formGroup }"
-                  (change)="saveChange()"
-                ></app-form-control>
-                <app-form-control
-                  [field]="{id:'EndDate', label: 'EndDate', type : 'datetime-local', placeholder: 'yyyy-MM-dd', form : formGroup }"
+                  [field]="{id:'EndDate', label: 'End date', type : 'datetime-local', placeholder: 'yyyy-MM-dd', form : formGroup }"
                   (change)="saveChange()"
                 ></app-form-control>
 
@@ -483,7 +503,7 @@
                   (change)="saveChange()"
                 ></app-form-control>
                 <app-form-control
-                  [field]="{id:'IsStepdownInterestRateScheme', label: 'Stepdown interest rate scheme', type : 'checkbox', form : formGroup }"
+                  [field]="{id:'IsStepdownInterestRateScheme', label: 'Step down interest rate scheme', type : 'checkbox', form : formGroup }"
                   (change)="saveChange()"
                 ></app-form-control>
                 <app-form-control

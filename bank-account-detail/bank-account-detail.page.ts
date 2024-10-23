@@ -45,6 +45,7 @@ export class BankAccountDetailPage extends PageBase {
       IDBranch: [this.env.selectedBranch],
       Id: new FormControl({ value: '', disabled: true }),
       IDBank: [''],
+      IDParent: [''],
       Code: [''],
       Name: ['', Validators.required],
       Remark: [''],
@@ -131,9 +132,9 @@ export class BankAccountDetailPage extends PageBase {
     super.loadedData(event);
     let rs = this.getBranchAndChildren(this.item.IDBranch,[]);
     this.accountProvider
-    .read({ Skip: 0, Take: 5000,ID_ne:this.item.Id, IDBranch: rs, IsLoanAccount:false}).then((values: any) => {
-      if(values){
-        this.accountList = values.data;
+    .read({ Skip: 0, Take: 5000,ID_ne:this.item.Id, Id: this.formGroup.get('IDParent').value, AllChildren:true}).then((values: any) => {
+      if(values && values.data?.length){
+        this.accountList = values.data.filter(d=> !d.IsLoanAccount && d.Id != this.formGroup.get('IDParent').value && d.Id != this.formGroup.get('Id').value);
         console.log(this.accountList);
       }
       this.setValidatorLoanAccount();
