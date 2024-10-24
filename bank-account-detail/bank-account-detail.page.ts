@@ -7,8 +7,9 @@ import {
   BANK_AccountProvider,
   BRA_BranchProvider,
   FINANCE_GeneralLedgerProvider,
+  LIST_BankProvider,
 } from 'src/app/services/static/services.service';
-import { FormBuilder, Validators, FormControl } from '@angular/forms';
+import { FormBuilder, Validators, FormControl, ValidatorFn, ValidationErrors, AbstractControl } from '@angular/forms';
 import { CommonService } from 'src/app/services/core/common.service';
 import { lib } from 'src/app/services/static/global-functions';
 
@@ -19,11 +20,16 @@ import { lib } from 'src/app/services/static/global-functions';
 })
 export class BankAccountDetailPage extends PageBase {
   ChartOfAccount = [];
+  collectionSchedule:any = [];
+  accountList = []
+  bankList = []
   branchList;
   constructor(
     public pageProvider: BANK_AccountProvider,
     public branchProvider: BRA_BranchProvider,
+    public list_BankProvider: LIST_BankProvider,
     public chartOfAccountProvider: FINANCE_GeneralLedgerProvider,
+    public accountProvider: BANK_AccountProvider,
     public env: EnvService,
     public navCtrl: NavController,
     public route: ActivatedRoute,
@@ -38,6 +44,8 @@ export class BankAccountDetailPage extends PageBase {
     this.formGroup = formBuilder.group({
       IDBranch: [this.env.selectedBranch],
       Id: new FormControl({ value: '', disabled: true }),
+      IDBank: [''],
+      IDParent: [''],
       Code: [''],
       Name: ['', Validators.required],
       Remark: [''],
@@ -62,6 +70,21 @@ export class BankAccountDetailPage extends PageBase {
       OtherExpensesAccount: [''],
       OtherIncomesAccount: [''],
       //-------------------------
+      IsLoanAccount: [''],
+      IsInDue: [''],
+      FixedPeriod: [''],
+      InterestRate: [''],
+      CurentInterestRate: [''],
+      IsStepdownInterestRateScheme: [''],
+      IsEarlyRepayment: [''],
+      LoanTenor: [''],
+      DisbursementDate: [''],
+      EndDate: [''],
+      IDAccountDebtCollection: [''],
+      TotalOutstandingLoans: [''],
+      PrincipalPaid: [''],
+
+      //-------------------------
       IsDisabled: new FormControl({ value: '', disabled: true }),
       IsDeleted: new FormControl({ value: '', disabled: true }),
       CreatedBy: new FormControl({ value: '', disabled: true }),
@@ -81,7 +104,8 @@ export class BankAccountDetailPage extends PageBase {
         })
         .toPromise(),
         this.branchProvider
-        .read({ Skip: 0, Take: 5000, AllParent: true, Id: this.env.selectedBranchAndChildren })
+        .read({ Skip: 0, Take: 5000, AllParent: true, Id: this.env.selectedBranchAndChildren }),
+        this.list_BankProvider.read({Take:5000})
     ]).then((values: any) => {
       if (values[0]) {
         lib.buildFlatTree(values[0], []).then((result: any) => {
@@ -97,14 +121,57 @@ export class BankAccountDetailPage extends PageBase {
           this.markNestedNode(this.branchList, this.env.selectedBranch);
         })
       }
+      if(values[2]){
+        this.bankList = values[2].data;
+      }
       super.preLoadData(event);
 
     });
   }
+  loadedData(event=null){
+    super.loadedData(event);
+    let rs = this.getBranchAndChildren(this.item.IDBranch,[]);
+    this.accountProvider
+    .read({ Skip: 0, Take: 5000,ID_ne:this.item.Id, Id: this.formGroup.get('IDParent').value, AllChildren:true}).then((values: any) => {
+      if(values && values.data?.length){
+        this.accountList = values.data.filter(d=> !d.IsLoanAccount && d.Id != this.formGroup.get('IDParent').value && d.Id != this.formGroup.get('Id').value);
+        console.log(this.accountList);
+      }
+      this.setValidatorLoanAccount();
 
+    });
+    
+    
+  }
+  getBranchAndChildren(id,result = []){
+    let it = this.branchList.find(d=> d.Id == id);
+    if(it) {
+      result.push(it.Id);
+      let children = [...this.branchList.filter(d=> d.IDParent == it.Id)]
+      children.forEach(c => {
+        this.getBranchAndChildren(c.Id,result);
+      })
+
+    }
+    return result;
+  }
   segmentView = 's1';
   segmentChanged(ev: any) {
     this.segmentView = ev.detail.value;
+    if(this.segmentView == 's3'){
+      if(this.formGroup.get('LoanTenor').value &&this.formGroup.get('InterestRate').value && this.formGroup.get('TotalOutstandingLoans').value && this.formGroup.get('DisbursementDate').value  )
+        {
+          let query = {Id:this.formGroup.get('Id').value};
+          this.pageProvider.commonService.connect('GET','BANK/Account/GetCollectionSchedule',query).toPromise().then((rs)=>{
+            console.log(rs);
+            this.collectionSchedule = rs;
+          }).catch(err=>{
+            console.log(err);
+            
+          })
+        }
+    
+    }
   }
 
   async saveChange() {
@@ -116,4 +183,39 @@ export class BankAccountDetailPage extends PageBase {
       this.markNestedNode(ls, i.Id);
     });
   }
+  setValidatorLoanAccount(){
+    if(this.formGroup.get('IsLoanAccount').value){
+      this.formGroup.get('LoanTenor').setValidators([Validators.required,this.greaterThanZeroValidator]);
+    //  this.formGroup.get('FixedPeriod').setValidators([Validators.required,this.greaterThanZeroValidator]);
+      this.formGroup.get('InterestRate').setValidators([Validators.required,this.greaterThanZeroValidator]);
+      this.formGroup.get('TotalOutstandingLoans').setValidators([Validators.required,this.greaterThanZeroValidator]);
+      this.formGroup.get('CurentInterestRate').setValidators([Validators.required,this.greaterThanZeroValidator]);
+    }
+    else{
+      this.formGroup.get('LoanTenor').setValidators([]);
+ //     this.formGroup.get('FixedPeriod').setValidators([]);
+      this.formGroup.get('InterestRate').setValidators([]);
+      this.formGroup.get('TotalOutstandingLoans').setValidators([]);
+      this.formGroup.get('CurentInterestRate').setValidators([]);
+    }
+    this.formGroup.get('LoanTenor').updateValueAndValidity();
+    this.formGroup.get('CurentInterestRate').updateValueAndValidity();
+    this.formGroup.get('InterestRate').updateValueAndValidity();
+    this.formGroup.get('TotalOutstandingLoans').updateValueAndValidity();
+
+  }
+  isLoanAccountChange(){
+    this.setValidatorLoanAccount();
+    this.saveChange();
+  }
+
+  greaterThanZeroValidator(control: AbstractControl): ValidationErrors | null {
+    const value = control.value;
+    return value > 0 ? null : { greaterThanZero: true };
+  }
+  searchByNameCode = (term: string, item: any) => {
+    term = term.toLowerCase();
+    return item.Name.toLowerCase().includes(term) || 
+          item.Code.toLowerCase().includes(term);  
+  };
 }
