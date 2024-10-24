@@ -109,6 +109,12 @@ export class BankAccountDetailPage extends PageBase {
     ]).then((values: any) => {
       if (values[0]) {
         lib.buildFlatTree(values[0], []).then((result: any) => {
+          result.forEach(i=> {
+            let parent = result.find(d => d.IDParent == i.Id);
+            if(parent){
+              i.disabled = true;
+            }
+          });
           this.ChartOfAccount = result;
         });
       }
