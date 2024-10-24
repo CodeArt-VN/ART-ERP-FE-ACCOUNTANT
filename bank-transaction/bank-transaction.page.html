@@ -123,6 +123,10 @@
       <datatable-column class="col-name flex-break" name="Remark" property="Remark">
         <ng-template let-i="row" datatable-cell-template>
           <div>
+            <a *ngIf="!query.IDAccount && i._BankAccount" class="bold" [routerLink]="['/bank-account/'+i._BankAccount.Id]">
+              <ion-text>{{i._BankAccount.Code}}</ion-text>
+              <small>{{i._BankAccount.Name}}</small>
+            </a>
             <a *ngIf="i._BusinessPartner" class="bold" [routerLink]="['/business-partner/'+i._BusinessPartner.Id]">
               <ion-text [color]="i._ReconciliationStatus?.Color">{{i._BusinessPartner.Name}}</ion-text>
               <small>{{i._BusinessPartner.Id}}</small>

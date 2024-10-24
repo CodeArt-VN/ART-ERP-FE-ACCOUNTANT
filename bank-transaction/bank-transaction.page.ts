@@ -31,7 +31,7 @@ export class BankTransactionPage extends PageBase {
   isAllRowOpened = true;
   constructor(
     public pageProvider: BANK_TransactionProvider,
-    public providerService: BANK_AccountProvider,
+    public bankProvider: BANK_AccountProvider,
     public contactProvider: CRM_ContactProvider,
     public branchProvider: BRA_BranchProvider,
     public modalController: ModalController,
@@ -104,7 +104,7 @@ export class BankTransactionPage extends PageBase {
       this.markNestedNode(this.branchList, this.env.selectedBranch);
     });
     
-    this.providerService
+    this.bankProvider
       .read({ Take: 5000 })
       .then((res) => {
         this.groupControl.groupList = res['data'];
@@ -127,6 +127,7 @@ export class BankTransactionPage extends PageBase {
     super.loadedData(event);
     this.items.forEach((i) => {
       i._ReconciliationStatus = this.statusList.find((d) => d.Code == i.ReconciliationStatus);
+      i._BankAccount = this.groupControl.groupList.find((d) => d.Id == i.IDAccount);
     });
     this._contactDataSource.initSearch();
     this.formGroup.get('IDBranch').markAsPristine();
@@ -152,7 +153,7 @@ export class BankTransactionPage extends PageBase {
         IDBranch: this.formGroup.get('IDBranch').value,
         IDContact: this.formGroup.get('IDContact').value,
       };
-      this.providerService.commonService
+      this.bankProvider.commonService
         .connect('PUT', 'BANK/Transaction/AssignBranchAndContact', obj)
         .toPromise()
         .then((res) => {
@@ -188,7 +189,7 @@ export class BankTransactionPage extends PageBase {
   FindMatchingCriteria() {
     let obj = { Ids: [] };
     if (this.selectedItems?.length > 0) obj.Ids = this.selectedItems.map((i) => i.Id);
-    this.providerService.commonService
+    this.bankProvider.commonService
       .connect('PUT', 'BANK/Transaction/FindMatchingCriteria', obj)
       .toPromise()
       .then((res) => {
