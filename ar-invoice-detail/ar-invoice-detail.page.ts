@@ -177,10 +177,14 @@ export class ARInvoiceDetailPage extends PageBase {
       WorkPhone: '',
     });
     if (!this.item?.BuyerTaxCode) this.item.BuyerTaxCode = '';
-    if (markAsDirty) this.onBuyerTaxCodeChange(this.TaxCodeDataSource[0]);
+    if (markAsDirty){
+      let defaultTaxAddress = this.TaxCodeDataSource.find(d=> d.IsDefault);
+      if(!defaultTaxAddress) defaultTaxAddress = this.TaxCodeDataSource[0];
+      this.onBuyerTaxCodeChange(defaultTaxAddress,true);
+    } 
   }
 
-  onBuyerTaxCodeChange(event) {
+  onBuyerTaxCodeChange(event,forceSave = true) {
     this.formGroup.get('BuyerTaxCode').setValue(event.TaxCode);
     this.formGroup.get('BuyerUnitName').setValue(event.CompanyName);
     this.formGroup.get('BuyerAddress').setValue(event.BillingAddress);
@@ -193,7 +197,7 @@ export class ARInvoiceDetailPage extends PageBase {
     this.formGroup.get('ReceiverEmail').markAsDirty();
     this.formGroup.get('ReceiverMobile').markAsDirty();
 
-    this.saveChange();
+    if(forceSave) this.saveChange();
   }
 
   IDBusinessPartnerChange(i) {
@@ -625,7 +629,7 @@ export class ARInvoiceDetailPage extends PageBase {
   async addContact() {
     const modal = await this.modalController.create({
       component: ARContactModalPage,
-      cssClass: 'my-custom-class',
+      cssClass: 'modal90',
       componentProps: {
         firstName: 'Douglas',
         lastName: 'Adams',
@@ -641,7 +645,7 @@ export class ARInvoiceDetailPage extends PageBase {
       this.IDBusinessPartnerChange(data);
     }
   }
-
+  
   approveInvoices() {
     if (!this.pageConfig.canApproveInvoice) {
       return;
