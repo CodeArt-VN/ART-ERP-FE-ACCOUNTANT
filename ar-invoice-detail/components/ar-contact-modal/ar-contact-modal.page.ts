@@ -2,8 +2,8 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { PageBase } from 'src/app/page-base';
 import { ModalController, NavController, LoadingController } from '@ionic/angular';
 import { EnvService } from 'src/app/services/core/env.service';
-import { CRM_ContactProvider, HRM_StaffProvider } from 'src/app/services/static/services.service';
-import { FormBuilder, Validators, FormGroup, FormControl } from '@angular/forms';
+import { CRM_ContactProvider, CRM_PartnerTaxInfoProvider, HRM_StaffProvider } from 'src/app/services/static/services.service';
+import { FormBuilder, Validators, FormGroup, FormControl, FormArray } from '@angular/forms';
 import { catchError, concat, distinctUntilChanged, of, Subject, switchMap, tap } from 'rxjs';
 
 @Component({
@@ -17,7 +17,8 @@ export class ARContactModalPage extends PageBase {
   constructor(
     public pageProvider: CRM_ContactProvider,
     public staffProvider: HRM_StaffProvider,
-    public env: EnvService,
+    public taxInfoProvider : CRM_PartnerTaxInfoProvider ,
+      public env: EnvService,
     public navCtrl: NavController,
 
     public modalController: ModalController,
@@ -46,9 +47,10 @@ export class ARContactModalPage extends PageBase {
         Phone1: [''],
         Contact: [''],
       }),
-      TaxAddresses: [''],
+      TaxInfos: this.formBuilder.array([]),
       TaxCode:['']
     });
+    this.addTaxInfo({});
     console.log(this.item);
     this.salemanDataSource.initSearch();
   }
@@ -84,6 +86,18 @@ export class ARContactModalPage extends PageBase {
     },
   };
 
+  addTaxInfo(taxInfo){
+    let groups = this.formGroup.get('TaxInfos') as FormArray;
+    let group = this.formBuilder.group({
+      Id:[taxInfo?.Id],
+      TaxCode:[taxInfo?.TaxCode, Validators.required],
+      CompanyName:[taxInfo?.CompanyName, Validators.required],
+      Email:[taxInfo?.Email],
+      WorkPhone:[taxInfo?.WorkPhone],
+      BillingAddress:[taxInfo?.BillingAddress, Validators.required],
+    })
+    groups.push(group);
+  }
   async saveChange() {
     if (this.formGroup.invalid) {
       return;
@@ -97,39 +111,9 @@ export class ARContactModalPage extends PageBase {
     this.formGroup.controls.Address['controls'].Phone1.markAsDirty();
     this.formGroup.controls.Address['controls'].Contact.markAsDirty();
     this.formGroup.controls.Address.markAsDirty();
-    return new Promise( (resolve, reject) => {
-      this.formGroup.updateValueAndValidity();
-      if (! this.formGroup.valid) {
-        let invalidControls = this.findInvalidControlsRecursive(this.formGroup); 
-        const translationPromises = invalidControls.map(control => this.env.translateResource(control));
-        Promise.all(translationPromises).then((values) => {
-          let invalidControls = values;
-          this.env.showMessage('Please recheck control(s): {{value}}', 'warning', invalidControls.join(' | '));
-          reject('form invalid');
-          });
-       
-      } else if (this.submitAttempt == false) {
-        this.submitAttempt = true;
-        let submitItem = this.getDirtyValues(this.formGroup);
-
-        this.pageProvider
-          .save(submitItem, this.pageConfig.isForceCreate)
-          .then((savedItem: any) => {
-            resolve(savedItem);
-            this.savedChange(savedItem,  this.formGroup);
-          })
-          .catch((err) => {
-            this.env.showMessage('Cannot save, please try again', 'danger');
-            this.cdr.detectChanges();
-            this.submitAttempt = false;
-            reject(err);
-          });
-      } else {
-        reject('submitAttempt');
-      }
-    });
-  
+    super.saveChange2();
   }
+
   Apply(apply = false) {
     if (apply) {
       this.item = {
@@ -153,6 +137,8 @@ export class ARContactModalPage extends PageBase {
 
   checkPhoneNumber() {
     if (this.formGroup.controls.WorkPhone.valid) {
+      let groups = this.formGroup.get('TaxInfos') as FormArray;
+      groups.controls[0].get('WorkPhone').setValue(this.formGroup.controls.WorkPhone.value);
       this.pageProvider
         .search({
           WorkPhone_eq: this.formGroup.controls.WorkPhone.value,
@@ -173,6 +159,8 @@ export class ARContactModalPage extends PageBase {
             .showPrompt('Contact has been existed, do you want to load information?')
             .then((_) => {
               this.formGroup.patchValue(results[0]);
+              this.formGroup.markAsPristine();
+              this.formGroup.get('WorkPhone').markAsDirty();
               this.formGroup.disable();
               this.formGroup.get('WorkPhone').enable();
               if(results[0]?._Owner) this.salemanDataSource.selected=[results[0]?._Owner]
@@ -181,6 +169,7 @@ export class ARContactModalPage extends PageBase {
             }).catch(err=>{
               this.formGroup.enable();
               this.formGroup.controls.WorkPhone.setValue('');
+              this.formGroup.get('Id').setValue(0);
               // this.formGroup.controls.WorkPhone.setErrors({
               //   incorrect: true,
               // });
@@ -188,7 +177,33 @@ export class ARContactModalPage extends PageBase {
           }
         });
     }
-    else this.formGroup.get('Id').setValue(0);
+    else {
+      this.formGroup.enable();
+      this.formGroup.controls.WorkPhone.setValue('');
+      this.formGroup.get('Id').setValue(0);
+    }
   }
+  onChangedTaxCode(event, form) {
+    //'{"MaSoThue":"0314643146","TenChinhThuc":"CÔNG TY TNHH CÔNG NGHỆ CODE ART","DiaChiGiaoDichChinh":"53/44/21, Bùi Xương Trạch, Phường Long Trường, Thành phố Thủ Đức, Thành phố Hồ Chí Minh, Việt Nam","DiaChiGiaoDichPhu":"","TrangThaiHoatDong":"NNT Đang hoạt động (đã được cấp GCN ĐKT)","SoDienThoai":"","ChuDoanhNghiep":"","LastUpdate":"2022-02-15T00:00:00"}'
+    let value = event.target.value;
+    if (value.length > 9) {
+      this.taxInfoProvider.commonService
+        .connect('GET', 'CRM/Contact/SearchUnitInforByTaxCode', {
+          TaxCode: value,
+        })
+        .toPromise()
+        .then((result: any) => {
+          if (result.TenChinhThuc) {
+            form.controls.CompanyName.setValue(result.TenChinhThuc);
+            form.controls.CompanyName.markAsDirty();
 
+            form.controls.BillingAddress.setValue(result.DiaChiGiaoDichChinh);
+            form.controls.BillingAddress.markAsDirty();
+          }
+        })
+        .catch((err) => {
+          this.env.showMessage('Mã số thuế không hợp lệ!', 'danger');
+        });
+    }
+  }
 }
