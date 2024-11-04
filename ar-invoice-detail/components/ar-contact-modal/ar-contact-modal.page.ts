@@ -50,6 +50,7 @@ export class ARContactModalPage extends PageBase {
       TaxCode:['']
     });
     console.log(this.item);
+    this.salemanDataSource.initSearch();
   }
   salemanDataSource = {
     searchProvider: this.staffProvider,
@@ -82,17 +83,6 @@ export class ARContactModalPage extends PageBase {
       );
     },
   };
-
-  savedChange(savedItem = null, form = this.formGroup, isApply = true) {
-    this.formGroup.markAsPristine();
-    this.cdr.detectChanges();
-    this.submitAttempt = false;
-    this.env.showMessage('Saving completed!', 'success');
-    if (savedItem) {
-      this.formGroup.patchValue(savedItem);
-      this.item = savedItem;
-    }
-  }
 
   async saveChange() {
     if (this.formGroup.invalid) {
