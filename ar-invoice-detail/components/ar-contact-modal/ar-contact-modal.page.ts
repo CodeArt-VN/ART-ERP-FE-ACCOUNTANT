@@ -2,8 +2,9 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { PageBase } from 'src/app/page-base';
 import { ModalController, NavController, LoadingController } from '@ionic/angular';
 import { EnvService } from 'src/app/services/core/env.service';
-import { CRM_ContactProvider } from 'src/app/services/static/services.service';
-import { FormBuilder, Validators, FormGroup } from '@angular/forms';
+import { CRM_ContactProvider, HRM_StaffProvider } from 'src/app/services/static/services.service';
+import { FormBuilder, Validators, FormGroup, FormControl } from '@angular/forms';
+import { catchError, concat, distinctUntilChanged, of, Subject, switchMap, tap } from 'rxjs';
 
 @Component({
   selector: 'app-ar-contact-modal',
@@ -15,6 +16,7 @@ export class ARContactModalPage extends PageBase {
   IsBtnApply = false;
   constructor(
     public pageProvider: CRM_ContactProvider,
+    public staffProvider: HRM_StaffProvider,
     public env: EnvService,
     public navCtrl: NavController,
 
@@ -29,37 +31,67 @@ export class ARContactModalPage extends PageBase {
     this.pageConfig.isDetailPage = true;
 
     this.formGroup = formBuilder.group({
-      Id: [''],
+      Id: new FormControl({ value: '', disabled: true }),
       WorkPhone: ['', Validators.required],
       Name: ['', Validators.required],
+      Code: [''],
+      IDOwner: [''],
+      IsPersonal: [true],
+      Email: [''],
+      CompanyName: [''],
+      BillingAddress:[''],
+      Remark:[''],
       Address: this.formBuilder.group({
         Id: [''],
         Phone1: [''],
         Contact: [''],
       }),
+      TaxAddresses: [''],
       TaxCode:['']
     });
     console.log(this.item);
   }
+  salemanDataSource = {
+    searchProvider: this.staffProvider,
+    loading: false,
+    input$: new Subject<string>(),
+    selected: [],
+    items$: null,
+    initSearch() {
+      this.loading = false;
+      this.items$ = concat(
+        of(this.selected),
+        this.input$.pipe(
+          distinctUntilChanged(),
+          tap(() => (this.loading = true)),
+          switchMap((term) =>
+            this.searchProvider
+              .search({
+                Take: 20,
+                Skip: 0,
+                SkipMCP: true,
+                Term: term ? term : this.item?.IDSeller,
 
-  savedChange(event): void {
-    super.savedChange(event);
-    this.pageProvider.getAnItem(this.item.Id).then((result) => {
-      this.item = {
-        Address: result['Address'],
-        Code: result['Code'],
-        IDAddress: result['Address'].Id,
-        Id: result['Id'],
-        Name: result['Name'],
-        WorkPhone: result['WorkPhone'],
-        TaxCode: result['TaxCode'],
-        IsPersonal :result['IsPersonal']
+              })
+              .pipe(
+                catchError(() => of([])), // empty list on error
+                tap(() => (this.loading = false)),
+              ),
+          ),
+        ),
+      );
+    },
+  };
 
-      };
-      this.Apply(true);
-      // this.IsBtnApply = true;
-      // this.IsBtnNew = false;
-    });
+  savedChange(savedItem = null, form = this.formGroup, isApply = true) {
+    this.formGroup.markAsPristine();
+    this.cdr.detectChanges();
+    this.submitAttempt = false;
+    this.env.showMessage('Saving completed!', 'success');
+    if (savedItem) {
+      this.formGroup.patchValue(savedItem);
+      this.item = savedItem;
+    }
   }
 
   async saveChange() {
@@ -68,44 +100,56 @@ export class ARContactModalPage extends PageBase {
     }
     let WorkPhone = this.formGroup.controls.WorkPhone.value;
     let Name = this.formGroup.controls.Name.value;
-    this.formGroup.controls.Address['controls'].Phone1.patchValue(WorkPhone);
+    this.formGroup.controls.Name.markAsDirty();
+    this.formGroup.controls.IsPersonal.markAsDirty();
     this.formGroup.controls.Address['controls'].Contact.patchValue(Name);
+    this.formGroup.controls.Address['controls'].Phone1.patchValue(WorkPhone);
     this.formGroup.controls.Address['controls'].Phone1.markAsDirty();
     this.formGroup.controls.Address['controls'].Contact.markAsDirty();
     this.formGroup.controls.Address.markAsDirty();
-
-    this.pageProvider.read({ WorkPhone_eq: WorkPhone }).then((results: any) => {
-      if (results['data'].length > 0) {
-        this.env
-        .showPrompt('Contact has been existed, do you want to apply?')
-        .then((_) => {
-          this.formGroup.controls.Name.patchValue(results['data'][0].Name);
-          this.item = {
-            Code: results['data'][0].Code,
-            Address: results['data'][0].Addresses[0],
-            IDAddress: results['data'][0].Addresses[0].Id,
-            Id: results['data'][0].Id,
-            Name: results['data'][0].Name,
-            WorkPhone: results['data'][0].WorkPhone,
-            TaxCode: results['data'][0]['TaxCode'],
-            IsPersonal :results['data'][0]['IsPersonal']
-          };
-          this.Apply(true);
-        })
-        .catch(err=>{
-          this.modalController.dismiss();
-        });
-    //  //   this.env.showMessage('Khách hàng đã tồn tại', 'warning');
-    //     this.IsBtnApply = true;
-    //     this.IsBtnNew = false;
+    return new Promise( (resolve, reject) => {
+      this.formGroup.updateValueAndValidity();
+      if (! this.formGroup.valid) {
+        let invalidControls = this.findInvalidControlsRecursive(this.formGroup); 
+        const translationPromises = invalidControls.map(control => this.env.translateResource(control));
+        Promise.all(translationPromises).then((values) => {
+          let invalidControls = values;
+          this.env.showMessage('Please recheck control(s): {{value}}', 'warning', invalidControls.join(' | '));
+          reject('form invalid');
+          });
        
+      } else if (this.submitAttempt == false) {
+        this.submitAttempt = true;
+        let submitItem = this.getDirtyValues(this.formGroup);
+
+        this.pageProvider
+          .save(submitItem, this.pageConfig.isForceCreate)
+          .then((savedItem: any) => {
+            resolve(savedItem);
+            this.savedChange(savedItem,  this.formGroup);
+          })
+          .catch((err) => {
+            this.env.showMessage('Cannot save, please try again', 'danger');
+            this.cdr.detectChanges();
+            this.submitAttempt = false;
+            reject(err);
+          });
       } else {
-        super.saveChange2();
+        reject('submitAttempt');
       }
     });
+  
   }
   Apply(apply = false) {
     if (apply) {
+      this.item = {
+        Address: this.item ['Address'],
+        IDOwner: this.item ['IDOwner'],
+        Code: this.item ['Code'],
+        IDAddress: this.item ['Address'].Id,
+        Id: this.item ['Id'],
+        Name: this.item ['Name'],
+      };
       this.modalController.dismiss(this.item);
     } else {
       this.modalController.dismiss();
@@ -116,4 +160,45 @@ export class ARContactModalPage extends PageBase {
     this.IsBtnNew = true;
     this.formGroup.reset();
   }
+
+  checkPhoneNumber() {
+    if (this.formGroup.controls.WorkPhone.valid) {
+      this.pageProvider
+        .search({
+          WorkPhone_eq: this.formGroup.controls.WorkPhone.value,
+          SkipMCP: true,
+        })
+        .toPromise()
+        .then((results: any) => {
+          if (results.length == 0 && results.findIndex((e) => e.Id == this.id)) {
+            this.formGroup.enable();
+            this.formGroup.get('Id').setValue(0);
+            this.formGroup.controls.WorkPhone.setErrors(null);
+            this.formGroup.controls.Address['controls'].Phone1.setValue(this.formGroup.controls.WorkPhone.value);
+            this.formGroup.controls.Address['controls'].Id.setValue(0);
+            this.formGroup.controls.Name.setValue('');
+            this.formGroup.controls.Code.setValue('');
+          } else {
+            this.env
+            .showPrompt('Contact has been existed, do you want to load information?')
+            .then((_) => {
+              this.formGroup.patchValue(results[0]);
+              this.formGroup.disable();
+              this.formGroup.get('WorkPhone').enable();
+              if(results[0]?._Owner) this.salemanDataSource.selected=[results[0]?._Owner]
+              this.salemanDataSource.initSearch();
+              this.item = results[0];
+            }).catch(err=>{
+              this.formGroup.enable();
+              this.formGroup.controls.WorkPhone.setValue('');
+              // this.formGroup.controls.WorkPhone.setErrors({
+              //   incorrect: true,
+              // });
+            });
+          }
+        });
+    }
+    else this.formGroup.get('Id').setValue(0);
+  }
+
 }
