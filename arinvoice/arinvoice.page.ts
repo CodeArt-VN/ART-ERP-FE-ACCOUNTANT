@@ -59,6 +59,8 @@ export class ARInvoicePage extends PageBase {
       { Dimension: 'Id', Order: 'DESC' },
     ];
     this.pageConfig.sort = sorted;
+    this.query.IDOwner = this.pageConfig.canViewAllData ? 'all' : this.env.user.StaffID;
+
     let sysConfigQuery = ['IsShowSOCode'];
     Promise.all([
       this.env.getStatus('ARInvoiceStatus'),
