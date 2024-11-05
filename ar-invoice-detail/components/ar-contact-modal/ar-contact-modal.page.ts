@@ -143,6 +143,7 @@ export class ARContactModalPage extends PageBase {
         .search({
           WorkPhone_eq: this.formGroup.controls.WorkPhone.value,
           SkipMCP: true,
+          SkipAddress: true,
         })
         .toPromise()
         .then((results: any) => {
