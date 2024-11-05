@@ -62,7 +62,7 @@
           </ion-col>
 
           <ion-col size="12" size-sm size-xl="4">
-            <app-form-control [field]="{id :'Id' , label:'Id',form:formGroup}" *ngIf="formGroup.get('Id').value">
+            <app-form-control [field]="{id :'Id' ,type:'span-text', label:'Id',form:formGroup}" *ngIf="formGroup.get('Id').value">
             </app-form-control>
        
             <app-form-control [field]="{id :'Code' , label:'Customner code',form:formGroup}">
@@ -119,9 +119,9 @@
         </ion-row>
       </ion-grid>
         <!-- Thông tin hóa đơn -->
-      <app-bp-tax-address [bpId]="formGroup.get('Id').value" *ngIf="this.formGroup.get('Id').value"></app-bp-tax-address>
+      <app-bp-tax-address [bpId]="item.Id" *ngIf="item.Id >0"></app-bp-tax-address>
        <ion-grid fixed>
-        <ion-row class="hr-group" *ngIf="!formGroup.get('Id').value">
+        <ion-row class="hr-group" *ngIf="!item.Id">
           <ion-col size="12" size-sm="12" size-md="12" size-xl="3">
             <ion-list-header class="ion-no-padding">
               <ion-label color="primary">{{'Invoice information' | translate}}</ion-label>
@@ -142,7 +142,7 @@
         <ion-row>
           <ion-col size="0" size-sm="0" size-xl="4"></ion-col>
           <ion-col size="12" size-sm="6" size-xl="4">
-          <div  class="c-control ion-text-right"*ngIf=" !this.formGroup.get('Id').value">
+          <div  class="c-control ion-text-right"*ngIf="!item.Id">
             <label class="c-label" for=""></label>
             <ion-button expand="block" (click)="saveChange()">{{'Save' | translate}}</ion-button>
           </div>

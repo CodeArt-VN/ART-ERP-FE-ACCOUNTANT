@@ -18,7 +18,7 @@ export class ARContactModalPage extends PageBase {
     public pageProvider: CRM_ContactProvider,
     public staffProvider: HRM_StaffProvider,
     public taxInfoProvider : CRM_PartnerTaxInfoProvider ,
-      public env: EnvService,
+    public env: EnvService,
     public navCtrl: NavController,
 
     public modalController: ModalController,
@@ -33,7 +33,7 @@ export class ARContactModalPage extends PageBase {
 
     this.formGroup = formBuilder.group({
       Id: new FormControl({ value: '', disabled: true }),
-      WorkPhone: ['', Validators.required],
+      WorkPhone:[null, [Validators.required, Validators.pattern('[- +()0-9]{10,}')]],
       Name: ['', Validators.required],
       Code: [''],
       IDOwner: [''],
@@ -90,11 +90,11 @@ export class ARContactModalPage extends PageBase {
     let groups = this.formGroup.get('TaxInfos') as FormArray;
     let group = this.formBuilder.group({
       Id:[taxInfo?.Id],
-      TaxCode:[taxInfo?.TaxCode, Validators.required],
-      CompanyName:[taxInfo?.CompanyName, Validators.required],
+      TaxCode:[taxInfo?.TaxCode],
+      CompanyName:[taxInfo?.CompanyName],
       Email:[taxInfo?.Email],
       WorkPhone:[taxInfo?.WorkPhone],
-      BillingAddress:[taxInfo?.BillingAddress, Validators.required],
+      BillingAddress:[taxInfo?.BillingAddress],
     })
     groups.push(group);
   }
@@ -114,17 +114,29 @@ export class ARContactModalPage extends PageBase {
     super.saveChange2();
   }
 
+  savedChange(savedItem = null, form = this.formGroup) {
+    if (savedItem) {
+      if (form.controls.Id && savedItem.Id && form.controls.Id.value != savedItem.Id)
+        form.controls.Id.setValue(savedItem.Id);
+    }
+    form.markAsPristine();
+    this.cdr.detectChanges();
+    this.submitAttempt = false;
+    this.env.showMessage('Saving completed!', 'success');
+  }
+
   Apply(apply = false) {
     if (apply) {
-      this.item = {
-        Address: this.item ['Address'],
-        IDOwner: this.item ['IDOwner'],
-        Code: this.item ['Code'],
-        IDAddress: this.item ['Address'].Id,
-        Id: this.item ['Id'],
-        Name: this.item ['Name'],
-      };
-      this.modalController.dismiss(this.item);
+      let formGroupValue = this.formGroup.getRawValue();
+      let data = {
+        Address: formGroupValue['Address'],
+        IDOwner: formGroupValue['IDOwner'],
+        Code: formGroupValue['Code'],
+        IDAddress: formGroupValue['Address']?.Id, 
+        Id: formGroupValue['Id'],
+        Name: formGroupValue['Name']
+      }
+      this.modalController.dismiss(data);
     } else {
       this.modalController.dismiss();
     }
@@ -137,51 +149,68 @@ export class ARContactModalPage extends PageBase {
 
   checkPhoneNumber() {
     if (this.formGroup.controls.WorkPhone.valid) {
-      let groups = this.formGroup.get('TaxInfos') as FormArray;
-      groups.controls[0].get('WorkPhone').setValue(this.formGroup.controls.WorkPhone.value);
-      this.pageProvider
-        .search({
-          WorkPhone_eq: this.formGroup.controls.WorkPhone.value,
-          SkipMCP: true,
-        })
-        .toPromise()
-        .then((results: any) => {
-          if (results.length == 0 && results.findIndex((e) => e.Id == this.id)) {
-            this.formGroup.enable();
-            this.formGroup.get('Id').setValue(0);
-            this.formGroup.controls.WorkPhone.setErrors(null);
-            this.formGroup.controls.Address['controls'].Phone1.setValue(this.formGroup.controls.WorkPhone.value);
-            this.formGroup.controls.Address['controls'].Id.setValue(0);
-            this.formGroup.controls.Name.setValue('');
-            this.formGroup.controls.Code.setValue('');
-          } else {
+      // let groups = this.formGroup.get('TaxInfos') as FormArray;
+      // groups.controls[0].get('WorkPhone').setValue(this.formGroup.controls.WorkPhone.value);
+      if(this.item.Id !=0) this.resetForm();
+      let queryChecking = {
+        IDContact : this.formGroup.get('Id').value,
+        WorkPhone: this.formGroup.get('WorkPhone').value
+      }
+      this.pageProvider.commonService.connect('GET','CRM/Contact/CheckExistWorkPhone',queryChecking).toPromise()
+        .then((result: any) => {
+          if(result){
             this.env
             .showPrompt('Contact has been existed, do you want to load information?')
             .then((_) => {
-              this.formGroup.patchValue(results[0]);
-              this.formGroup.markAsPristine();
-              this.formGroup.get('WorkPhone').markAsDirty();
-              this.formGroup.disable();
-              this.formGroup.get('WorkPhone').enable();
-              if(results[0]?._Owner) this.salemanDataSource.selected=[results[0]?._Owner]
-              this.salemanDataSource.initSearch();
-              this.item = results[0];
+              this.pageProvider
+              .search({
+                WorkPhone_eq: this.formGroup.controls.WorkPhone.value,
+                SkipMCP: true,
+                SkipAddress: true,
+              })
+              .toPromise().then((results:any) => {
+                if (results.length == 0) {
+                  this.resetForm();
+                } else {
+                  this.formGroup.patchValue(results[0]);
+                  this.formGroup.markAsPristine();
+                  this.formGroup.get('WorkPhone').markAsDirty();
+                  this.formGroup.disable();
+                  this.formGroup.get('WorkPhone').enable();
+                  if(results[0]?._Owner) this.salemanDataSource.selected=[results[0]?._Owner]
+                  this.salemanDataSource.initSearch();
+                  this.item = results[0]; // hiện component TaxAddress
+                }
+              })
             }).catch(err=>{
-              this.formGroup.enable();
-              this.formGroup.controls.WorkPhone.setValue('');
-              this.formGroup.get('Id').setValue(0);
-              // this.formGroup.controls.WorkPhone.setErrors({
-              //   incorrect: true,
-              // });
-            });
+              this.formGroup.get('WorkPhone').setValue('');
+            })
+          }
+          else{
+            this.formGroup.enable();
+            this.formGroup.get('Id').setValue(0);
+            this.item.Id = 0;
           }
         });
     }
-    else {
-      this.formGroup.enable();
-      this.formGroup.controls.WorkPhone.setValue('');
-      this.formGroup.get('Id').setValue(0);
-    }
+  }
+  resetForm(){
+    this.formGroup.enable();
+    this.formGroup.get('Id').setValue(0);
+    this.formGroup.controls.Address['controls'].Phone1.setValue(this.formGroup.controls.WorkPhone.value);
+    this.formGroup.controls.Address['controls'].Id.setValue(0);
+    this.formGroup.controls.Name.setValue('');
+    this.formGroup.controls.Code.setValue('');
+    this.formGroup.get('IDOwner').setValue(null);
+    this.formGroup.get('IsPersonal').setValue(true);
+
+    this.formGroup.get('Code').setValue(null);
+    this.formGroup.get('Remark').setValue(null);
+    this.formGroup.get('IDOwner').markAsPristine();
+    this.formGroup.get('Code').markAsPristine();
+    this.formGroup.get('Remark').markAsPristine();
+    this.formGroup.get('IsPersonal').markAsPristine();
+    this.item.Id = 0; // không hiện component TaxAddress
   }
   onChangedTaxCode(event, form) {
     //'{"MaSoThue":"0314643146","TenChinhThuc":"CÔNG TY TNHH CÔNG NGHỆ CODE ART","DiaChiGiaoDichChinh":"53/44/21, Bùi Xương Trạch, Phường Long Trường, Thành phố Thủ Đức, Thành phố Hồ Chí Minh, Việt Nam","DiaChiGiaoDichPhu":"","TrangThaiHoatDong":"NNT Đang hoạt động (đã được cấp GCN ĐKT)","SoDienThoai":"","ChuDoanhNghiep":"","LastUpdate":"2022-02-15T00:00:00"}'
