@@ -18,7 +18,7 @@ export class ARContactModalPage extends PageBase {
     public pageProvider: CRM_ContactProvider,
     public staffProvider: HRM_StaffProvider,
     public taxInfoProvider : CRM_PartnerTaxInfoProvider ,
-      public env: EnvService,
+    public env: EnvService,
     public navCtrl: NavController,
 
     public modalController: ModalController,
@@ -33,7 +33,7 @@ export class ARContactModalPage extends PageBase {
 
     this.formGroup = formBuilder.group({
       Id: new FormControl({ value: '', disabled: true }),
-      WorkPhone: ['', Validators.required],
+      WorkPhone:[null, [Validators.required, Validators.pattern('[- +()0-9]{10,}')]],
       Name: ['', Validators.required],
       Code: [''],
       IDOwner: [''],
@@ -90,11 +90,11 @@ export class ARContactModalPage extends PageBase {
     let groups = this.formGroup.get('TaxInfos') as FormArray;
     let group = this.formBuilder.group({
       Id:[taxInfo?.Id],
-      TaxCode:[taxInfo?.TaxCode, Validators.required],
-      CompanyName:[taxInfo?.CompanyName, Validators.required],
+      TaxCode:[taxInfo?.TaxCode],
+      CompanyName:[taxInfo?.CompanyName],
       Email:[taxInfo?.Email],
       WorkPhone:[taxInfo?.WorkPhone],
-      BillingAddress:[taxInfo?.BillingAddress, Validators.required],
+      BillingAddress:[taxInfo?.BillingAddress],
     })
     groups.push(group);
   }
@@ -137,8 +137,8 @@ export class ARContactModalPage extends PageBase {
 
   checkPhoneNumber() {
     if (this.formGroup.controls.WorkPhone.valid) {
-      let groups = this.formGroup.get('TaxInfos') as FormArray;
-      groups.controls[0].get('WorkPhone').setValue(this.formGroup.controls.WorkPhone.value);
+      // let groups = this.formGroup.get('TaxInfos') as FormArray;
+      // groups.controls[0].get('WorkPhone').setValue(this.formGroup.controls.WorkPhone.value);
       this.pageProvider
         .search({
           WorkPhone_eq: this.formGroup.controls.WorkPhone.value,
