@@ -9,7 +9,7 @@
 </ion-header>
 
 <ion-content appScrollbarTheme class="ion-padding">
-  <div class="main-view" *ngIf="item && pageConfig.showSpinner==false">
+  <div class="main-view" *ngIf="item && !pageConfig.showSpinner">
     <ion-grid fixed>
       <ion-row>
         <ion-col size="12" size-sm>
@@ -103,7 +103,7 @@
                   [field]="{id:'Amount', label: 'Amount', type : 'number', form : formGroup }" 
                   (change)="changeAmount()"
                 >
-                <small label class="danger" *ngIf="differenceAmount>0">{{'Difference: ' | translate}}{{differenceAmount}} </small>
+                <small label class="danger" *ngIf="differenceAmount!=0">{{'Difference : ' | translate}}{{differenceAmount | number:'1.0-0'}} </small>
                 </app-form-control>
                 <div class="c-control" *ngIf="item.IDTransaction">
                   <label class="c-label">

@@ -1,44 +1,15 @@
 <ion-header>
-  <app-detail-toolbar [page]="this"></app-detail-toolbar>
+  <app-toolbar [page]="this">
+    <ion-toolbar>
+    <ion-button *ngIf="this.formGroup.get('Status').value == 'Open' && pageConfig.canRequestOutgoingPayment" tollbarSelected  title="{{'Create outgoing payment' | translate}}" (click)="createOutgoingPayment()">
+			<ion-icon color="success" name="money-check"></ion-icon>
+		</ion-button>
+    </ion-toolbar>
+  </app-toolbar>
 </ion-header>
 
 <ion-content appScrollbarTheme class="ion-padding">
-  <div class="main-view" *ngIf="item && pageConfig.showSpinner==false">
-    <!-- <ion-grid fixed>
-            <ion-row>
-                <ion-col class="img-holder" size="12" size-sm="300px">
-                    <div class="avatar">
-                        <img src="assets/undraw_street_food_hm5i.svg" (error)="img.src = 'assets/undraw_street_food_hm5i.svg'" #img>
-                        <div>
-                            <ion-button class="change-avatar" *ngIf="item.IsDisabled" color="danger" size="small">
-                                TẠM DỪNG
-                            </ion-button>
-                            <ion-button class="change-avatar" *ngIf="!item.IsDisabled && item.Id" color="primary" size="small">
-                                Đổi hình
-                            </ion-button>
-                        </div>
-                    </div>
-                </ion-col>
-                <ion-col size="12" size-sm>
-                    <ion-grid>
-                        <ion-row>
-                            <ion-col size="12" size-md="12" size-lg="12" size-xl="5">
-                                <div class="c-control">
-                                    <label class="c-label">Số xe
-                                        <span *ngIf="!formGroup.controls.Name.valid && !formGroup.controls.Name.pending && (formGroup.controls.Name.dirty || submitAttempt)" ion-text color="danger">(*)</span>
-                                    </label>
-                                    <input readonly class="c-input" [ngModel]="item.Name" type="text">
-                                </div>
-                            </ion-col>
-                            <ion-col size="12" size-md="12" size-lg="12" size-xl="5">
-                                
-                            </ion-col>
-                        </ion-row>
-                    </ion-grid>
-                </ion-col>
-            </ion-row>
-        </ion-grid> -->
-
+  <div class="main-view" *ngIf="item && !pageConfig.showSpinner">
     <div class="row-full shadow full-screen">
       <ion-toolbar color="primary">
         <ion-segment scrollable="true" (ionChange)="segmentChanged($event)" [value]="segmentView">
@@ -178,79 +149,11 @@
 										</ng-template>
 									</ng-select>
 								</div> -->
-
-                <div class="c-control">
-                  <label class="c-label" for="InvoiceForm"
-                    >{{'Form' | translate}}
-                    <span
-                      *ngIf="!formGroup.controls.InvoiceForm.valid && !formGroup.controls.InvoiceForm.pending && (formGroup.controls.InvoiceForm.dirty || submitAttempt)"
-                      ion-text
-                      color="danger"
-                      >(*)</span
-                    >
-                  </label>
-                  <input
-                    (change)="saveChange()"
-                    class="c-input"
-                    id="InvoiceForm"
-                    formControlName="InvoiceForm"
-                    type="text"
-                  />
-                </div>
-                <div class="c-control">
-                  <label class="c-label" for="InvoiceSerial"
-                    >{{'Serial' | translate}}
-                    <span
-                      *ngIf="!formGroup.controls.InvoiceSerial.valid && !formGroup.controls.InvoiceSerial.pending && (formGroup.controls.InvoiceSerial.dirty || submitAttempt)"
-                      ion-text
-                      color="danger"
-                      >(*)</span
-                    >
-                  </label>
-                  <input
-                    (change)="saveChange()"
-                    class="c-input"
-                    id="InvoiceSerial"
-                    formControlName="InvoiceSerial"
-                    type="text"
-                  />
-                </div>
-                <div class="c-control">
-                  <label class="c-label" for="InvoiceNo"
-                    >{{'Invoice number' | translate}}
-                    <span
-                      *ngIf="!formGroup.controls.InvoiceNo.valid && !formGroup.controls.InvoiceNo.pending && (formGroup.controls.InvoiceNo.dirty || submitAttempt)"
-                      ion-text
-                      color="danger"
-                      >(*)</span
-                    >
-                  </label>
-                  <input
-                    (change)="saveChange()"
-                    class="c-input"
-                    id="InvoiceNo"
-                    formControlName="InvoiceNo"
-                    type="text"
-                  />
-                </div>
-                <div class="c-control">
-                  <label class="c-label" for="InvoiceDate"
-                    >{{'Invoice date' | translate}}
-                    <span
-                      *ngIf="!formGroup.controls.InvoiceDate.valid && !formGroup.controls.InvoiceDate.pending && (formGroup.controls.InvoiceDate.dirty || submitAttempt)"
-                      ion-text
-                      color="danger"
-                      >(*)</span
-                    >
-                  </label>
-                  <input
-                    (change)="saveChange()"
-                    class="c-input"
-                    id="InvoiceDate"
-                    formControlName="InvoiceDate"
-                    type="date"
-                  />
-                </div>
+                <app-form-control [field]="{id:'InvoiceForm',label:'Form', type:'text',form:formGroup}"  (change)="saveChange()"></app-form-control>
+                <app-form-control [field]="{id:'InvoiceSerial',label:'Serial', type:'text',form:formGroup}"  (change)="saveChange()"></app-form-control>
+                <app-form-control [field]="{id:'InvoiceNo',label:'Invoice number', type:'text',form:formGroup}"  (change)="saveChange()"></app-form-control>
+                <app-form-control [field]="{id:'InvoiceDate',label:'Invoice date', type : 'date' ,form:formGroup}"  (change)="saveChange()"></app-form-control>
+              
 
                 <!-- <div class="c-control">
 									<label class="c-label" for="InvoiceSignedDate">Ngày ký
@@ -271,43 +174,10 @@
 									</label>
 									<input class="c-input" id="Name" (change)="saveChange();" formControlName="Name" type="text">
 								</div> -->
-
-                <div class="c-control">
-                  <label class="c-label" for="SellerName"
-                    >{{'Bên bán' | translate}}
-                    <span
-                      *ngIf="!formGroup.controls.SellerName.valid && !formGroup.controls.SellerName.pending && (formGroup.controls.SellerName.dirty || submitAttempt)"
-                      ion-text
-                      color="danger"
-                      >(*)</span
-                    >
-                  </label>
-                  <input
-                    (change)="saveChange()"
-                    class="c-input"
-                    id="SellerName"
-                    formControlName="SellerName"
-                    type="text"
-                  />
-                </div>
-                <div class="c-control">
-                  <label class="c-label" for="BuyerName"
-                    >{{'Bên mua' | translate}}
-                    <span
-                      *ngIf="!formGroup.controls.BuyerName.valid && !formGroup.controls.BuyerName.pending && (formGroup.controls.BuyerName.dirty || submitAttempt)"
-                      ion-text
-                      color="danger"
-                      >(*)</span
-                    >
-                  </label>
-                  <input
-                    (change)="saveChange()"
-                    class="c-input"
-                    id="BuyerName"
-                    formControlName="BuyerName"
-                    type="text"
-                  />
-                </div>
+                <app-form-control [field]="{id:'SellerName',label:'Bên bán', type:'text',form:formGroup}"  (change)="saveChange()"></app-form-control>
+                
+                <app-form-control [field]="{id:'BuyerName',label:'Bên mua', type:'text',form:formGroup}"  (change)="saveChange()"></app-form-control>
+         
               </ion-col>
 
               <ion-col size="12" size-sm size-xl="4">
@@ -322,7 +192,7 @@
                     >
                   </label>
                   <input
-                    (change)="saveChange()"
+                    (change)="changeAmount()"
                     class="c-input"
                     id="TotalBeforeDiscount"
                     formControlName="TotalBeforeDiscount"
@@ -342,7 +212,7 @@
                     >
                   </label>
                   <input
-                    (change)="saveChange()"
+                  (change)="changeAmount()"
                     class="c-input"
                     id="TotalDiscount"
                     formControlName="TotalDiscount"
@@ -368,7 +238,7 @@
                     >
                   </label>
                   <input
-                    (change)="saveChange()"
+                  (change)="changeAmount()"
                     class="c-input"
                     id="Tax"
                     formControlName="Tax"
@@ -394,7 +264,7 @@
                     >
                   </label>
                   <input
-                    (change)="saveChange()"
+           
                     class="c-input"
                     id="CalcTotalAfterTax"
                     formControlName="CalcTotalAfterTax"
@@ -414,7 +284,7 @@
                     >
                   </label>
                   <input
-                    (change)="saveChange()"
+          
                     class="c-input"
                     id="Paid"
                     formControlName="Paid"
@@ -434,7 +304,7 @@
                     >
                   </label>
                   <input
-                    (change)="saveChange()"
+               
                     class="c-input"
                     id="CalcBalance"
                     formControlName="CalcBalance"
@@ -524,6 +394,58 @@
         </ion-grid>
       </div>
       <div *ngIf="segmentView == 's2'"></div>
+      <div class="table responsive" *ngIf="segmentView == 's3'">
+        <app-data-table class="box-shadow responsive" *ngIf ="paymentDetailList" [rows]="paymentDetailList" [(selectedRows)]="selectedItems" [showSpinner]="showSpinnerPayment" >
+          <!-- <datatable-column [checkbox]="true"></datatable-column> -->
+          <datatable-column class="col-id" name="Id" property="Id">
+            <ng-template let-i="row" datatable-cell-template>
+              <a [routerLink]="['/outgoing-payment/'+i.Id]">{{i.Id}}</a>
+            </ng-template>
+          </datatable-column>
+          <!-- <datatable-column class="col-name" name="Warehouse" property="WarehouseName">
+            <ng-template let-i="row" datatable-cell-template>
+              {{i.WarehouseName}}
+              <small class="address" *ngIf="i.WarehouseCode">
+                <ion-text color="dark">{{i.WarehouseCode}}</ion-text>
+              </small>
+            </ng-template>
+          </datatable-column>
+          -->
+          <datatable-column class="col-code"  filterControlType="text" name="Type" property="Type">
+          </datatable-column>
+          <datatable-column class="col-number"  filterControlType="number" name="Amount" property="Amount">
+          
+          </datatable-column>
+          <datatable-column class="col-date"  filterControlType="date" name="Posting date" property="PostingDate">
+            <ng-template let-i="row" datatable-cell-template>
+              {{i.PostingDate | date:'dd/MM/yyyy HH:mm'}}
+              </ng-template>
+          </datatable-column>
+          <datatable-column class="col-date"  filterControlType="date" name="Document date" property="DocumentDate">
+            <ng-template let-i="row" datatable-cell-template>
+              {{i.DocumentDate | date:'dd/MM/yyyy HH:mm'}}
+              </ng-template>
+          </datatable-column>
+          <datatable-column class="col-date"  filterControlType="date" name="Due date" property="DueDate">
+            <ng-template let-i="row" datatable-cell-template>
+              {{i.DueDate | date:'dd/MM/yyyy HH:mm'}}
+              </ng-template>
+          </datatable-column>
+          <!-- <datatable-column class="col-date" filterControlType="date" name="Picked date" property="PickedDate">
+            <ng-template let-i="row" datatable-cell-template>
+              {{i.PickedDate | date:'dd/MM/yyyy HH:mm'}}
+              </ng-template>
+          </datatable-column> -->
+         
+          <datatable-column class="col-status" name="Status" property="Status">
+            <ng-template let-i="row" datatable-cell-template>
+            <ion-badge [color]="i._Status?.Color" [title]="i._Status?.Name">
+              {{i._Status?.Name}}
+            </ion-badge>
+            </ng-template>
+          </datatable-column>
+        </app-data-table>
+      </div>
     </div>
   </div>
   <app-page-message [itemsLength]="item? 1: 0" [showSpinner]="pageConfig.showSpinner"></app-page-message>

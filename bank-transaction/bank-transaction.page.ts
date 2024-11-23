@@ -95,17 +95,7 @@ export class BankTransactionPage extends PageBase {
     let sorted: SortConfig[] = [{ Dimension: 'Id', Order: 'DESC' }];
     this.pageConfig.sort = sorted;
     this.pageConfig.pageIcon = 'flash-outline';
-    this.env.getBranch(this.env.selectedBranch,true)
-    .then((resp) => {
-      let currentBranch = this.env.branchList.find(d=> d.Id == this.env.selectedBranch);
-      this.branchList = lib.cloneObject(resp);
-      this.branchList.unshift(currentBranch);
-      this.branchList.forEach((i) => {
-        i.disabled = true;
-      });
-      this.markNestedNode(this.branchList, this.env.selectedBranch);
-    });
-    
+    this.branchList = lib.cloneObject(this.env.branchList);
     this.providerService
       .read({ Take: 5000 })
       .then((res) => {
@@ -225,11 +215,4 @@ export class BankTransactionPage extends PageBase {
     this.formGroup.get('IDBranch').markAsPristine();
   }
 
-  markNestedNode(ls, Id) {
-    let currentBranch = ls.find((d) => d.Id == Id);
-    if (currentBranch.Type != 'TitlePosition') currentBranch.disabled = false;
-    ls.filter(s=> s.IDParent == currentBranch.Id).forEach(i=>{
-      this.markNestedNode(ls, i.Id);
-    });
-  }
 }

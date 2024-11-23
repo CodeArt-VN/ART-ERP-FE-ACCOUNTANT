@@ -66,20 +66,20 @@ export class OutgoingPaymentPage extends PageBase {
       this.pageConfig.ShowCancel = true;
     }
     this.selectedItems?.forEach((i) => {
-      let notShowApprove = [ 'Approved','Cancelled'];
-      if (notShowApprove.indexOf(i.Status) > -1) {
+      let notShowApprove = [ 'Approved','Cancelled','Draft'];
+      if (notShowApprove.indexOf(i.Status) > -1 || i.DifferenceAmount != 0) {
         this.pageConfig.ShowApprove = false;
       }
       let notShowDisapprove = ['Unapproved', 'Approved','Cancelled','Draft'];
-      if (notShowDisapprove.indexOf(i.Status) > -1) {
+      if (notShowDisapprove.indexOf(i.Status) > -1 || i.DifferenceAmount != 0) {
         this.pageConfig.ShowDisapprove = false;
       }
       let notShowCancel = ['Approved','Cancelled'];
-      if (notShowCancel.indexOf(i.Status) > -1) {
+      if (notShowCancel.indexOf(i.Status) > -1 || i.DifferenceAmount != 0) {
         this.pageConfig.ShowCancel = false;
       }
       let notShowSubmit = ['Unapproved', 'Approved','Cancelled','Submitted'];
-      if (notShowSubmit.indexOf(i.Status) > -1) {
+      if (notShowSubmit.indexOf(i.Status) > -1 || i.DifferenceAmount != 0) {
         this.pageConfig.ShowSubmit = false;
       }
     });

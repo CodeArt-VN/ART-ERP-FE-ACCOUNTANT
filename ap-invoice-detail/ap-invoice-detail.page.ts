@@ -1,7 +1,7 @@
 import { Component, ChangeDetectorRef } from '@angular/core';
 import { NavController, LoadingController, AlertController } from '@ionic/angular';
 import { PageBase } from 'src/app/page-base';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, NavigationExtras } from '@angular/router';
 import { EnvService } from 'src/app/services/core/env.service';
 import {
   AC_APInvoiceProvider,
@@ -24,6 +24,9 @@ import { catchError, distinctUntilChanged, switchMap, tap } from 'rxjs/operators
 export class APInvoiceDetailPage extends PageBase {
   statusList = [];
   branchList = [];
+  _seller = null;
+  paymentDetailList = [];
+  paymentStatusList;
   constructor(
     public pageProvider: AC_APInvoiceProvider,
     public receiptProvider: WMS_ReceiptProvider,
@@ -67,7 +70,8 @@ export class APInvoiceDetailPage extends PageBase {
 
       ////////
       Type: [''],
-      Status: [''],
+      Status: ['Open'],
+      PaymentStatus: [''],
 
       InvoiceForm: [''],
       InvoiceSerial: [''],
@@ -113,23 +117,6 @@ export class APInvoiceDetailPage extends PageBase {
   }
 
   preLoadData(event?: any): void {
-    this.branchProvider
-      .read({ Skip: 0, Take: 5000, Type: 'Warehouse', AllParent: true, Id: this.env.selectedBranchAndChildren })
-      .then((resp) => {
-        lib
-          .buildFlatTree(resp['data'], this.branchList)
-          .then((result: any) => {
-            this.branchList = result;
-            this.branchList.forEach((i) => {
-              i.disabled = true;
-            });
-            this.markNestedNode(this.branchList, this.env.selectedBranch);
-            super.preLoadData(event);
-          })
-          .catch((err) => {
-            this.env.showMessage(err);
-          });
-      });
     this.env.getStatus('APInvoice').then((result) => {
       this.statusList = result;
       super.preLoadData();
@@ -153,7 +140,14 @@ export class APInvoiceDetailPage extends PageBase {
     this.IDReceiptDataSource.initSearch();
     this.IDPurchaseOrderDataSource.initSearch();
     this.IDOwnerDataSource.initSearch();
-
+    if(this.item.IDSeller){
+      this._seller = {
+        Id : this.item.IDSeller,
+        Name : this.item.SellerName,
+        Address: this.item.SellerAddress,
+        TaxCode : this.item.SellerTaxCode
+      }
+    }
     if (this.item._Receipt) {
       this.IDReceiptDataSource.selected.push(this.item._Receipt);
     }
@@ -164,28 +158,89 @@ export class APInvoiceDetailPage extends PageBase {
     if (this.item._Owner) {
       this.IDOwnerDataSource.selected.push(this.item._Owner);
     }
+    if(!this.formGroup.get('Id').value) this.formGroup.get('Status').markAsDirty();
   }
 
+  showSpinnerPayment = false;
   segmentView = 's1';
   segmentChanged(ev: any) {
     this.segmentView = ev.detail.value;
+    if(this.segmentView == 's3'){
+      this.getPaymentHistory();
+    }
   }
 
+  getPaymentHistory(){
+  this.showSpinnerPayment = true;
+   let queryPayment = {
+    Id:this.formGroup.get('Id').value
+   }
+    this.commonService.connect('GET','AC/APInvoice/GetPaymentHistory/',queryPayment).toPromise()
+    .then((result: any) => {
+      this.paymentDetailList = result;
+      if(!this.paymentStatusList){
+        this.env.getStatus('OutgoingPaymentStatus').then(rs=>{
+          this.paymentStatusList = rs;
+          this.paymentDetailList.forEach(i=>{
+              i._Status = this.paymentStatusList.find((d) => d.Code == i.Status);
+          })
+        })
+      }else{
+        this.paymentDetailList.forEach(i=>{
+          i._Status = this.paymentStatusList.find((d) => d.Code == i.Status);
+      })
+      }
+      console.log(result);
+      
+    })
+    .catch(err=> this.env.showMessage(err,'danger'))
+    .finally(()=>{ this.showSpinnerPayment = false});
+  }
+  createOutgoingPayment(){
+    let date = new Date(this.formGroup.get('InvoiceDate').value).toISOString().split('Z')[0];
+
+    let navigationExtras: NavigationExtras = {
+      state: {
+           OutgoingPaymentDetails: [{
+            DocumentEntry:this.formGroup.get('Id').value,
+            Id:0,
+            DocumentType:'Invoice',
+            Amount: this.formGroup.get('CalcBalance').value
+           }],
+           _BusinessPartner:this._seller,
+          IDBusinessPartner:this.formGroup.get('IDSeller').value,
+          Amount: this.formGroup.get('CalcBalance').value,
+          DocumentDate: date,
+          PostingDate:date,
+          DueDate: date,
+          
+      }
+    };
+    this.nav('/outgoing-payment/0', 'forward', navigationExtras);
+  }
   async saveChange() {
-    let rvalue = this.formGroup.getRawValue();
 
-    this.item.CalcTotalAfterDiscount = rvalue.TotalBeforeDiscount - rvalue.TotalDiscount;
-    this.item.CalcTotalAfterTax = this.item.CalcTotalAfterDiscount + rvalue.Tax - rvalue.WithholdingTax;
-    if (rvalue.Received) {
-      this.item.CalcBalance = this.item.CalcTotalAfterTax - rvalue.Received;
-      this.formGroup.controls['CalcBalance'].setValue(this.item.CalcBalance);
-    }
-
-    this.formGroup.controls['CalcTotalAfterDiscount'].setValue(this.item.CalcTotalAfterDiscount);
-    this.formGroup.controls['CalcTotalAfterTax'].setValue(this.item.CalcTotalAfterTax);
     super.saveChange2();
   }
 
+  changeAmount(){
+    let rvalue = this.formGroup.getRawValue();
+ 
+    rvalue.CalcTotalAfterDiscount =  rvalue.TotalBeforeDiscount - rvalue.TotalDiscount;
+    rvalue.CalcTotalAfterTax = rvalue.CalcTotalAfterDiscount + rvalue.Tax - rvalue.WithholdingTax;
+    if(rvalue.CalcTotalAfterTax < this.formGroup.get('Paid').value){
+      this.env.showMessage('Total after tax is lower than paid amount!','danger');
+      return;
+    }
+    this.formGroup.get('CalcTotalAfterDiscount').setValue(rvalue.CalcTotalAfterDiscount);
+    this.formGroup.get('CalcTotalAfterDiscount').markAsDirty();
+    this.formGroup.get('CalcTotalAfterTax').setValue(rvalue.CalcTotalAfterTax);
+    this.formGroup.get('CalcTotalAfterTax').markAsDirty();
+    
+    this.formGroup.get('CalcBalance').setValue(rvalue.CalcTotalAfterTax - rvalue.Paid);
+    this.formGroup.get('CalcBalance').markAsDirty();
+    this.saveChange();
+  }
   IDReceiptDataSource = {
     searchProvider: this.receiptProvider,
     loading: false,
@@ -218,7 +273,9 @@ export class APInvoiceDetailPage extends PageBase {
   };
 
   receiptChange(e) {
- 
+    if(e?._Vendor){
+      this._seller = e._Vendor;
+    }
     if (e.IDPurchaseOrder) {
       this.formGroup.controls['IDPurchaseOrder'].setValue(e.IDPurchaseOrder);
       this.formGroup.controls['IDPurchaseOrder'].markAsDirty();
@@ -277,13 +334,6 @@ export class APInvoiceDetailPage extends PageBase {
       );
     },
   };
-
-  markNestedNode(ls, Id) {
-    ls.filter((d) => d.IDParent == Id).forEach((i) => {
-      if (i.Type == 'Warehouse') i.disabled = false;
-      this.markNestedNode(ls, i.Id);
-    });
-  }
 
   IDOwnerDataSource = {
     searchProvider: this.staffProvider,
