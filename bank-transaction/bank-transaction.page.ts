@@ -1,19 +1,17 @@
+import { Location } from '@angular/common';
 import { Component, ViewChild } from '@angular/core';
-import { NavController, ModalController, AlertController, LoadingController, PopoverController } from '@ionic/angular';
-import { EnvService } from 'src/app/services/core/env.service';
+import { FormBuilder } from '@angular/forms';
+import { AlertController, LoadingController, ModalController, NavController, PopoverController } from '@ionic/angular';
+import { Subject, catchError, concat, distinctUntilChanged, of, switchMap, tap } from 'rxjs';
 import { PageBase } from 'src/app/page-base';
+import { EnvService } from 'src/app/services/core/env.service';
+import { lib } from 'src/app/services/static/global-functions';
 import {
   BANK_AccountProvider,
   BANK_TransactionProvider,
   BRA_BranchProvider,
   CRM_ContactProvider,
 } from 'src/app/services/static/services.service';
-import { Location } from '@angular/common';
-import { SortConfig } from 'src/app/models/options-interface';
-import { J } from '@fullcalendar/core/internal-common';
-import { FormBuilder } from '@angular/forms';
-import { lib } from 'src/app/services/static/global-functions';
-import { Subject, catchError, concat, distinctUntilChanged, of, switchMap, tap } from 'rxjs';
 
 @Component({
   selector: 'app-bank-transaction',
@@ -33,7 +31,7 @@ export class BankTransactionPage extends PageBase {
   isAllRowOpened = true;
   constructor(
     public pageProvider: BANK_TransactionProvider,
-    public providerService: BANK_AccountProvider,
+    public bankProvider: BANK_AccountProvider,
     public contactProvider: CRM_ContactProvider,
     public branchProvider: BRA_BranchProvider,
     public modalController: ModalController,
@@ -86,14 +84,14 @@ export class BankTransactionPage extends PageBase {
     },
   };
   preLoadData(event?: any): void {
+    this.query.SortBy = 'TransactionDate_desc';
     this.selectedItems = [];
     this.statusList = [
       { Code: 'Unrecognized', Name: 'Unrecognized', Color: 'warning' },
       { Code: 'Suggested', Name: 'Suggested entry', Color: 'danger' },
       { Code: 'RecordFound', Name: 'Record found', Color: 'success' },
     ];
-    let sorted: SortConfig[] = [{ Dimension: 'Id', Order: 'DESC' }];
-    this.pageConfig.sort = sorted;
+    
     this.pageConfig.pageIcon = 'flash-outline';
     this.branchList = lib.cloneObject(this.env.branchList);
     this.providerService
@@ -119,6 +117,7 @@ export class BankTransactionPage extends PageBase {
     super.loadedData(event);
     this.items.forEach((i) => {
       i._ReconciliationStatus = this.statusList.find((d) => d.Code == i.ReconciliationStatus);
+      i._BankAccount = this.groupControl.groupList.find((d) => d.Id == i.IDAccount);
     });
     this._contactDataSource.initSearch();
     this.formGroup.get('IDBranch').markAsPristine();
@@ -127,6 +126,7 @@ export class BankTransactionPage extends PageBase {
   refresh(event?: any): void {
     this.clearData();
     this.preLoadData(event);
+    //super.refresh(event);
   }
 
   @ViewChild('popover') popover;
@@ -143,7 +143,7 @@ export class BankTransactionPage extends PageBase {
         IDBranch: this.formGroup.get('IDBranch').value,
         IDContact: this.formGroup.get('IDContact').value,
       };
-      this.providerService.commonService
+      this.bankProvider.commonService
         .connect('PUT', 'BANK/Transaction/AssignBranchAndContact', obj)
         .toPromise()
         .then((res) => {
@@ -179,7 +179,7 @@ export class BankTransactionPage extends PageBase {
   FindMatchingCriteria() {
     let obj = { Ids: [] };
     if (this.selectedItems?.length > 0) obj.Ids = this.selectedItems.map((i) => i.Id);
-    this.providerService.commonService
+    this.bankProvider.commonService
       .connect('PUT', 'BANK/Transaction/FindMatchingCriteria', obj)
       .toPromise()
       .then((res) => {
@@ -204,7 +204,11 @@ export class BankTransactionPage extends PageBase {
       delete this.query.IDAccount;
     }
 
-    this.refresh();
+    this.selectedItems = [];
+    if (!this.pageConfig.showSpinner) {
+      this.clearData();
+      this.loadData(null);
+    }
   }
 
   changeBP(event) {

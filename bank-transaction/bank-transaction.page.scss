@@ -1,18 +1,54 @@
-
 .icon-30 {
-    width: 30px;
+  width: 30px;
+}
+
+.feature{
+  background: linear-gradient(180deg, var(--main-background-top), var(--main-background-bottom));
+}
+
+ion-item.item-label {
+  --color: var(--ion-color-contrast);
+}
+
+ion-card{
+    background: var(--table-row-background);
+
+    &.ion-color-primary {
+        //   background:
+        //     url(/assets/bg-layers.svg) 0% 0% / cover,
+        //     linear-gradient(90deg, rgb(127, 108, 248) 0%, rgb(120, 175, 249) 100%) 0% 0% / 100%;
+      
+        background:
+          url(/assets/bg-layers.svg) 0% 0% / cover,
+          linear-gradient(
+              90deg,
+              rgba(var(--ion-color-light-rgb, 0, 0, 0), 0.5) -100%,
+              rgba(var(--ion-color-primary-rgb, 0, 0, 0), 1) 100%
+            )
+            0% 0% / 100%;
+      }
 }
 
 ::ng-deep {
-    .row{
-        padding: 16px 170px 16px 35px !important;
+  app-data-table.responsive.small-width .row.header.filter .cell.col-date {
+    //order: 3 !important;
+    max-width: unset !important;
+    min-width: fit-content !important;
+  }
+  .header {
+    &.row {
+      padding: 16px !important;
     }
-    .col-id{
-        min-width: 130px !important;
-        max-width: 130px !important;
-    }
-    .col-date{
-        min-width: 140px !important;
-        max-width: 140px !important;
-    }
+  }
+  .row {
+    padding: 16px 170px 16px 35px !important;
+  }
+  .col-id {
+    min-width: 130px !important;
+    max-width: 130px !important;
+  }
+  .col-date {
+    min-width: 140px !important;
+    max-width: 140px !important;
+  }
 }
