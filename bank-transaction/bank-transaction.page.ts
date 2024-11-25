@@ -94,7 +94,7 @@ export class BankTransactionPage extends PageBase {
     
     this.pageConfig.pageIcon = 'flash-outline';
     this.branchList = lib.cloneObject(this.env.branchList);
-    this.pageProvider
+    this.bankProvider
       .read({ Take: 5000 })
       .then((res) => {
         this.groupControl.groupList = res['data'];
