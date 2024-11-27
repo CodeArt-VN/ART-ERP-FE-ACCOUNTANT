@@ -75,6 +75,12 @@
 
               <ion-col size="12" size-sm size-xl="4">
                 <app-form-control
+                [field]="{id:'PaymentReason', label: 'Reason', type : 'ng-select',bindValue:'Code',bindLabel:'Name',dataSource:paymentReasonList, form : formGroup }"
+                (change)="saveChange()"
+              >
+              </app-form-control>
+
+                <app-form-control
                   [field]="{id:'Type', label: 'Type', type : 'ng-select', dataSource: typeDataSource, bindValue:'Code', bindLabel:'Name', form : formGroup }"
                   (change)="changeType($event)"
                 >
@@ -137,6 +143,8 @@
                   (change)="saveChange()"
                 >
                 </app-form-control>
+                <app-form-control [field]="{id:'IDStaff',label:'Onwer', type:'ng-select-staff',dataSource:_staffDataSource, bindLabel:'Name',
+                bindValue:'Id',form:formGroup}" (controlChange)="saveChange()" ></app-form-control>
               </ion-col>
             </ion-row>
 

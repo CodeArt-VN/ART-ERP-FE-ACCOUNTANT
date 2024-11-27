@@ -135,7 +135,7 @@ export class OutgoingPaymentInvoiceModalPage extends PageBase {
           invoice.PaidAmount = s.Amount ?? invoice.PaidAmount;
           invoice.IDOutgoingPaymentDetail = s.Id;
           this.selectedItems.push(invoice);
-          reorderedInvoices.push(s); // Add to reorderedInvoices
+          reorderedInvoices.push(invoice); // Add to reorderedInvoices
           // Remove from remainingInvoices to avoid duplicates later
           remainingInvoices.splice(invoiceIndex, 1);
         } else {

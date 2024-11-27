@@ -13,8 +13,11 @@ import { FormBuilder } from '@angular/forms';
 })
 export class APInvoicePage extends PageBase {
   statusList = [];
-  paymentStatusList = [];
+  apPaymentStatusList = [];
   paymentTypeList = [];
+  paymentReasonList = [];
+  paymentSubTypeList = [];
+
     constructor(
     public pageProvider: AC_APInvoiceProvider,
     public outgoingPaymentProvider: BANK_OutgoingPaymentProvider,
@@ -31,22 +34,30 @@ export class APInvoicePage extends PageBase {
      
     this.formGroup = formBuilder.group({
       PaymentType: [''],
+      PaymentSubType:[''],
+      PaymentReason : ['']      
     });
   }
 
   preLoadData(event?: any): void {
     this.query.SortBy = 'Id_desc';
-    Promise.all([this.env.getStatus('APInvoice'),this.env.getStatus('OutgoingPaymentStatus'), this.env.getType('PaymentType')]).then((values) => {
+    Promise.all([this.env.getStatus('APInvoice'),
+        this.env.getStatus('APInvoicePayment'),
+       this.env.getType('PaymentType'),
+       this.env.getType('OutgoingPaymentReason')
+      ]).then((values) => {
       if(values[0]){
         this.statusList = values[0];
       }
       if(values[1]){
-        this.paymentStatusList = values[1];
-        console.log(this.paymentStatusList);
-        
+        this.apPaymentStatusList = values[1];
       }
       if(values[2]){
         this.paymentTypeList = values[2].filter((d) => d.Code == 'Cash' || d.Code == 'Card' || d.Code == 'Transfer');
+      }
+      if(values[3]){
+        this.paymentReasonList = values[3];
+        if(values[3].length==0) this.paymentReasonList = [{Name : 'Payment of invoice', Code :'PaymentOfInvoice'},{Name : 'Payment of purchase order', Code :'PaymentOfPO'}]
       }
       super.preLoadData();
     });
@@ -59,32 +70,34 @@ export class APInvoicePage extends PageBase {
   @ViewChild('popoverPub') popoverPub;
   isOpenPopover = false;
   dismissPopover(apply: boolean = false) {
-    if (!this.isOpenPopover || !this.IDBusinessPartner) return;
+    if (!this.isOpenPopover || !this.IDBusinessPartner){
+      this.isOpenPopover = false;
+      return;
+    } 
     if (apply) {
       this.submitAttempt = true;
       let obj = {
         Id:0,
         IDBusinessPartner : this.IDBusinessPartner,
-        Status:'Draft',
-        Amount : 0,
+        IDBranch:this.env.selectedBranch,
+        SourceType : 'Invoice',
+        IDStaff : this.env.user.StaffID,
+        Name: 'From AP invoices ['+this.selectedItems.map(d=> d.Id).join(',')+']',
+        Type:this.formGroup.get('PaymentType').value,
+        SubType:this.formGroup.get('PaymentSubType').value,
+        PaymentReason:this.formGroup.get('PaymentReason').value,
         PostingDate: new Date(),
         DueDate: new Date(),
         DocumentDate: new Date(),
-        Type:this.formGroup.get('PaymentType').value,
-        OutgoingPaymentDetails : this.selectedItems.map(d=> {
-          return {
-            DocumentEntry : d.Id,
-            DocumentType : "Invoice",
-            Amount: d.CalcBalance,
-          }
-      }),
-    } 
-    obj.Amount = obj.OutgoingPaymentDetails.reduce((sum, detail) => sum + (detail.Amount || 0), 0);
-    this.outgoingPaymentProvider.save(obj).then(rs=>{
-      this.env.showMessage('Create outgoing payment successfully!','success');
+        OutgoingPaymentDetails : this.selectedItems.map(d=> d.Id)
+      };
+    this.outgoingPaymentProvider.commonService.connect('POST','BANK/OutgoingPayment/PostFromSource',obj).toPromise().then((rs:any)=>{
+      this.env.showPrompt('Create outgoing payment successfully!','Do you want to navigate to outgoing payment ?').then(d=> {
+        this.nav('Outgoing-Payment/'+rs.Id, 'forward');
+      })
       console.log(rs);
     }).catch(err=>{
-      this.env.showMessage(err?.Message?? err,'danger');
+      this.env.showMessage(err.error?.Message?? err,'danger');
 
     }).finally(()=> {this.submitAttempt = false});
      
@@ -105,8 +118,10 @@ export class APInvoicePage extends PageBase {
     }
     const uniqueSellerIDs = new Set(this.selectedItems.map(i => i.IDSeller));
     this.selectedItems?.forEach((i) => {
-      let notShowRequestOutgoingPayment = ['Draft', 'Closed', 'Cancelled'];
-      if (notShowRequestOutgoingPayment.indexOf(i.Status) != -1 ) {
+      let notShowRequestOutgoingPaymentAPStatus = ['Draft', 'Closed', 'Cancelled'];
+      let notShowRequestOutgoingPaymentPaymentStatus = ['Unapproved','Paid'];
+      if (notShowRequestOutgoingPaymentAPStatus.indexOf(i.Status) != -1 ||
+      notShowRequestOutgoingPaymentPaymentStatus.indexOf(i.PaymentStatus) != -1) {
         this.ShowRequestOutgoingPayment = false;
         this.IDBusinessPartner = null;
       }

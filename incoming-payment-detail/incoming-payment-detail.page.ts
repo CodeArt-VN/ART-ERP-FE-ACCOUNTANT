@@ -8,6 +8,7 @@ import {
   BANK_IncomingPaymentProvider,
   BRA_BranchProvider,
   CRM_ContactProvider,
+  HRM_StaffProvider
 } from 'src/app/services/static/services.service';
 import { FormBuilder, FormControl, FormArray, Validators } from '@angular/forms';
 import { CommonService } from 'src/app/services/core/common.service';
@@ -22,12 +23,15 @@ import { IncomingPaymentInvoiceModalPage } from '../incoming-payment-invoice-mod
 })
 export class IncomingPaymentDetailPage extends PageBase {
   statusList: [];
+  typeDataSource: any;
+  paymentReasonList= [];
   SelectedOrderList: any;
   SelectedInvoiceList: any;
   constructor(
     public pageProvider: BANK_IncomingPaymentProvider,
     public IncomingPaymentDetailservice: BANK_IncomingPaymentDetailProvider,
     public branchProvider: BRA_BranchProvider,
+    public staffProvider: HRM_StaffProvider,
     public popoverCtrl: PopoverController,
     public env: EnvService,
     public navCtrl: NavController,
@@ -58,6 +62,8 @@ export class IncomingPaymentDetailPage extends PageBase {
       Amount: ['', Validators.required],
       Status: ['', Validators.required],
       IDCustomer: ['', Validators.required],
+      PaymentReason: [''],
+      IDStaff: [''],
       IncomingPaymentDetails: this.formBuilder.array([]),
       IsDisabled: new FormControl({ value: '', disabled: true }),
       IsDeleted: new FormControl({ value: '', disabled: true }),
@@ -69,57 +75,12 @@ export class IncomingPaymentDetailPage extends PageBase {
     });
   }
 
-  segmentView = 's1';
-  segmentChanged(ev: any) {
-    this.segmentView = ev.detail.value;
-  }
-
-  async saveChange() {
-    this.saveChange2();
-    // let groups = <FormArray>this.formGroup.controls.IncomingPaymentDetails;
-    // if (groups.controls.length > 0) {
-
-    // } else {
-    //   this.env.showTranslateMessage('Please select at least 1 order', 'warning');
-    // }
-  }
-
-  saveChange2(form = this.formGroup, publishEventCode = this.pageConfig.pageName, provider = this.pageProvider) {
-    return new Promise((resolve, reject) => {
-      this.formGroup.updateValueAndValidity();
-      if (!form.valid) {
-        this.env.showMessage('Please recheck information highlighted in red above', 'warning');
-      } else if (this.submitAttempt == false) {
-        this.submitAttempt = true;
-        let submitItem = this.getDirtyValues(form);
-        this.pageProvider.commonService
-          .connect('POST', 'BANK/IncomingPayment/PostIncomingPayment', submitItem)
-          .toPromise()
-          .then((savedItem: any) => {
-            resolve(savedItem);
-            this.savedChange(savedItem, form);
-            this.item = savedItem;
-            let formArray = this.formGroup.get('IncomingPaymentDetails') as FormArray;
-            formArray.clear();
-            this.loadedData();
-            if (publishEventCode) this.env.publishEvent({ Code: publishEventCode });
-          })
-          .catch((err) => {
-            this.env.showMessage('Cannot save, please try again', 'danger');
-            this.cdr.detectChanges();
-            this.submitAttempt = false;
-            reject(err);
-          });
-      }
-    });
-  }
-
-  typeDataSource: any;
   preLoadData(event?: any): void {
-    Promise.all([this.env.getStatus('PaymentStatus'), this.env.getType('PaymentType')]).then((values: any) => {
+    Promise.all([this.env.getStatus('PaymentStatus'), this.env.getType('PaymentType'),this.env.getType('IncomingPaymentReason')]).then((values: any) => {
       if (values.length) {
         this.statusList = values[0].filter((d) => d.Code != 'PaymentStatus');
         this.typeDataSource = values[1].filter((d) => d.Code == 'Cash' || d.Code == 'Card' || d.Code == 'Transfer');
+        if(values[2].length==0) this.paymentReasonList = [{Name : 'Payment of invoice', Code :'PaymentOfInvoice'},{Name : 'Payment of sale order', Code :'PaymentOfSO'}]
       }
       super.preLoadData(event);
     });
@@ -185,6 +146,10 @@ export class IncomingPaymentDetailPage extends PageBase {
       this._contactDataSource.selected = [];
       this._contactDataSource.selected.push(this.item.Customer);
     }
+    if (this.item._Owner) {
+      this._staffDataSource.selected =[...[],this.item._Owner];
+    }
+    this._staffDataSource.initSearch();
     this._contactDataSource.initSearch();
 
     if (!IDCustomerDisabled || this.pageConfig.canEditCustomer) {
@@ -422,6 +387,29 @@ export class IncomingPaymentDetailPage extends PageBase {
       );
     },
   };
+  _staffDataSource = {
+    searchProvider: this.staffProvider,
+    loading: false,
+    input$: new Subject<string>(),
+    selected: [],
+    items$: null,
+    initSearch() {
+      this.loading = false;
+      this.items$ = concat(
+        of(this.selected),
+        this.input$.pipe(
+          distinctUntilChanged(),
+          tap(() => (this.loading = true)),
+          switchMap((term) =>
+            this.searchProvider.search({ Take: 20, Skip: 0, Term: term }).pipe(
+              catchError(() => of([])), // empty list on error
+              tap(() => (this.loading = false)),
+            ),
+          ),
+        ),
+      );
+    },
+  };
 
   removeField(deletedFields) {
     this.formGroup.get('DeletedFields').setValue(deletedFields);
@@ -472,4 +460,46 @@ export class IncomingPaymentDetailPage extends PageBase {
       this.formGroup.controls.IncomingPaymentDetails = new FormArray([]);
     }
   }
+
+  
+  segmentView = 's1';
+  segmentChanged(ev: any) {
+    this.segmentView = ev.detail.value;
+  }
+
+  async saveChange() {
+    this.saveChange2();
+   
+  }
+
+  saveChange2(form = this.formGroup, publishEventCode = this.pageConfig.pageName, provider = this.pageProvider) {
+    return new Promise((resolve, reject) => {
+      this.formGroup.updateValueAndValidity();
+      if (!form.valid) {
+        this.env.showMessage('Please recheck information highlighted in red above', 'warning');
+      } else if (this.submitAttempt == false) {
+        this.submitAttempt = true;
+        let submitItem = this.getDirtyValues(form);
+        this.pageProvider.commonService
+          .connect('POST', 'BANK/IncomingPayment/PostIncomingPayment', submitItem)
+          .toPromise()
+          .then((savedItem: any) => {
+            resolve(savedItem);
+            this.savedChange(savedItem, form);
+            this.item = savedItem;
+            let formArray = this.formGroup.get('IncomingPaymentDetails') as FormArray;
+            formArray.clear();
+            this.loadedData();
+            if (publishEventCode) this.env.publishEvent({ Code: publishEventCode });
+          })
+          .catch((err) => {
+            this.env.showMessage('Cannot save, please try again', 'danger');
+            this.cdr.detectChanges();
+            this.submitAttempt = false;
+            reject(err);
+          });
+      }
+    });
+  }
+
 }

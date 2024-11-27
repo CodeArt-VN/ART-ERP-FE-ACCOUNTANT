@@ -1,23 +1,7 @@
-<!-- <ion-header>
-  <app-list-toolbar
-    pageTitle="Danh sách"
-    [pageConfig]="pageConfig"
-    [selectedItems]="selectedItems"
-    [query]="query"
-    (add)="add()"
-    (refresh)="refresh()"
-    (export)="export()"
-    (import)="import($event)"
-    (help)="help()"
-    (unselect)="unselect()"
-    (archiveItems)="archiveItems()"
-    (deleteItems)="deleteItems()"
-    (changeBranch)="changeBranch($event)"
-  ></app-list-toolbar>
-</ion-header> -->
+
 <ion-header>
   <app-toolbar [page]="this" >
-    <ion-button *ngIf="ShowRequestOutgoingPayment && pageConfig.canRequestOutgoingPayment"fill="clear" title="Create outgoing payment"  
+    <ion-button *ngIf="selectedItems?.length>0 && ShowRequestOutgoingPayment && pageConfig.canRequestOutgoingPayment"fill="clear" title="Create outgoing payment"  
     (click)="presentPopover($event)" >
 			<ion-icon slot="start" name="money-check"></ion-icon>
 		</ion-button>
@@ -48,7 +32,7 @@
       <datatable-column class="col-id" name="Id" property="Id">
         <ng-template let-i="row" datatable-cell-template>
           <a [routerLink]="['/'+pageConfig.pageName+'/'+i.Id]" >
-            <span class="show-small-inline">PO: </span>{{i.InvoiceNo}}
+           {{i.Id}}
           </a >
         </ng-template>
       </datatable-column>
@@ -69,15 +53,24 @@
       <datatable-column class="col-id" name="Số HĐ" property="InvoiceNo">
         <ng-template let-i="row" datatable-cell-template>
           <a [routerLink]="['/'+pageConfig.pageName+'/'+i.Id]" >
-            <span class="show-small-inline">PO: </span>{{i.InvoiceNo}}
+            <span class="show-small-inline">PO: </span>{{i.Id}}
           </a >
         </ng-template>
       </datatable-column>
-
+    
       <datatable-column class="col-date"  filterControlType="date" name="Ngày HĐ" property="InvoiceDate">
         <ng-template let-i="row" datatable-cell-template>
           {{i.InvoiceDate | date:'dd/MM/yyyy'}}
           </ng-template>
+      </datatable-column>
+      <datatable-column class="col-code" name="Payment status" property="PaymentStatus">
+        <ng-template let-i="row" datatable-cell-template>
+          <span class="bar-holder">
+            <ng-container *ngFor="let s of apPaymentStatusList">
+              <ion-text *ngIf="s.Code==i.PaymentStatus" class="bar-title" [color]="s.Color">{{s.Name}}</ion-text>
+            </ng-container>
+          </span>
+        </ng-template>
       </datatable-column>
       <datatable-column class="col-name"  filterControlType="text" name="Bên bán" property="SellerName">
         <ng-template let-i="row" datatable-cell-template>
@@ -85,13 +78,10 @@
         </ng-template>
       </datatable-column>
    
-      <datatable-column class="col-remark"  filterControlType="text" name="Bên mua" property="BuyerName">
-        <ng-template let-i="row" datatable-cell-template>
-          {{i.BuyerName}}
-        </ng-template>
-      </datatable-column>
-
       <datatable-column class="col-number" name="Total amount" property="CalcTotalAfterTax">
+        <ng-template let-i="row" datatable-cell-template>
+          {{i.CalcTotalAfterTax | number:'1.0-0'}}
+        </ng-template>
       </datatable-column>
 
       <datatable-column class="col-status" name="Status" property="Status">
@@ -114,25 +104,7 @@
         </ng-template>
       </datatable-column>
       
-      <datatable-column class="col-status" name="Payment status" property="PaymentStatus">
-        <ng-template let-i="row" datatable-cell-template>
-          <span class="bar-holder">
-            <ng-container *ngFor="let s of paymentStatusList">
-              <ion-text *ngIf="s.Code==i.PaymentStatus" class="bar-title" [color]="s.Color">{{s.Name}}</ion-text>
-            </ng-container>
-            <span
-              class="bar"
-              [ngClass]="{active: s.Code==i.PaymentStatus}"
-              [ngStyle]="{'background-color': 'var(--ion-color-'+s.Color+')'}"
-              *ngFor="let s of paymentStatusList"
-              [title]="s.Name"
-            ></span>
-          </span>
-        <!-- <ion-badge [color]="i._Status?.Color" [title]="i._Status?.Name">
-          {{i._Status?.Name}}
-        </ion-badge> -->
-        </ng-template>
-      </datatable-column>
+   
     </app-data-table>
 </section>
 
@@ -158,8 +130,14 @@
           <ion-row>
           <ion-col size="12" size-sm size-xl="12">
             <app-form-control
-            [field]="{ id: 'PaymentType', type: 'ng-select', label: 'Provider', dataSource: paymentTypeList, bindValue: 'Code', bindLabel: 'Name', form: formGroup }"
+            [field]="{ id: 'PaymentReason', type: 'ng-select', label: 'Reason', dataSource: paymentReasonList, bindValue: 'Code', bindLabel: 'Name', form: formGroup }"
           ></app-form-control>
+            <app-form-control
+            [field]="{ id: 'PaymentType', type: 'ng-select', label: 'Type', dataSource: paymentTypeList, bindValue: 'Code', bindLabel: 'Name', form: formGroup }"
+          ></app-form-control>
+          <app-form-control
+          [field]="{ id: 'PaymentSubType', type: 'ng-select', label: 'Sub type', dataSource: paymentSubTypeList, bindValue: 'Code', bindLabel: 'Name', form: formGroup }"
+        ></app-form-control>
           </ion-col>
         </ion-row>
         </form>

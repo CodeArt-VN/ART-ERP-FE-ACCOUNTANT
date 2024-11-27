@@ -7,6 +7,7 @@ import {
   BANK_OutgoingPaymentProvider,
   BRA_BranchProvider,
   CRM_ContactProvider,
+  HRM_StaffProvider,
 } from 'src/app/services/static/services.service';
 import { FormBuilder, FormControl, FormArray, Validators } from '@angular/forms';
 import { CommonService } from 'src/app/services/core/common.service';
@@ -21,17 +22,20 @@ import { OutgoingPaymentInvoiceModalPage } from '../outgoing-payment-invoice-mod
 })
 export class OutgoingPaymentDetailPage extends PageBase {
   statusList: [];
+  paymentReasonList = [];
   SelectedOrderList: any;
   SelectedInvoiceList: any;
-  defaultBusinessPartner : any;
-  differenceAmount = 0 ;
-  orderPaymentCount = 0 ;
-  invoicePaymentCount = 0 ;
+  defaultBusinessPartner: any;
+  differenceAmount = 0;
+  orderPaymentCount = 0;
+  invoicePaymentCount = 0;
   itemFromOtherSource = null;
+  previousAmountTracking = 0;
   constructor(
     public pageProvider: BANK_OutgoingPaymentProvider,
     // public OutgoingPaymentDetailservice: BANK_OutgoingPaymentDetailProvider,
     public branchProvider: BRA_BranchProvider,
+    public staffProvider: HRM_StaffProvider,
     public popoverCtrl: PopoverController,
     public env: EnvService,
     public navCtrl: NavController,
@@ -62,8 +66,10 @@ export class OutgoingPaymentDetailPage extends PageBase {
       Remark: [''],
       Amount: ['', Validators.required],
       Status: [''],
+      IDStaff: [this.env.user.StaffID],
       IDBusinessPartner: ['', Validators.required],
       OutgoingPaymentDetails: this.formBuilder.array([]),
+      PaymentReason: [''],
       IsDisabled: new FormControl({ value: '', disabled: true }),
       IsDeleted: new FormControl({ value: '', disabled: true }),
       CreatedBy: new FormControl({ value: '', disabled: true }),
@@ -71,6 +77,8 @@ export class OutgoingPaymentDetailPage extends PageBase {
       ModifiedBy: new FormControl({ value: '', disabled: true }),
       ModifiedDate: new FormControl({ value: '', disabled: true }),
       DeletedFields: [[]],
+
+      TrackingAmount: [''],
     });
   }
 
@@ -84,23 +92,9 @@ export class OutgoingPaymentDetailPage extends PageBase {
   }
 
   savedChange(savedItem = null, form = this.formGroup) {
-    if (savedItem) {
-      this.item = savedItem;
-      if (form.controls.Id && savedItem.Id && form.controls.Id.value != savedItem.Id)
-        form.controls.Id.setValue(savedItem.Id);
-      if (this.pageConfig.isDetailPage && form == this.formGroup && this.id == 0) {
-        this.id = savedItem.Id;
-        if (window.location.hash.endsWith('/0')) {
-          let newURL = window.location.hash.substring(0, window.location.hash.length - 1) + savedItem.Id;
-          history.pushState({}, null, newURL);
-        }
-      }
-    }
-
-    form.markAsPristine();
-    this.cdr.detectChanges();
-    this.submitAttempt = false;
-    this.env.showMessage('Saving completed!', 'success');
+    this.item = savedItem;
+    super.savedChange(savedItem);
+    this.loadedData();
   }
 
   typeDataSource: any;
@@ -109,69 +103,98 @@ export class OutgoingPaymentDetailPage extends PageBase {
       this.itemFromOtherSource = this.router.getCurrentNavigation().extras.state;
       this.item = this.itemFromOtherSource;
     });
-    Promise.all([this.env.getStatus('OutgoingPaymentStatus'), this.env.getType('PaymentType')]).then((values: any) => {
+    Promise.all([
+      this.env.getStatus('OutgoingPaymentStatus'),
+      this.env.getType('PaymentType'),
+      this.env.getType('OutgoingPaymentReason'),
+    ]).then((values: any) => {
       if (values.length) {
-        this.statusList = values[0]//.filter((d) => d.Code != 'PaymentStatus');
+        this.statusList = values[0]; //.filter((d) => d.Code != 'PaymentStatus');
         this.typeDataSource = values[1].filter((d) => d.Code == 'Cash' || d.Code == 'Card' || d.Code == 'Transfer');
+        if (values[2].length == 0)
+          this.paymentReasonList = [
+            { Name: 'Payment of invoice', Code: 'PaymentOfInvoice' },
+            { Name: 'Payment of purchase order', Code: 'PaymentOfPO' },
+          ];
       }
       super.preLoadData(event);
     });
   }
 
-  
   amountOrder = 0;
   amountInvoice = 0;
-  async loadedData(event?: any, ignoredFromGroup?: boolean) {
+  loadedData(event?: any, ignoredFromGroup?: boolean) {
     if (this.item?.Status != 'Draft') {
       if (this.item.IDBusinessPartner == null && this.pageConfig.canEdit) {
       }
       this.pageConfig.canEdit = false;
     }
-
+    if (!this.item.Id) {
+      this.item.IDStaff = this.env.user.StaffID;
+      this.item._Owner = {
+        Id: this.env.user.StaffID,
+        FullName: this.env.user.FullName,
+      };
+      this.formGroup.controls['IDStaff'].markAsDirty();
+    }
     super.loadedData(event, ignoredFromGroup);
+
+    if (this.item?.Status) this.item._Status = this.statusList.find((d: any) => d.Code == this.item?.Status);
   
-    if(this.item?.Status) this.item._Status =  this.statusList.find((d:any) => d.Code == this.item?.Status);
     this.amountOrder = 0;
     this.amountInvoice = 0;
     const formArray = this.formGroup.get('OutgoingPaymentDetails') as FormArray;
     formArray.clear();
-    formArray.valueChanges.subscribe(value => {
-      this.invoicePaymentCount = formArray.value.filter(d=> d.DocumentType=='Invoice').length;
-      this.orderPaymentCount = formArray.value.filter(d=> d.DocumentType=='Order').length;
+    formArray.valueChanges.subscribe((value) => {
+      this.invoicePaymentCount = formArray.value.filter((d) => d.DocumentType == 'Invoice').length;
+      this.orderPaymentCount = formArray.value.filter((d) => d.DocumentType == 'Order').length;
       this.calcDifferenceAmount();
     });
-    this.formGroup.get('Amount').valueChanges.subscribe(value => {
+    this.previousAmountTracking = this.formGroup.get('Amount').value;
+    this.formGroup.get('Amount').valueChanges.subscribe((value) => {
       this.calcDifferenceAmount();
     });
     this.item.OutgoingPaymentDetails?.forEach((i) => {
       this.addField(i);
     });
     if (this.item?.IDBusinessPartner) {
-      this._contactDataSource.selected=[this.item._BusinessPartner];
+      this._contactDataSource.selected = [this.item._BusinessPartner];
       this.defaultBusinessPartner = this.item._BusinessPartner;
     }
+    if (this.item._Owner) {
+      this._staffDataSource.selected = [...[], this.item._Owner];
+    }
     this._contactDataSource.initSearch();
-    if(this.itemFromOtherSource){
-      if(this.item.Id) return ; //first time saved 
-      Object.keys(this.itemFromOtherSource).forEach(key=>{
-        if( this.formGroup.get(key)){
-          if(key == 'OutgoingPaymentDetails'){
-            this.itemFromOtherSource['OutgoingPaymentDetails'].forEach(d=>{
-              let fg = this.formGroup.get('OutgoingPaymentDetails')['controls'].find(c=> c.get('DocumentEntry').value == d.DocumentEntry);
-              if(fg){
-                Object.keys(d).forEach(k =>{
-                  if(fg.get(k)) fg.get(k).markAsDirty();
-                })
+    this._staffDataSource.initSearch();
+    if (this.itemFromOtherSource) {
+      if (this.item.Id) return; //first time saved
+      Object.keys(this.itemFromOtherSource).forEach((key) => {
+        if (this.formGroup.get(key)) {
+          if (key == 'OutgoingPaymentDetails') {
+            this.itemFromOtherSource['OutgoingPaymentDetails'].forEach((d) => {
+              let fg = this.formGroup
+                .get('OutgoingPaymentDetails')
+                ['controls'].find((c) => c.get('DocumentEntry').value == d.DocumentEntry);
+              if (fg) {
+                Object.keys(d).forEach((k) => {
+                  if (fg.get(k)) fg.get(k).markAsDirty();
+                });
               }
-            })
-            this.formGroup.get(key)  
-          }else{
+            });
+            this.formGroup.get(key);
+          } else {
             this.formGroup.get(key).markAsDirty();
           }
         }
-      })
+      });
     }
-
+   
+    if (this.pageConfig.canMarkAsPaid && (this.formGroup.get('Status').value == 'Approved' || this.formGroup.get('Status').value == 'PartiallyPaid')) {
+      this.pageConfig.ShowMarkAsPaid = true;
+    }
+    if (this.pageConfig.canPay &&(this.formGroup.get('Status').value == 'Approved' || this.formGroup.get('Status').value == 'PartiallyPaid')) {
+      this.pageConfig.ShowPay = true;
+    }
   }
 
   addField(field: any, markAsDirty = false) {
@@ -205,22 +228,22 @@ export class OutgoingPaymentDetailPage extends PageBase {
     this.formGroup.get('Type').markAsDirty();
     this.saveChange();
   }
-  tesst(){
+  tesst() {
     this.outgoingPaymentDetails = [...this.formGroup.controls.OutgoingPaymentDetails.value];
-    this.outgoingPaymentDetails?.forEach(s=> s.IDOrder = s.DocumentEntry);
+    this.outgoingPaymentDetails?.forEach((s) => (s.IDOrder = s.DocumentEntry));
   }
   outgoingPaymentDetails: any;
   async showOrderModal() {
     this.tesst();
     this.outgoingPaymentDetails = [...this.formGroup.controls.OutgoingPaymentDetails.value];
-    this.SelectedOrderList = [...this.outgoingPaymentDetails.filter(d=> d.DocumentType=='Order')]
+    this.SelectedOrderList = [...this.outgoingPaymentDetails.filter((d) => d.DocumentType == 'Order')];
     let amountOrder = this.formGroup.get('Amount').value - this.amountInvoice;
-   //  let amountOrder = this.formGroup.get('Amount').value - this.amountInvoice; 
+    //  let amountOrder = this.formGroup.get('Amount').value - this.amountInvoice;
     const modal = await this.modalController.create({
       component: OutgoingPaymentPurchaseOrderModalPage,
       componentProps: {
         IDBusinessPartner: this.formGroup.controls.IDBusinessPartner.value,
-        DefaultBusinessPartner : this.defaultBusinessPartner,
+        DefaultBusinessPartner: this.defaultBusinessPartner,
         canEdit: this.pageConfig.canEdit,
         amount: amountOrder,
         IDOutgoingPayment: this.formGroup.controls.Id.value,
@@ -241,12 +264,20 @@ export class OutgoingPaymentDetailPage extends PageBase {
         e.DocumentEntry = e.IDOrder;
         e.DocumentType = 'Order';
         this.SelectedOrderList.push(e);
-        
-        if (!this.outgoingPaymentDetails.some((item) =>item.DocumentType == 'Order' && item.DocumentEntry == e.DocumentEntry)) {
+
+        if (
+          !this.outgoingPaymentDetails.some(
+            (item) => item.DocumentType == 'Order' && item.DocumentEntry == e.DocumentEntry,
+          )
+        ) {
           this.addField(e, true);
         } else {
-          if(e.Amount != this.outgoingPaymentDetails.find((item) =>item.DocumentType == 'Order' && item.DocumentEntry == e.DocumentEntry).Amount)
-          {
+          if (
+            e.Amount !=
+            this.outgoingPaymentDetails.find(
+              (item) => item.DocumentType == 'Order' && item.DocumentEntry == e.DocumentEntry,
+            ).Amount
+          ) {
             this.updateField(e);
           }
         }
@@ -277,8 +308,8 @@ export class OutgoingPaymentDetailPage extends PageBase {
       this.orderPaymentCount = data.length;
 
       if (this.formGroup.valid) {
-        await this.saveChange().then(async() => {
-          await this.loadedData()
+        await this.saveChange().then(async () => {
+          // await this.loadedData()
         });
       }
     }
@@ -286,14 +317,14 @@ export class OutgoingPaymentDetailPage extends PageBase {
   async showInvoiceModal() {
     this.outgoingPaymentDetails = [...this.formGroup.controls.OutgoingPaymentDetails.value];
     //this.outgoingPaymentDetails?.value?.forEach(s=> s.IDOrder = s.DocumentEntry);
-    this.SelectedInvoiceList = this.outgoingPaymentDetails?.filter(d=> d.DocumentType=='Invoice');
-   let amountInvoice = this.formGroup.get('Amount').value - this.amountOrder;
+    this.SelectedInvoiceList = this.outgoingPaymentDetails?.filter((d) => d.DocumentType == 'Invoice');
+    let amountInvoice = this.formGroup.get('Amount').value - this.amountOrder;
     const modal = await this.modalController.create({
       component: OutgoingPaymentInvoiceModalPage,
       componentProps: {
         IDBusinessPartner: this.formGroup.controls.IDBusinessPartner.value,
         canEdit: this.pageConfig.canEdit,
-        DefaultBusinessPartner : this.defaultBusinessPartner,
+        DefaultBusinessPartner: this.defaultBusinessPartner,
         IDOutgoingPayment: this.formGroup.controls.Id.value,
         amount: amountInvoice,
         canEditAmount: true,
@@ -315,11 +346,19 @@ export class OutgoingPaymentDetailPage extends PageBase {
         e.IDBusinessPartner = e.IDSeller;
         this.SelectedInvoiceList.push(e);
         e.IDOrder = null;
-        if (!this.outgoingPaymentDetails.some((item) => item.DocumentType == 'Invoice' && item.DocumentEntry === e.IDInvoice)) {
+        if (
+          !this.outgoingPaymentDetails.some(
+            (item) => item.DocumentType == 'Invoice' && item.DocumentEntry === e.IDInvoice,
+          )
+        ) {
           this.addField(e, true);
         } else {
-          if(e.Amount != this.outgoingPaymentDetails.find((item) =>item.DocumentType == 'Invoice' && item.DocumentEntry == e.DocumentEntry).Amount)
-          {
+          if (
+            e.Amount !=
+            this.outgoingPaymentDetails.find(
+              (item) => item.DocumentType == 'Invoice' && item.DocumentEntry == e.DocumentEntry,
+            ).Amount
+          ) {
             this.updateField(e);
           }
         }
@@ -349,60 +388,67 @@ export class OutgoingPaymentDetailPage extends PageBase {
       this.formGroup.get('Amount').markAsDirty();
       this.invoicePaymentCount = data.length;
       if (this.formGroup.valid) {
-        await this.saveChange().then(async() => {
-          await this.loadedData()
+        await this.saveChange().then(async () => {
+          // await this.loadedData()
         });
-
       }
     }
   }
 
-  changeDate(e){
-    if(!this.formGroup.get('DocumentDate').value){
+  changeDate(e) {
+    if (!this.formGroup.get('DocumentDate').value) {
       this.formGroup.get('DocumentDate').setValue(e.target.value);
       this.formGroup.get('DocumentDate').markAsDirty();
     }
-    if(!this.formGroup.get('PostingDate').value){
+    if (!this.formGroup.get('PostingDate').value) {
       this.formGroup.get('PostingDate').setValue(e.target.value);
       this.formGroup.get('PostingDate').markAsDirty();
     }
-    if(!this.formGroup.get('DueDate').value){
+    if (!this.formGroup.get('DueDate').value) {
       this.formGroup.get('DueDate').setValue(e.target.value);
       this.formGroup.get('DueDate').markAsDirty();
     }
     this.saveChange();
   }
-  changeAmount(){
-    if( this.submitAttempt) return;
-     this.submitAttempt = true;
-    let paymentDetails = <FormArray> this.formGroup.controls.OutgoingPaymentDetails;
-    if(paymentDetails.controls.length>0){
+  changeAmount() {
+    if (this.submitAttempt) return;
+    this.submitAttempt = true;
+    let paymentDetails = <FormArray>this.formGroup.controls.OutgoingPaymentDetails;
+    if (paymentDetails.controls.length > 0) {
       this.env
-      .showPrompt('Khi thay đổi lượng tiền bạn cần điều chỉnh lại các đơn hàng/hóa đơn!', 'Warning', 'Bạn có muốn xóa toàn bộ hóa đơn trước đó không?','Delete','No')
-      .then((_) => {
-        this.formGroup.get('DeletedFields').setValue(this.formGroup.controls.OutgoingPaymentDetails['controls'].map(s=>s.get('Id').value));
-        this.formGroup.get('DeletedFields').markAsDirty();
-        this.submitAttempt = false;
-        let groups = <FormArray>this.formGroup.controls.OutgoingPaymentDetails;
-        groups.clear();
-        this.saveChange();
-      })
-      .catch((_) => {
-        // this.formGroup.get('Amount').setValue(this.trackingAmount);
-        // this.formGroup.get('Amount').markAsPristine();
-        this.submitAttempt = false;
-        this.saveChange();
-
-      });
-    }
-    else{
+        .showPrompt(
+          'When changing the amount of money, you need to adjust the orders/invoices!',
+          'Warning',
+          'Do you want to delete all invoice details ?',
+          'Delete',
+          'No',
+        )
+        .then((_) => {
+          this.formGroup
+            .get('DeletedFields')
+            .setValue(this.formGroup.controls.OutgoingPaymentDetails['controls'].map((s) => s.get('Id').value));
+          this.formGroup.get('DeletedFields').markAsDirty();
+          this.submitAttempt = false;
+          let groups = <FormArray>this.formGroup.controls.OutgoingPaymentDetails;
+          groups.clear();
+          this.previousAmountTracking = this.formGroup.get('Amount').value;
+          this.saveChange();
+        })
+        .catch((_) => {
+          // this.formGroup.get('Amount').setValue(this.trackingAmount);
+          // this.formGroup.get('Amount').markAsPristine();
+          this.submitAttempt = false;
+          // this.saveChange();
+          this.formGroup.get('Amount').setValue(this.previousAmountTracking);
+          this.formGroup.get('Amount').markAsPristine();
+        });
+    } else {
       this.submitAttempt = false;
-      // this.trackingAmount = this.formGroup.get('Amount').value;
+      this.previousAmountTracking = this.formGroup.get('Amount').value;
       this.saveChange();
     }
+  }
 
-    };
-  
   _contactDataSource = {
     searchProvider: this.contactProvider,
     loading: false,
@@ -436,15 +482,37 @@ export class OutgoingPaymentDetailPage extends PageBase {
     },
   };
 
+  _staffDataSource = {
+    searchProvider: this.staffProvider,
+    loading: false,
+    input$: new Subject<string>(),
+    selected: [],
+    items$: null,
+    initSearch() {
+      this.loading = false;
+      this.items$ = concat(
+        of(this.selected),
+        this.input$.pipe(
+          distinctUntilChanged(),
+          tap(() => (this.loading = true)),
+          switchMap((term) =>
+            this.searchProvider.search({ Take: 20, Skip: 0, Term: term }).pipe(
+              catchError(() => of([])), // empty list on error
+              tap(() => (this.loading = false)),
+            ),
+          ),
+        ),
+      );
+    },
+  };
+
   removeField(deletedFields) {
     this.formGroup.get('DeletedFields').setValue(deletedFields);
     this.formGroup.get('DeletedFields').markAsDirty();
   }
 
   async updateField(updatedField: any) {
-    const index = this.outgoingPaymentDetails.findIndex(
-      (d) => d.Id === updatedField.IDPaymentDetail 
-    );
+    const index = this.outgoingPaymentDetails.findIndex((d) => d.Id === updatedField.IDPaymentDetail);
     if (index != -1) {
       this.outgoingPaymentDetails[index].Amount = updatedField.Amount;
       const group = <FormArray>this.formGroup.controls.OutgoingPaymentDetails;
@@ -461,9 +529,8 @@ export class OutgoingPaymentDetailPage extends PageBase {
       this.env.showPrompt('Bạn có chắc muốn xóa không?', null, 'Xóa 1 dòng').then((_) => {
         this.formGroup.get('DeletedFields').setValue([id]);
         this.formGroup.get('DeletedFields').markAsDirty();
-        this.saveChange().then(rs=>{
+        this.saveChange().then((rs) => {
           groups.removeAt(index);
-
         });
       });
     } else {
@@ -476,7 +543,9 @@ export class OutgoingPaymentDetailPage extends PageBase {
       this.env
         .showPrompt('Khi thay đổi khách hàng sẽ xóa toàn bộ hóa đơn trước đó', null, 'Bạn có muốn thay đổi không?')
         .then((_) => {
-          this.formGroup.get('DeletedFields').setValue(this.formGroup.controls.OutgoingPaymentDetails['controls'].map(s=>s.get('Id').value));
+          this.formGroup
+            .get('DeletedFields')
+            .setValue(this.formGroup.controls.OutgoingPaymentDetails['controls'].map((s) => s.get('Id').value));
           this.formGroup.get('DeletedFields').markAsDirty();
           this.saveChange();
           this.formGroup.controls.OutgoingPaymentDetails = new FormArray([]);
@@ -489,11 +558,65 @@ export class OutgoingPaymentDetailPage extends PageBase {
       this.formGroup.controls.OutgoingPaymentDetails = new FormArray([]);
     }
   }
-  calcDifferenceAmount(){
-    this.amountOrder =  parseFloat( this.formGroup.get('OutgoingPaymentDetails').value.filter(d=>d.DocumentType =='Order').reduce((sum, item) => sum + (item.Amount || 0), 0));
-    this.amountInvoice = parseFloat( this.formGroup.get('OutgoingPaymentDetails').value.filter(d=>d.DocumentType =='Invoice').reduce((sum, item) => sum + (item.Amount || 0), 0)) ;
-    this.orderPaymentCount =this.formGroup.get('OutgoingPaymentDetails').value.filter(d=>d.DocumentType =='Order').length ;
-    this.invoicePaymentCount = this.formGroup.get('OutgoingPaymentDetails').value.filter(d=>d.DocumentType =='Invoice').length;
+
+  markAsPaid() {
+    if (!this.pageConfig.canMarkAsPaid) return;
+    let ids = [this.formGroup.get('Id').value];
+    this.env
+      .showPrompt({
+        code: 'Are you sure you want to mark as paid?',
+      })
+      .then(() => {
+        this.env
+          .showLoading(
+            'Please wait for a few moments',
+            this.pageProvider.commonService.connect('POST', 'BANK/OutgoingPayment/MarkAsPaid', ids).toPromise(),
+          )
+          .then((rs) => {
+            this.env.showMessage('Saved', 'success');
+            this.refresh();
+          })
+          .catch((err) => {
+            if (err.error?.Message) {
+              try {
+                let messageObj = JSON.parse(err.error?.Message);
+                if (messageObj && messageObj.Message1 && messageObj.Message2) {
+                  this.env.showPrompt(
+                    { code:  messageObj.Message2+ '{{value}}', value:messageObj.DocumentEntry.toString() },
+                    null,
+                    { code: messageObj.Message1+ '{{value}}', value:'[' + messageObj.payments.join(',') + ']' },
+                  )
+                } else this.env.showMessage(err.error?.Message ?? err, 'danger');
+              } catch (e) {
+                this.env.showMessage(err.error?.Message ?? err, 'danger');
+              }
+            } else this.env.showMessage(err, 'danger');
+          });
+      });
+  }
+
+  pay() {
+    this.env.showMessage('This feature will be available soon', 'warning');
+  }
+  calcDifferenceAmount() {
+    this.amountOrder = parseFloat(
+      this.formGroup
+        .get('OutgoingPaymentDetails')
+        .value.filter((d) => d.DocumentType == 'Order')
+        .reduce((sum, item) => sum + (item.Amount || 0), 0),
+    );
+    this.amountInvoice = parseFloat(
+      this.formGroup
+        .get('OutgoingPaymentDetails')
+        .value.filter((d) => d.DocumentType == 'Invoice')
+        .reduce((sum, item) => sum + (item.Amount || 0), 0),
+    );
+    this.orderPaymentCount = this.formGroup
+      .get('OutgoingPaymentDetails')
+      .value.filter((d) => d.DocumentType == 'Order').length;
+    this.invoicePaymentCount = this.formGroup
+      .get('OutgoingPaymentDetails')
+      .value.filter((d) => d.DocumentType == 'Invoice').length;
     this.differenceAmount = this.formGroup.get('Amount').value - (this.amountOrder + this.amountInvoice);
   }
 }

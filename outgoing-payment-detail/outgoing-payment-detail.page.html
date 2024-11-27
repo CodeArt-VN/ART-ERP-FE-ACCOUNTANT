@@ -5,7 +5,21 @@
     [pageConfig]="pageConfig"
     [selectedItems]="selectedItems"
     [query]="query"
-  ></app-toolbar>
+  >
+  <ion-button
+  *ngIf="pageConfig.ShowMarkAsPaid && pageConfig.canMarkAsPaid"
+  title="{{'Mark as paid' | translate}}"
+  color="secondary"
+  (click)="markAsPaid()"
+>
+  <ion-icon color="success" slot="icon-only" name="wallet-outline"></ion-icon>
+</ion-button>
+<ion-button *ngIf="pageConfig.ShowPay && pageConfig.canPay"fill="clear" 
+  title="{{'Create expense authorization' | translate}}"  
+  (click)="pay()" >
+    <ion-icon slot="start" name="card-outline"></ion-icon>
+  </ion-button>
+</app-toolbar>
 </ion-header>
 
 <ion-content appScrollbarTheme class="ion-padding">
@@ -75,6 +89,12 @@
 
               <ion-col size="12" size-sm size-xl="4">
                 <app-form-control
+                [field]="{id:'PaymentReason', label: 'Reason', type : 'ng-select',bindValue:'Code',bindLabel:'Name',dataSource:paymentReasonList, form : formGroup }"
+                (change)="saveChange()"
+              >
+              </app-form-control>
+
+                <app-form-control
                   [field]="{id:'Type', label: 'Type', type : 'ng-select', dataSource: typeDataSource, bindValue:'Code', bindLabel:'Name', form : formGroup }"
                   (change)="changeType($event)"
                 >
@@ -120,6 +140,9 @@
              
               </ion-col>
               <ion-col size="12" size-sm size-xl="4">
+                <app-form-control [field]="{id:'Name', label: 'Name', type : 'text', form : formGroup }">
+                </app-form-control>
+
                 <app-form-control
                   [field]="{id:'Code', label: 'Code', type : 'text', form : formGroup }"
                   (change)="saveChange()"
@@ -127,9 +150,7 @@
                   <small label *ngIf="item?.Id">Id: {{item.Id}}</small>
                 </app-form-control>
 
-                <app-form-control [field]="{id:'Name', label: 'Name', type : 'text', form : formGroup }">
-                </app-form-control>
-
+           
                 <app-form-control
                   [field]="{id:'DocumentDate', label: 'Document date', type : 'datetime-local', form : formGroup }"
                   (change)="changeDate($event)"
@@ -145,6 +166,8 @@
                   (change)="changeDate($event)"
                 >
                 </app-form-control>
+                <app-form-control [field]="{id:'IDStaff',label:'Onwer', type:'ng-select-staff',dataSource:_staffDataSource, bindLabel:'Name',
+                bindValue:'Id',form:formGroup}" (controlChange)="saveChange()" ></app-form-control>
               </ion-col>
             </ion-row>
 
