@@ -54,6 +54,7 @@ export class OutgoingPaymentPurchaseOrderModalPage extends PageBase {
 
   loadData(event = null) {
       this.parseSort();
+      this.query.IDSelected = this.SelectedOrderList?.map(s=> s.DocumentEntry);
       if (this.pageProvider && !this.pageConfig.isEndOfData) {
         if (event == 'search') {
           this.pageProvider.read(this.query, this.pageConfig.forceLoadData).then((result: any) => {
@@ -118,25 +119,39 @@ export class OutgoingPaymentPurchaseOrderModalPage extends PageBase {
     });
     this.total.Amount = this.amount;
     super.loadedData(event);
-    if (this.SelectedOrderList?.length) {
-      this.SelectedOrderList.forEach((s) => {
-        let order = this.items.find((i) => i.Id == s.IDOrder);
-        if (order) {
-          order.checked = true;
-          order.PaidAmount = s.Amount ? s.Amount : s.PaidAmount;
-          order.IDPaymentDetail = s.Id;
-          this.selectedItems.push(order);
+  
+  if (this.SelectedOrderList?.length) {
+  const reorderedItems = []; // To store items in the desired order
+  const remainingItems = [...this.items]; // Copy of original items to track unprocessed items
 
-        }
-        else {
-          s.isDisabled = true;
-          s.title = 'This order has been paid!';
-          s.PaidAmount = s.Amount ? s.Amount : s.PaidAmount;
-          s.checked = false;
-          s._BusinessPartner =  this.DefaultBusinessPartner ;
-          this.items.unshift(s);
-        }
-      });
+  this.SelectedOrderList.forEach((s) => {
+    const orderIndex = remainingItems.findIndex((i) => i.Id === s.DocumentEntry);
+    
+    if (orderIndex > -1) {
+      // Item exists in the original list
+      const order = remainingItems[orderIndex];
+      order.checked = true;
+      order.PaidAmount = s.Amount ?? order.PaidAmount;
+      order.IDPaymentDetail = s.Id;
+      this.selectedItems.push(order);
+      reorderedItems.push(order); // Add to reorderedItems
+
+      // Remove from remainingItems to avoid duplicates later
+      remainingItems.splice(orderIndex, 1);
+    } else {
+      // Item does not exist in the original list
+      s.isDisabled = true;
+      s.title = 'This order has been paid!';
+      s.PaidAmount = s.Amount ?? s.PaidAmount;
+      s.checked = false;
+      s._BusinessPartner = this.DefaultBusinessPartner;
+      reorderedItems.push(s); // Add to reorderedItems
+
+    }
+  });
+
+  // Combine reorderedItems (from SelectedOrderList) and remainingItems
+  this.items = [...reorderedItems, ...remainingItems];
     } else {
       this.autoSelect();
     }

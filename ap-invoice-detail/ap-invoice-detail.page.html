@@ -1,44 +1,14 @@
 <ion-header>
-  <app-detail-toolbar [page]="this"></app-detail-toolbar>
+  <app-toolbar [page]="this">
+    <ion-toolbar>
+    <ion-button *ngIf="pageConfig.ShowRequestOutgoingPayment && pageConfig.canRequestOutgoingPayment" tollbarSelected  title="{{'Create outgoing payment' | translate}}" (click)="presentPopover()">
+			<ion-icon color="success" name="money-check"></ion-icon>
+		</ion-button>
+    </ion-toolbar>
+  </app-toolbar>
 </ion-header>
-
 <ion-content appScrollbarTheme class="ion-padding">
-  <div class="main-view" *ngIf="item && pageConfig.showSpinner==false">
-    <!-- <ion-grid fixed>
-            <ion-row>
-                <ion-col class="img-holder" size="12" size-sm="300px">
-                    <div class="avatar">
-                        <img src="assets/undraw_street_food_hm5i.svg" (error)="img.src = 'assets/undraw_street_food_hm5i.svg'" #img>
-                        <div>
-                            <ion-button class="change-avatar" *ngIf="item.IsDisabled" color="danger" size="small">
-                                TẠM DỪNG
-                            </ion-button>
-                            <ion-button class="change-avatar" *ngIf="!item.IsDisabled && item.Id" color="primary" size="small">
-                                Đổi hình
-                            </ion-button>
-                        </div>
-                    </div>
-                </ion-col>
-                <ion-col size="12" size-sm>
-                    <ion-grid>
-                        <ion-row>
-                            <ion-col size="12" size-md="12" size-lg="12" size-xl="5">
-                                <div class="c-control">
-                                    <label class="c-label">Số xe
-                                        <span *ngIf="!formGroup.controls.Name.valid && !formGroup.controls.Name.pending && (formGroup.controls.Name.dirty || submitAttempt)" ion-text color="danger">(*)</span>
-                                    </label>
-                                    <input readonly class="c-input" [ngModel]="item.Name" type="text">
-                                </div>
-                            </ion-col>
-                            <ion-col size="12" size-md="12" size-lg="12" size-xl="5">
-                                
-                            </ion-col>
-                        </ion-row>
-                    </ion-grid>
-                </ion-col>
-            </ion-row>
-        </ion-grid> -->
-
+  <div class="main-view" *ngIf="item ">
     <div class="row-full shadow full-screen">
       <ion-toolbar color="primary">
         <ion-segment scrollable="true" (ionChange)="segmentChanged($event)" [value]="segmentView">
@@ -69,7 +39,7 @@
 									<input class="c-input" id="Id" formControlName="Id" type="number">
 								</div> -->
 
-                <div class="c-control">
+                <div class="c-control"  *ngIf="formGroup.get('Id').value">
                   <label class="c-label" for="IDReceipt"
                     >{{'ASN/Receipt' | translate}}
                     <span
@@ -82,7 +52,7 @@
 
                   <ng-select
                     class="c-input"
-                    (change)="receiptChange($event);"
+                    (change)="sourceChange($event,'Receipt');"
                     labelForId="IDReceipt"
                     formControlName="IDReceipt"
                     [items]="IDReceiptDataSource.items$ | async"
@@ -116,7 +86,7 @@
                   </ng-select>
                 </div>
 
-                <div class="c-control">
+                <div class="c-control" *ngIf="formGroup.get('Id').value">
                   <label class="c-label" for="IDPurchaseOrder"
                     >PO
                     <span
@@ -129,7 +99,7 @@
 
                   <ng-select
                     class="c-input"
-                    (change)="receiptChange($event);"
+                    (change)="sourceChange($event,'PurchaseOrder');"
                     labelForId="IDPurchaseOrder"
                     formControlName="IDPurchaseOrder"
                     [items]="IDPurchaseOrderDataSource.items$ | async"
@@ -178,79 +148,11 @@
 										</ng-template>
 									</ng-select>
 								</div> -->
-
-                <div class="c-control">
-                  <label class="c-label" for="InvoiceForm"
-                    >{{'Form' | translate}}
-                    <span
-                      *ngIf="!formGroup.controls.InvoiceForm.valid && !formGroup.controls.InvoiceForm.pending && (formGroup.controls.InvoiceForm.dirty || submitAttempt)"
-                      ion-text
-                      color="danger"
-                      >(*)</span
-                    >
-                  </label>
-                  <input
-                    (change)="saveChange()"
-                    class="c-input"
-                    id="InvoiceForm"
-                    formControlName="InvoiceForm"
-                    type="text"
-                  />
-                </div>
-                <div class="c-control">
-                  <label class="c-label" for="InvoiceSerial"
-                    >{{'Serial' | translate}}
-                    <span
-                      *ngIf="!formGroup.controls.InvoiceSerial.valid && !formGroup.controls.InvoiceSerial.pending && (formGroup.controls.InvoiceSerial.dirty || submitAttempt)"
-                      ion-text
-                      color="danger"
-                      >(*)</span
-                    >
-                  </label>
-                  <input
-                    (change)="saveChange()"
-                    class="c-input"
-                    id="InvoiceSerial"
-                    formControlName="InvoiceSerial"
-                    type="text"
-                  />
-                </div>
-                <div class="c-control">
-                  <label class="c-label" for="InvoiceNo"
-                    >{{'Invoice number' | translate}}
-                    <span
-                      *ngIf="!formGroup.controls.InvoiceNo.valid && !formGroup.controls.InvoiceNo.pending && (formGroup.controls.InvoiceNo.dirty || submitAttempt)"
-                      ion-text
-                      color="danger"
-                      >(*)</span
-                    >
-                  </label>
-                  <input
-                    (change)="saveChange()"
-                    class="c-input"
-                    id="InvoiceNo"
-                    formControlName="InvoiceNo"
-                    type="text"
-                  />
-                </div>
-                <div class="c-control">
-                  <label class="c-label" for="InvoiceDate"
-                    >{{'Invoice date' | translate}}
-                    <span
-                      *ngIf="!formGroup.controls.InvoiceDate.valid && !formGroup.controls.InvoiceDate.pending && (formGroup.controls.InvoiceDate.dirty || submitAttempt)"
-                      ion-text
-                      color="danger"
-                      >(*)</span
-                    >
-                  </label>
-                  <input
-                    (change)="saveChange()"
-                    class="c-input"
-                    id="InvoiceDate"
-                    formControlName="InvoiceDate"
-                    type="date"
-                  />
-                </div>
+                <app-form-control [field]="{id:'InvoiceForm',label:'Form', type:'text',form:formGroup}"  (change)="saveChange()"></app-form-control>
+                <app-form-control [field]="{id:'InvoiceSerial',label:'Serial', type:'text',form:formGroup}"  (change)="saveChange()"></app-form-control>
+                <app-form-control [field]="{id:'InvoiceNo',label:'Invoice number', type:'text',form:formGroup}"  (change)="saveChange()"></app-form-control>
+                <app-form-control [field]="{id:'InvoiceDate',label:'Invoice date', type : 'date' ,form:formGroup}"  (change)="saveChange()"></app-form-control>
+              
 
                 <!-- <div class="c-control">
 									<label class="c-label" for="InvoiceSignedDate">Ngày ký
@@ -271,191 +173,39 @@
 									</label>
 									<input class="c-input" id="Name" (change)="saveChange();" formControlName="Name" type="text">
 								</div> -->
-
-                <div class="c-control">
-                  <label class="c-label" for="SellerName"
-                    >{{'Bên bán' | translate}}
-                    <span
-                      *ngIf="!formGroup.controls.SellerName.valid && !formGroup.controls.SellerName.pending && (formGroup.controls.SellerName.dirty || submitAttempt)"
-                      ion-text
-                      color="danger"
-                      >(*)</span
-                    >
-                  </label>
-                  <input
-                    (change)="saveChange()"
-                    class="c-input"
-                    id="SellerName"
-                    formControlName="SellerName"
-                    type="text"
-                  />
-                </div>
-                <div class="c-control">
-                  <label class="c-label" for="BuyerName"
-                    >{{'Bên mua' | translate}}
-                    <span
-                      *ngIf="!formGroup.controls.BuyerName.valid && !formGroup.controls.BuyerName.pending && (formGroup.controls.BuyerName.dirty || submitAttempt)"
-                      ion-text
-                      color="danger"
-                      >(*)</span
-                    >
-                  </label>
-                  <input
-                    (change)="saveChange()"
-                    class="c-input"
-                    id="BuyerName"
-                    formControlName="BuyerName"
-                    type="text"
-                  />
-                </div>
+                <app-form-control [field]="{id:'SellerName',label:'Bên bán', type:'text',form:formGroup}"  (change)="saveChange()"></app-form-control>
+                
+                <app-form-control [field]="{id:'BuyerName',label:'Bên mua', type:'text',form:formGroup}"  (change)="saveChange()"></app-form-control>
+                <app-form-control [field]="{id:'PaymentStatus',label:'Payment status', type:'ng-select',dataSource:apPaymentStatusList,bindLabel:'Name',bindValue:'Code',form:formGroup}"></app-form-control>
+         
               </ion-col>
 
               <ion-col size="12" size-sm size-xl="4">
-                <div class="c-control">
-                  <label class="c-label" for="TotalBeforeDiscount"
-                    >{{'Total cost of goods' | translate}}
-                    <span
-                      *ngIf="!formGroup.controls.TotalBeforeDiscount.valid && !formGroup.controls.TotalBeforeDiscount.pending && (formGroup.controls.TotalBeforeDiscount.dirty || submitAttempt)"
-                      ion-text
-                      color="danger"
-                      >(*)</span
-                    >
-                  </label>
-                  <input
-                    (change)="saveChange()"
-                    class="c-input"
-                    id="TotalBeforeDiscount"
-                    formControlName="TotalBeforeDiscount"
-                    mask="separator.2"
-                    thousandSeparator=","
-                    [allowNegativeNumbers]="true"
-                  />
-                </div>
-                <div class="c-control">
-                  <label class="c-label" for="TotalDiscount"
-                    >{{'Discount' | translate}}
-                    <span
-                      *ngIf="!formGroup.controls.TotalDiscount.valid && !formGroup.controls.TotalDiscount.pending && (formGroup.controls.TotalDiscount.dirty || submitAttempt)"
-                      ion-text
-                      color="danger"
-                      >(*)</span
-                    >
-                  </label>
-                  <input
-                    (change)="saveChange()"
-                    class="c-input"
-                    id="TotalDiscount"
-                    formControlName="TotalDiscount"
-                    mask="separator.2"
-                    thousandSeparator=","
-                    [allowNegativeNumbers]="true"
-                  />
-                </div>
+                <app-form-control [field]="{id:'TotalBeforeDiscount',label:'Total cost of goods', type:'span-number',form:formGroup}" ></app-form-control>
+                <app-form-control [field]="{id:'TotalDiscount',label:'Discount', type:'span-number',form:formGroup}" ></app-form-control>
+                <app-form-control [field]="{id:'Tax',label:'VAT', type:'span-number',form:formGroup}" ></app-form-control>
+                <app-form-control [field]="{id:'CalcTotalAfterTax',label:'Total payment amount', type:'span-number',form:formGroup}" ></app-form-control>
+                <app-form-control [field]="{id:'Paid',label:'Amount paid', type:'span-number',form:formGroup}" ></app-form-control>
+                <app-form-control [field]="{id:'CalcBalance',label:'Remaining', type:'span-number',form:formGroup}" ></app-form-control>
+                <app-form-control [field]="{id:'DueDate',label:'Payment due date', type:'date',form:formGroup}" (controlChange)="saveChange()" ></app-form-control>
+                <app-form-control [field]="{id:'IDOwner',label:'Buyer', type:'ng-select-staff',dataSource:IDOwnerDataSource, bindLabel:'Name',
+                bindValue:'Id',form:formGroup}" (controlChange)="saveChange()" ></app-form-control>
+               
+
                 <!-- <div class="c-control">
 									<label class="c-label" for="CalcTotalAfterDiscount">CalcTotalAfterDiscount
 										<span *ngIf="!formGroup.controls.CalcTotalAfterDiscount.valid && !formGroup.controls.CalcTotalAfterDiscount.pending && (formGroup.controls.CalcTotalAfterDiscount.dirty || submitAttempt)" ion-text color="danger">(*)</span>
 									</label>
 									<input (change)="saveChange()" class="c-input" id="CalcTotalAfterDiscount" formControlName="CalcTotalAfterDiscount" mask="separator.2" thousandSeparator="," [allowNegativeNumbers]="true">
 								</div> -->
-                <div class="c-control">
-                  <label class="c-label" for="Tax"
-                    >{{'VAT' | translate}}
-                    <span
-                      *ngIf="!formGroup.controls.Tax.valid && !formGroup.controls.Tax.pending && (formGroup.controls.Tax.dirty || submitAttempt)"
-                      ion-text
-                      color="danger"
-                      >(*)</span
-                    >
-                  </label>
-                  <input
-                    (change)="saveChange()"
-                    class="c-input"
-                    id="Tax"
-                    formControlName="Tax"
-                    mask="separator.2"
-                    thousandSeparator=","
-                    [allowNegativeNumbers]="true"
-                  />
-                </div>
+                
                 <!-- <div class="c-control">
 									<label class="c-label" for="WithholdingTax">WithholdingTax
 										<span *ngIf="!formGroup.controls.WithholdingTax.valid && !formGroup.controls.WithholdingTax.pending && (formGroup.controls.WithholdingTax.dirty || submitAttempt)" ion-text color="danger">(*)</span>
 									</label>
 									<input (change)="saveChange()" class="c-input" id="WithholdingTax" formControlName="WithholdingTax" mask="separator.2" thousandSeparator="," [allowNegativeNumbers]="true">
 								</div> -->
-                <div class="c-control">
-                  <label class="c-label" for="CalcTotalAfterTax"
-                    >{{'Total payment amount' | translate}}
-                    <span
-                      *ngIf="!formGroup.controls.CalcTotalAfterTax.valid && !formGroup.controls.CalcTotalAfterTax.pending && (formGroup.controls.CalcTotalAfterTax.dirty || submitAttempt)"
-                      ion-text
-                      color="danger"
-                      >(*)</span
-                    >
-                  </label>
-                  <input
-                    (change)="saveChange()"
-                    class="c-input"
-                    id="CalcTotalAfterTax"
-                    formControlName="CalcTotalAfterTax"
-                    mask="separator.2"
-                    thousandSeparator=","
-                    [allowNegativeNumbers]="true"
-                  />
-                </div>
-                <div class="c-control">
-                  <label class="c-label" for="Paid"
-                    >{{'Amount paid' | translate}}
-                    <span
-                      *ngIf="!formGroup.controls.Paid.valid && !formGroup.controls.Paid.pending && (formGroup.controls.Paid.dirty || submitAttempt)"
-                      ion-text
-                      color="danger"
-                      >(*)</span
-                    >
-                  </label>
-                  <input
-                    (change)="saveChange()"
-                    class="c-input"
-                    id="Paid"
-                    formControlName="Paid"
-                    mask="separator.2"
-                    thousandSeparator=","
-                    [allowNegativeNumbers]="true"
-                  />
-                </div>
-                <div class="c-control">
-                  <label class="c-label" for="CalcBalance"
-                    >{{'Remaining' | translate}}
-                    <span
-                      *ngIf="!formGroup.controls.CalcBalance.valid && !formGroup.controls.CalcBalance.pending && (formGroup.controls.CalcBalance.dirty || submitAttempt)"
-                      ion-text
-                      color="danger"
-                      >(*)</span
-                    >
-                  </label>
-                  <input
-                    (change)="saveChange()"
-                    class="c-input"
-                    id="CalcBalance"
-                    formControlName="CalcBalance"
-                    mask="separator.2"
-                    thousandSeparator=","
-                    [allowNegativeNumbers]="true"
-                  />
-                </div>
-                <div class="c-control" *ngIf="item.CalcBalance">
-                  <label class="c-label" for="DueDate"
-                    >{{'Payment due date' | translate}}
-                    <span
-                      *ngIf="!formGroup.controls.DueDate.valid && !formGroup.controls.DueDate.pending && (formGroup.controls.DueDate.dirty || submitAttempt)"
-                      ion-text
-                      color="danger"
-                      >(*)</span
-                    >
-                  </label>
-                  <input (change)="saveChange()" class="c-input" id="DueDate" formControlName="DueDate" type="date" />
-                </div>
-
+<!-- 
                 <div class="c-control">
                   <label class="c-label" for="IDOwner">{{'Buyer' | translate}}</label>
                   <ng-select
@@ -487,7 +237,7 @@
                       </div>
                     </ng-template>
                   </ng-select>
-                </div>
+                </div> -->
               </ion-col>
             </ion-row>
             <ion-row class="hr-group" *ngIf="item.Id">
@@ -523,8 +273,213 @@
           </form>
         </ion-grid>
       </div>
-      <div *ngIf="segmentView == 's2'"></div>
+         <!-- Items list -->
+      <div *ngIf="segmentView == 's2'" class="table-contain" style="max-width: 1250px">
+        <form [formGroup]="formGroup">
+          <ng-container formArrayName="InvoiceDetails">
+            <section class="table" style="min-width: 1100px">
+              <header class="bold">
+                <div class="col-checkbox cell" *ngIf="pageConfig.canEdit">
+                  <app-input-control [field]="{id:'IsAllChecked', type : 'checkbox', form : formGroup, }" (change)="toggleSelectAll()"></app-input-control>
+									<!-- <input (change)="toggleSelectAll()" [(ngModel)]="isAllChecked" class="c-checkbox" type="checkbox"> -->
+								</div>
+                <div class="col-id cell">{{'No.' | translate}}</div>
+                <div class="col-name cell">{{'Name' | translate}}</div>
+                <div class="col-number cell">{{'Unit' | translate}}</div>
+                <div class="col-number cell">{{'Quantity' | translate}}</div>
+                <div class="col-checkbox cell">{{'Promotion' | translate}}</div>
+                <div class="col-money cell">{{'Unit price' | translate}}</div>
+                <div class="col-money cell">{{'Discount' | translate}}</div>
+                <div class="col-number cell">{{'Tax rate' | translate}}</div>
+                <div class="col-money cell">{{'Total' | translate}}</div>
+                <a class="col-icon cell clickable">
+                  <ion-icon  *ngIf="selectedInvoiceDetails.controls.length>0 && pageConfig.canEdit" 
+                     color="danger" slot="icon-only" size="large" name="trash" slot="start"(click)="deleteItems()">
+                    </ion-icon>
+                </a>
+              </header>
+              <div class="row" *ngFor="let g of formGroup.get('InvoiceDetails')['controls']; let idx = index;">
+                <ng-container [formGroup]="g">
+                  <div class="col-checkbox cell" style="text-align: center;" *ngIf="pageConfig.canEdit">
+										<app-input-control [field]="{id:'IsChecked', type : 'checkbox', form : g, }" (change)="changeSelection(g, $event)"></app-input-control>
+									</div>
+                  <div class="col-id cell">{{idx+1}}</div>
+                  <div class="col-name cell">
+                    <app-input-control
+                      [field]="{id:'IDItem', label: 'Item', type : 'ng-select-item', form : g,  dataSource: g.get('_IDItemDataSource').value,  bindValue: 'Id', clearable: true, placeholder: 'Type to search...' }"
+                      (change)="IDItemChange($event, g);"
+                      (nav)="nav($event)"
+                    ></app-input-control>
+
+                  </div>
+                  <div class="col-number cell">
+                    <select formControlName="IDUoM" class="c-input c-dropdown" (change)="IDUoMChange(g)">
+                      <option [disabled]="t.Flag" *ngFor="let t of g.controls._IDUoMDataSource.value" [value]="t.Id">
+                        {{t.Name}}
+                      </option>
+                    </select>
+                  </div>
+                  <div class="col-number cell">
+                    <input
+                      formControlName="Quantity"
+                      (focus)="$event.target.select()"
+                      (change)="saveChange()"
+                      class="c-input"
+                      mask="separator.2"
+                      thousandSeparator=","
+                    />
+                  </div>
+                  <div class="col-checkbox cell">
+                    <input
+                      formControlName="IsPromotionItem"
+                      class="c-checkbox"
+                      (change)="IsPromotionItemChange(g)"
+                      type="checkbox"
+                    />
+                  </div>
+                  <div class="col-money cell">
+                    <input
+                      formControlName="UoMPrice"
+                      (focus)="$event.target.select()"
+                      (change)="UoMPriceChange(g)"
+                      class="c-input"
+                      mask="separator.2"
+                      thousandSeparator=","
+                    />
+                  </div>
+                  <div class="col-money cell">
+                    <input
+                      formControlName="TotalDiscount"
+                      (focus)="$event.target.select()"
+                      (change)="TotalDiscountChange(g)"
+                      class="c-input"
+                      mask="separator.2"
+                      thousandSeparator=","
+                    />
+                  </div>
+                  <div class="col-number cell">
+                    <select class="c-input c-dropdown" (change)="saveChange()" formControlName="TaxRate">
+                      <option [value]="0">0%</option>
+                      <option [value]="5">5%</option>
+                      <option [value]="8">8%</option>
+                      <option [value]="10">10%</option>
+                      <option [value]="-1">{{'Không chịu thuế' | translate}}</option>
+                      <option [value]="-2">{{'Không kê khai thuế' | translate}}</option>
+                    </select>
+                  </div>
+                  <div class="col-money cell">
+                    <span class="c-input disable"
+                      >{{ (g.controls.Quantity.value * g.controls.UoMPrice.value - g.controls.TotalDiscount.value ) *
+                      (1+(g.controls.TaxRate.value < 0 ? 0 : g.controls.TaxRate.value)/100) | number: '1.0-0' }}</span
+                    >
+                  </div>
+                  <a
+                    class="col-icon cell clickable"
+                    *ngIf="pageConfig.canEdit && !this.item.IDSaleOrder && !this.item._HasChild"
+                    (click)="removeLine(g, idx)"
+                  >
+                    <ion-icon color="danger" class="min-btn" name="trash-outline"></ion-icon>
+                  </a>
+                </ng-container>
+              </div>
+              <div class="row" *ngIf="formGroup.get('CalcTotalAfterTax').value != 0">
+                <div class="col-name cell text-right bold">{{'Total' | translate}}</div>
+                <div class="col-money cell">
+                  <span class="c-input disable bold">{{ formGroup.get('CalcTotalAfterTax').value | number: '1.0-0'}}</span>
+                </div>
+                <div class="col-checkbox cell" *ngIf="pageConfig.canEdit">
+                  <!-- nút xóa ảo -->
+                </div>
+              </div>
+              <div class="row" *ngIf="pageConfig.canEdit">
+                <div class="cell">
+                  <ion-button fill="clear" size="small" (click)="addLine({},true)">
+                    <ion-icon slot="start" name="add-circle-outline"></ion-icon>
+                    {{'Add' | translate}}
+                  </ion-button>
+                </div>
+              </div>
+            </section>
+          </ng-container>
+        </form>
+      </div>
+      <div class="table responsive" *ngIf="segmentView == 's3'">
+        <app-data-table class="box-shadow responsive" *ngIf ="paymentDetailList" [rows]="paymentDetailList" [(selectedRows)]="selectedItems" [showSpinner]="showSpinnerPayment" >
+          <!-- <datatable-column [checkbox]="true"></datatable-column> -->
+          <datatable-column class="col-id" name="Id" property="Id">
+            <ng-template let-i="row" datatable-cell-template>
+              <a [routerLink]="['/outgoing-payment/'+i.Id]">{{i.Id}}</a>
+            </ng-template>
+          </datatable-column>
+          <!-- <datatable-column class="col-name" name="Warehouse" property="WarehouseName">
+            <ng-template let-i="row" datatable-cell-template>
+              {{i.WarehouseName}}
+              <small class="address" *ngIf="i.WarehouseCode">
+                <ion-text color="dark">{{i.WarehouseCode}}</ion-text>
+              </small>
+            </ng-template>
+          </datatable-column>
+          -->
+          <datatable-column class="col-code"  filterControlType="text" name="Type" property="Type">
+          </datatable-column>
+          <datatable-column class="col-number"  filterControlType="number" name="Amount" property="Amount">
+          
+          </datatable-column>
+          <datatable-column class="col-date"  filterControlType="date" name="Posting date" property="PostingDate">
+            <ng-template let-i="row" datatable-cell-template>
+              {{i.PostingDate | date:'dd/MM/yyyy HH:mm'}}
+              </ng-template>
+          </datatable-column>
+          <datatable-column class="col-date"  filterControlType="date" name="Document date" property="DocumentDate">
+            <ng-template let-i="row" datatable-cell-template>
+              {{i.DocumentDate | date:'dd/MM/yyyy HH:mm'}}
+              </ng-template>
+          </datatable-column>
+          <datatable-column class="col-date"  filterControlType="date" name="Due date" property="DueDate">
+            <ng-template let-i="row" datatable-cell-template>
+              {{i.DueDate | date:'dd/MM/yyyy HH:mm'}}
+              </ng-template>
+          </datatable-column>
+          <!-- <datatable-column class="col-date" filterControlType="date" name="Picked date" property="PickedDate">
+            <ng-template let-i="row" datatable-cell-template>
+              {{i.PickedDate | date:'dd/MM/yyyy HH:mm'}}
+              </ng-template>
+          </datatable-column> -->
+         
+          <datatable-column class="col-status" name="Status" property="Status">
+            <ng-template let-i="row" datatable-cell-template>
+            <ion-badge [color]="i._Status?.Color" [title]="i._Status?.Name">
+              {{i._Status?.Name}}
+            </ion-badge>
+            </ng-template>
+          </datatable-column>
+        </app-data-table>
+      </div>
     </div>
   </div>
   <app-page-message [itemsLength]="item? 1: 0" [showSpinner]="pageConfig.showSpinner"></app-page-message>
+  <ion-popover class="w300" #popover [isOpen]="isOpenPopover" (didDismiss)="dismissPopover()">
+		<ng-template>
+		<ion-content appScrollbarTheme>
+			<ion-grid>
+			<form [formGroup]="paymentFormGroup" (submit)="dismissPopover(true)">
+				<ion-row>
+				<ion-col size="12" size-sm size-xl="12">
+        <app-form-control
+        [field]="{ id: 'PaymentReason', type: 'ng-select', label: 'Reason', dataSource: paymentReasonList, bindValue: 'Code', bindLabel: 'Name', form: paymentFormGroup }"
+      ></app-form-control>
+        <app-form-control
+        [field]="{ id: 'PaymentType', type: 'ng-select', label: 'Type', dataSource: paymentTypeList, bindValue: 'Code', bindLabel: 'Name', form: paymentFormGroup }"
+      ></app-form-control>
+      <app-form-control
+      [field]="{ id: 'PaymentSubType', type: 'ng-select', label: 'Sub type', dataSource: paymentSubTypeList, bindValue: 'Code', bindLabel: 'Name', form: paymentFormGroup }"
+    ></app-form-control>
+				</ion-col>
+			</ion-row>
+			</form>
+		</ion-grid>
+		  </ion-content>
+		  <ion-button class="ion-margin" size="small" expand="block" (click)="dismissPopover(true)">Apply</ion-button>
+		</ng-template>
+	 </ion-popover>
 </ion-content>

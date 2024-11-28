@@ -32,9 +32,11 @@
                   >(*)</span
                 >
               </label>
-              <app-input-control
-             [field]="{id :'WorkPhone' , label:'Work phone number',form:formGroup}" (change)="checkPhoneNumber()"
-              ></app-input-control>
+        
+            <input class="c-input" formControlName="WorkPhone" type="text" (blur)="checkPhoneNumber()" />
+              <!-- <app-input-control
+             [field]="{id :'WorkPhone' , label:'Work phone number',form:formGroup}" (blur)="checkPhoneNumber()"
+              ></app-input-control> -->
               <ion-text
               color="success"
               *ngIf="formGroup.controls.WorkPhone.valid && formGroup.controls.WorkPhone.dirty"
@@ -68,6 +70,8 @@
             <app-form-control [field]="{id :'Code' , label:'Customner code',form:formGroup}">
             </app-form-control>
             <app-form-control [field]="{id :'Name' , label:'Customer name',form:formGroup}">
+            </app-form-control>
+            <app-form-control [field]="{id :'IsCustomer' , label:'Customer', type:'checkbox', form:formGroup}">
             </app-form-control>
             <!-- <div class="c-control">
                                 <label class="c-label" for="OtherPhone">{{'Telephone number (other)' | translate}}
@@ -118,6 +122,7 @@
           </ion-col>
         </ion-row>
       </ion-grid>
+ 
         <!-- Thông tin hóa đơn -->
       <app-bp-tax-address [bpId]="item.Id" *ngIf="item.Id >0"></app-bp-tax-address>
        <ion-grid fixed>
@@ -144,7 +149,7 @@
           <ion-col size="12" size-sm="6" size-xl="4">
           <div  class="c-control ion-text-right"*ngIf="!item.Id">
             <label class="c-label" for=""></label>
-            <ion-button expand="block" (click)="saveChange()">{{'Save' | translate}}</ion-button>
+            <ion-button expand="block" (click)="saveChange()">{{'Save and apply' | translate}}</ion-button>
           </div>
         </ion-col>
         <ion-col size="12" size-sm="6" size-xl="4">

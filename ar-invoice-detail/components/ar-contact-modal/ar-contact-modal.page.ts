@@ -38,6 +38,7 @@ export class ARContactModalPage extends PageBase {
       Code: [''],
       IDOwner: [''],
       IsPersonal: [true],
+      IsCustomer: [true],
       Email: [''],
       CompanyName: [''],
       BillingAddress:[''],
@@ -59,6 +60,13 @@ export class ARContactModalPage extends PageBase {
     loading: false,
     input$: new Subject<string>(),
     selected: [],
+    searchQuery:{
+      Take: 20,
+      Skip: 0,
+      SkipMCP: true,
+      Term:'',// term ? term : this.item?.IDSeller,
+      IDOwner:''
+    },
     items$: null,
     initSearch() {
       this.loading = false;
@@ -68,14 +76,9 @@ export class ARContactModalPage extends PageBase {
           distinctUntilChanged(),
           tap(() => (this.loading = true)),
           switchMap((term) =>
+            this.searchQuery.Term = term ? term : this.item?.IDSeller,
             this.searchProvider
-              .search({
-                Take: 20,
-                Skip: 0,
-                SkipMCP: true,
-                Term: term ? term : this.item?.IDSeller,
-
-              })
+              .search(this.searchQuery)
               .pipe(
                 catchError(() => of([])), // empty list on error
                 tap(() => (this.loading = false)),
@@ -111,6 +114,11 @@ export class ARContactModalPage extends PageBase {
     this.formGroup.controls.Address['controls'].Phone1.markAsDirty();
     this.formGroup.controls.Address['controls'].Contact.markAsDirty();
     this.formGroup.controls.Address.markAsDirty();
+    let groups = this.formGroup.get('TaxInfos') as FormArray;
+    let group = groups.controls[0];
+    if(!group.get('TaxCode').value){
+      group.get('WorkPhone').markAsPristine();
+    }
     super.saveChange2();
   }
 
@@ -123,6 +131,7 @@ export class ARContactModalPage extends PageBase {
     this.cdr.detectChanges();
     this.submitAttempt = false;
     this.env.showMessage('Saving completed!', 'success');
+    this.Apply(true);
   }
 
   Apply(apply = false) {
@@ -149,9 +158,13 @@ export class ARContactModalPage extends PageBase {
 
   checkPhoneNumber() {
     if (this.formGroup.controls.WorkPhone.valid) {
-      // let groups = this.formGroup.get('TaxInfos') as FormArray;
-      // groups.controls[0].get('WorkPhone').setValue(this.formGroup.controls.WorkPhone.value);
-      if(this.item.Id !=0) this.resetForm();
+      if(this.item.Id == 0){
+        let groups = this.formGroup.get('TaxInfos') as FormArray;
+        let group = groups.controls[0];
+        group.get('WorkPhone').setValue(this.formGroup.controls.WorkPhone.value);
+        group.get('WorkPhone').markAsDirty();
+      }
+      else this.resetForm();
       let queryChecking = {
         IDContact : this.formGroup.get('Id').value,
         WorkPhone: this.formGroup.get('WorkPhone').value
@@ -178,12 +191,15 @@ export class ARContactModalPage extends PageBase {
                   this.formGroup.disable();
                   this.formGroup.get('WorkPhone').enable();
                   if(results[0]?._Owner) this.salemanDataSource.selected=[results[0]?._Owner]
+                  //this.salemanDataSource.searchQuery.IDOwner = results[0].IDOwner
                   this.salemanDataSource.initSearch();
                   this.item = results[0]; // hiện component TaxAddress
                 }
               })
             }).catch(err=>{
-              this.formGroup.get('WorkPhone').setValue('');
+               this.formGroup.controls.WorkPhone.setErrors({
+                incorrect: true,
+              });
             })
           }
           else{

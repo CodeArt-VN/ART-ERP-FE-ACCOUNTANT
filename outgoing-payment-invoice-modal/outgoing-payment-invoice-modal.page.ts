@@ -62,6 +62,7 @@ export class OutgoingPaymentInvoiceModalPage extends PageBase {
   };
   loadData(event = null) {
     this.parseSort();
+    this.query.IDSelected = this.SelectedInvoiceList?.map(s=> s.DocumentEntry);
     if (this.pageProvider && !this.pageConfig.isEndOfData) {
       if (event == 'search') {
         this.pageProvider.read(this.query, this.pageConfig.forceLoadData).then((result: any) => {
@@ -120,27 +121,39 @@ export class OutgoingPaymentInvoiceModalPage extends PageBase {
     });
     this.total.Amount = this.amount;
     super.loadedData(event);
-    if (this.SelectedInvoiceList.length) {
+    if (this.SelectedInvoiceList?.length) {
+      const reorderedInvoices = []; // To store invoices from SelectedInvoiceList
+      const remainingInvoices = [...this.items]; // Copy of original items to track unprocessed invoices
+    
       this.SelectedInvoiceList.forEach((s) => {
-        let invoice = this.items.find((i) => i.Id == s.DocumentEntry);
-        if (invoice) {
+        const invoiceIndex = remainingInvoices.findIndex((i) => i.Id === s.DocumentEntry);
+    
+        if (invoiceIndex > -1) {
+          // Invoice exists in the original list
+          const invoice = remainingInvoices[invoiceIndex];
           invoice.checked = true;
-          invoice.PaidAmount = s.Amount ? s.Amount : s.PaidAmount;
+          invoice.PaidAmount = s.Amount ?? invoice.PaidAmount;
           invoice.IDOutgoingPaymentDetail = s.Id;
           this.selectedItems.push(invoice);
-        }
-        else {
+          reorderedInvoices.push(invoice); // Add to reorderedInvoices
+          // Remove from remainingInvoices to avoid duplicates later
+          remainingInvoices.splice(invoiceIndex, 1);
+        } else {
+          // Invoice does not exist in the original list
           s.isDisabled = true;
-          s.PaidAmount = s.Amount ? s.Amount : s.PaidAmount;
           s.title = 'This invoice was paid!';
-          s._Seller =  this.DefaultBusinessPartner ;
+          s.PaidAmount = 0; // Explicitly set PaidAmount to 0 as per your logic
+          s._Seller = this.DefaultBusinessPartner;
           s.checked = false;
-          s.PaidAmount = 0;
-          this.items.unshift(s);
-
+    
+          reorderedInvoices.push(s); // Add to reorderedInvoices
         }
       });
-    } else {
+    
+      // Combine reorderedInvoices (from SelectedInvoiceList) and remainingInvoices
+      this.items = [...reorderedInvoices, ...remainingInvoices];
+    }
+     else {
       this.autoSelect();
     }
     this.calcDifferenceAmount();

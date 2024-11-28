@@ -160,47 +160,15 @@
           <form [formGroup]="formGroup" (submit)="dismissPopover(true)">
             <ion-row>
               <ion-col size="12" size-sm size-xl="12">
-                <div class="c-control">
-                  <label class="c-label" for="IDBranch"
-                    >{{'Branch' | translate}}
-                    <span
-                      *ngIf="!formGroup.controls.IDBranch.valid && !formGroup.controls.IDBranch.pending && (formGroup.controls.IDBranch.dirty || submitAttempt)"
-                      ion-text
-                      color="danger"
-                      >(*)</span
-                    >
-                  </label>
-                  <ng-select
-                    class="c-input"
-                    (change)="changeIDBranch()"
-                    labelForId="IDBranch"
-                    formControlName="IDBranch"
-                    [items]="branchList"
-                    [virtualScroll]="true"
-                    bindLabel="Name"
-                    bindValue="Id"
-                    placeholder="{{'Search...' | translate}}"
-                  >
-                    <ng-template ng-option-tmp let-i="item" let-search="searchTerm">
-                      <div *ngIf="i">
-                        <div>
-                          <span *ngFor="let l of i.levels">&nbsp;&nbsp;&nbsp;</span>
-                          <span [ngOptionHighlight]="search">{{i.Name}}</span>
-                        </div>
-                      </div>
-                    </ng-template>
-                  </ng-select>
-                </div>
                 <app-form-control
-                  [form]="formGroup"
-                  type="ng-select-bp"
-                  label="Contact"
-                  id="IDContact"
-                  [dataSource]="_contactDataSource"
+                [field]="{ branchConfig:{selectedBranch:env.selectedBranch},id: 'IDBranch', type: 'ng-select-branch', label: 'Branch', dataSource: branchList, 
+                bindValue: 'Id', bindLabel: 'Name', form: formGroup, clearable: true, placeholder:'Search...'}"
+                  (change)="changeIDBranch()"
+                ></app-form-control>
+                <app-form-control
+                [field]="{ id: 'IDContact', type: 'ng-select-bp', label: 'Contact', dataSource: _contactDataSource, 
+                bindValue: 'Id', bindLabel: 'Name', form: formGroup, clearable: true}"
                   (change)="changeBP($event)"
-                  bindValue="Id"
-                  bindLabel="Name"
-                  [clearable]="true"
                 ></app-form-control>
               </ion-col>
             </ion-row>
