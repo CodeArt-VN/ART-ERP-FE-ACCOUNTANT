@@ -9,10 +9,11 @@
     <ion-button
       *ngIf="pageConfig.ShowMarkAsPaid && pageConfig.canMarkAsPaid && selectedItems.length>0 && pageConfig.canEdit"
       title="{{'Mark as paid' | translate}}"
-      color="secondary"
+      color="success"
       (click)="markAsPaid()"
     >
-      <ion-icon color="success" slot="icon-only" name="wallet-outline"></ion-icon>
+      {{'Mark as paid' | translate}}
+      <!-- <ion-icon color="success" slot="icon-only" name="wallet-outline"></ion-icon> -->
     </ion-button>
     <ion-button
       *ngIf="selectedItems?.length>0 && pageConfig.ShowPay && pageConfig.canPay"
@@ -20,7 +21,8 @@
       title="{{'Create expense authorization' | translate}}"
       (click)="pay()"
     >
-      <ion-icon slot="start" name="card-outline"></ion-icon>
+      {{'Create expense authorization' | translate}}
+      <!-- <ion-icon slot="start" name="card-outline"></ion-icon> -->
     </ion-button>
   </app-toolbar>
 </ion-header>
@@ -56,7 +58,9 @@
         <a [routerLink]="['/'+pageConfig.pageName+'/'+i.Id]">{{i.Id}}</a>
       </ng-template>
     </datatable-column>
-    <datatable-column class="col-name" name="Name" property="Name" filterControlType="text"></datatable-column>
+    <datatable-column class="col-name" name="Name" property="Name" filterControlType="text">
+      <ng-template let-i="row" datatable-cell-template> {{i?.Name | translate}} </ng-template>
+    </datatable-column>
 
     <datatable-column
       class="col-date"
@@ -101,7 +105,7 @@
       <ng-template let-i="row" datatable-cell-template>
         <span class="bar-holder">
           <ng-container *ngFor="let s of statusList">
-            <ion-text *ngIf="s.Code==i.Status" class="bar-title" [color]="s.Color">{{s.Name}}</ion-text>
+            <ion-text *ngIf="s.Code==i.Status" class="bar-title" [color]="s.Color">{{s.Name | translate}}</ion-text>
           </ng-container>
           <span
             class="bar"

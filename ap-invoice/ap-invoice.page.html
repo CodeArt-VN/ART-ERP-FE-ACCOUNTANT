@@ -66,7 +66,7 @@
       <datatable-column class="col-code" name="Payment status" property="PaymentStatus">
         <ng-template let-i="row" datatable-cell-template>
           <span class="bar-holder">
-            <ng-container *ngFor="let s of apPaymentStatusList">
+            <ng-container *ngFor="let s of paymentStatusList">
               <ion-text *ngIf="s.Code==i.PaymentStatus" class="bar-title" [color]="s.Color">{{s.Name}}</ion-text>
             </ng-container>
           </span>

@@ -44,7 +44,7 @@ export class OutgoingPaymentPage extends PageBase {
               e.Value = e._InheritedConfig.Value;
             }
             this.pageConfig[e.Code] = JSON.parse(e.Value);
-          });
+          }); 
         }
         if (this.pageConfig.OutgoingPaymentUsedApprovalModule) {
           this.pageConfig.canApprove = false;
@@ -72,27 +72,27 @@ export class OutgoingPaymentPage extends PageBase {
       this.pageConfig.ShowPay = true;
     }
     this.selectedItems?.forEach((i) => {
-      let notShowApprove = [ 'Approved','Cancelled','Draft'];
+      let notShowApprove = [ 'Approved','Paid','Cancelled','NotSubmittedYet'];
       if (notShowApprove.indexOf(i.Status) > -1 || i.DifferenceAmount != 0) {
         this.pageConfig.ShowApprove = false;
       }
-      let notShowDisapprove = ['Unapproved', 'Approved','Cancelled','Draft'];
+      let notShowDisapprove = ['Unapproved','Paid', 'Approved','Cancelled','NotSubmittedYet'];
       if (notShowDisapprove.indexOf(i.Status) > -1 || i.DifferenceAmount != 0) {
         this.pageConfig.ShowDisapprove = false;
       }
-      let notShowCancel = ['Approved','Cancelled'];
+      let notShowCancel = ['Approved','Paid','Cancelled'];
       if (notShowCancel.indexOf(i.Status) > -1 || i.DifferenceAmount != 0) {
         this.pageConfig.ShowCancel = false;
       }
-      let notShowSubmit = ['Unapproved', 'Approved','Cancelled','Submitted'];
+      let notShowSubmit = ['Unapproved','Paid', 'Approved','Cancelled','Submitted'];
       if (notShowSubmit.indexOf(i.Status) > -1 || i.DifferenceAmount != 0) {
         this.pageConfig.ShowSubmit = false;
       }
-      let notShowMarkAsPaid = ['Draft','Unapproved', 'Cancelled','Submitted'];
+      let notShowMarkAsPaid = ['NotSubmittedYet','Paid','Unapproved', 'Cancelled','Submitted'];
       if (notShowMarkAsPaid.indexOf(i.Status) > -1 || i.DifferenceAmount != 0) {
         this.pageConfig.ShowMarkAsPaid = false;
       }
-      let notShowPay = ['Draft','Unapproved','Paid', 'Cancelled','Submitted'];
+      let notShowPay = ['NotSubmittedYet','Unapproved','Paid', 'Cancelled','Submitted'];
       if (notShowPay.indexOf(i.Status) > -1 || i.DifferenceAmount != 0) {
         this.pageConfig.ShowPay = false;
       }
@@ -102,7 +102,7 @@ export class OutgoingPaymentPage extends PageBase {
   submit(){
     if(!this.pageConfig.canSubmit) return;
      let ids= this.selectedItems.map(i => i.Id);
-     this.env.showPrompt( { code: 'Are you sure you want submit {{value}} selected item(s)?', value: this.selectedItems.length }).then(
+     this.env.showPrompt( { code: 'Are you sure you want to submit {{value}} selected item(s)?', value: this.selectedItems.length }).then(
       ()=>{
         this.env.showLoading('Please wait for a few moments',
           this.pageProvider.commonService.connect('POST','BANK/OutgoingPayment/Submit',ids).toPromise()).then(rs=>{
@@ -132,7 +132,7 @@ export class OutgoingPaymentPage extends PageBase {
   approve(){
     if(!this.pageConfig.canApprove) return;
      let ids= this.selectedItems.map(i => i.Id);
-     this.env.showPrompt( { code: 'Are you sure you want approve {{value}} selected item(s)?', value: this.selectedItems.length }).then(
+     this.env.showPrompt( { code: 'Are you sure you want to approve {{value}} selected item(s)?', value: this.selectedItems.length }).then(
       ()=>{
         this.env.showLoading('Please wait for a few moments',
           this.pageProvider.commonService.connect('POST','BANK/OutgoingPayment/approve',ids).toPromise()).then(rs=>{
@@ -161,7 +161,7 @@ export class OutgoingPaymentPage extends PageBase {
   disapprove(){
     if(!this.pageConfig.canApprove) return;
      let ids= this.selectedItems.map(i => i.Id);
-     this.env.showPrompt( { code: 'Are you sure you want disapprove {{value}} selected item(s)?', value: this.selectedItems.length }).then(
+     this.env.showPrompt( { code: 'Are you sure you want to disapprove {{value}} selected item(s)?', value: this.selectedItems.length }).then(
       ()=>{
         this.env.showLoading('Please wait for a few moments',
           this.pageProvider.commonService.connect('POST','BANK/OutgoingPayment/disapprove',ids).toPromise()).then(rs=>{
@@ -191,7 +191,7 @@ export class OutgoingPaymentPage extends PageBase {
   cancel(){
     if(!this.pageConfig.canCancel) return;
      let ids= this.selectedItems.map(i => i.Id);
-     this.env.showPrompt( { code: 'Are you sure you want cancel {{value}} selected item(s)?', value: this.selectedItems.length }).then(
+     this.env.showPrompt( { code: 'Are you sure you want to cancel {{value}} selected item(s)?', value: this.selectedItems.length }).then(
       ()=>{
         this.env.showLoading('Please wait for a few moments',
           this.pageProvider.commonService.connect('POST','BANK/OutgoingPayment/Cancel',ids).toPromise()).then(rs=>{
