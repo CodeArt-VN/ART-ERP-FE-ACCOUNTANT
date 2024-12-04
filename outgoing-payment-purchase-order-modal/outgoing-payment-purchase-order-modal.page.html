@@ -106,7 +106,7 @@
           color="primary"
         ></ion-icon>
       </div>
-      <div class="col-name cell" (click)="sortToggle('BusinessPartnerName')">
+      <!-- <div class="col-name cell" (click)="sortToggle('BusinessPartnerName')">
         {{'BusinessPartner' | translate}}
         <small>#Id</small>
 
@@ -126,19 +126,31 @@
         <small class="right">
           <ion-text color="dark"> {{'Address' | translate}}</ion-text>
         </small>
+      </div> -->
+      <div class="col-number cell money">
+        {{'Paid amount' | translate}}
+        <ion-icon class="min-btn" *ngIf="sort.PaidAmount" [name]="sort.PaidAmount == 'PaidAmount'?'arrow-down': 'arrow-up'"></ion-icon>
+        <ion-icon
+          class="min-btn"
+          (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch"
+          *ngIf="query.PaidAmount"
+          name="search"
+          color="primary"
+        ></ion-icon>
       </div>
+   
       <div class="col-number cell money" (click)="sortToggle('Debt')">
         {{'Debt' | translate}}
         <ion-icon class="min-btn" *ngIf="sort.Debt" [name]="sort.Debt == 'Debt'?'arrow-down': 'arrow-up'"></ion-icon>
         <ion-icon
           class="min-btn"
           (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch"
-          *ngIf="query.ProductWeight"
+          *ngIf="query.Debt"
           name="search"
           color="primary"
         ></ion-icon>
       </div>
-      <div class="col-code cell" (click)="sortToggle('Code')">
+      <!-- <div class="col-code cell" (click)="sortToggle('Code')">
         {{'Vendor code' | translate}}
         <ion-icon class="min-btn" *ngIf="sort.Code" [name]="sort.Code == 'Code'?'arrow-down': 'arrow-up'"></ion-icon>
         <ion-icon
@@ -148,7 +160,7 @@
           name="search"
           color="primary"
         ></ion-icon>
-      </div>
+      </div> -->
     </header>
 
     <form (submit)="refresh()" action="#">
@@ -192,7 +204,7 @@
             name="close-circle-outline"
           ></ion-icon>
         </div>
-        <div class="col-name cell">
+        <!-- <div class="col-name cell">
           <input
             [ngModelOptions]="{standalone: true}"
             [(ngModel)]="query.VendorName"
@@ -214,9 +226,9 @@
               ></b
             >
           </div>
-        </div>
+        </div> -->
         <div class="col-code cell"></div>
-        <div class="col-code cell">
+        <!-- <div class="col-code cell">
           <input
             [ngModelOptions]="{standalone: true}"
             [(ngModel)]="query.Code"
@@ -230,7 +242,7 @@
             *ngIf="query.Code"
             name="close-circle-outline"
           ></ion-icon>
-        </div>
+        </div> -->
         <button mat-raised-button type="submit" style="display: none">Search</button>
       </header>
     </form>
@@ -253,7 +265,7 @@
         {{i.OrderDateText}}
         <small *ngIf="i.OrderTimeText ">{{i.OrderTimeText}}</small>
       </div>
-      <div class="col-name cell">
+      <!-- <div class="col-name cell">
         <span [ngOptionHighlight]="query.VendorName?.Name">{{i._BusinessPartner?.Name}}</span>
         <small *ngIf="i._BusinessPartner?.Id">#{{i._BusinessPartner?.Id}}</small>
         <small class="right" *ngIf="i._BusinessPartner?.Address">
@@ -263,7 +275,7 @@
         </small>
         <small  class="danger" *ngIf="i.title">{{i.title}}</small>
       </div>
- 
+  -->
       <div class="col-number cell money">
         <input
           [(ngModel)]="i.PaidAmount"
@@ -276,7 +288,7 @@
         />
       </div>
       <div class="col-number cell money">{{i.Debt}}</div>
-      <div class="col-code cell">{{i._BusinessPartner?.Code}}</div>
+      <!-- <div class="col-code cell">{{i._BusinessPartner?.Code}}</div> -->
     </div>
   </section>
 </ion-content>

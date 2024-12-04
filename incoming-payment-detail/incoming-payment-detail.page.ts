@@ -149,6 +149,9 @@ export class IncomingPaymentDetailPage extends PageBase {
     if (this.item._Owner) {
       this._staffDataSource.selected =[...[],this.item._Owner];
     }
+    if (!this.formGroup.get('Id').value) {
+      this.formGroup.get('IDStaff').markAsDirty();
+    }
     this._staffDataSource.initSearch();
     this._contactDataSource.initSearch();
 

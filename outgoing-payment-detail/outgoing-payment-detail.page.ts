@@ -106,7 +106,7 @@ export class OutgoingPaymentDetailPage extends PageBase {
     Promise.all([
       this.env.getStatus('OutgoingPaymentStatus'),
       this.env.getType('PaymentType'),
-      this.env.getType('OutgoingPaymentReason'),
+      this.env.getType('OutgoingPaymentReasonType'),
     ]).then((values: any) => {
       if (values.length) {
         this.statusList = values[0]; //.filter((d) => d.Code != 'PaymentStatus');
@@ -124,7 +124,7 @@ export class OutgoingPaymentDetailPage extends PageBase {
   amountOrder = 0;
   amountInvoice = 0;
   loadedData(event?: any, ignoredFromGroup?: boolean) {
-    if (this.item?.Status != 'Draft') {
+    if (this.item?.Status != 'NotSubmittedYet') {
       if (this.item.IDBusinessPartner == null && this.pageConfig.canEdit) {
       }
       this.pageConfig.canEdit = false;
@@ -135,7 +135,6 @@ export class OutgoingPaymentDetailPage extends PageBase {
         Id: this.env.user.StaffID,
         FullName: this.env.user.FullName,
       };
-      this.formGroup.controls['IDStaff'].markAsDirty();
     }
     super.loadedData(event, ignoredFromGroup);
 
@@ -163,6 +162,9 @@ export class OutgoingPaymentDetailPage extends PageBase {
     }
     if (this.item._Owner) {
       this._staffDataSource.selected = [...[], this.item._Owner];
+    }
+    if (!this.formGroup.get('Id').value) {
+      this.formGroup.get('IDStaff').markAsDirty();
     }
     this._contactDataSource.initSearch();
     this._staffDataSource.initSearch();

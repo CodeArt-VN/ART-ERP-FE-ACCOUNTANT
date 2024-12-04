@@ -26,14 +26,12 @@ import { catchError, distinctUntilChanged, switchMap, tap } from 'rxjs/operators
 export class APInvoiceDetailPage extends PageBase {
   statusList = [];
   branchList = [];
-  _seller = null;
   paymentDetailList = [];
   paymentStatusList;
   paymentTypeList;
   paymentSubTypeList;
   paymentReasonList;
-  apPaymentStatusList;
-  paymentFormGroup : FormGroup;
+  paymentFormGroup: FormGroup;
   constructor(
     public pageProvider: AC_APInvoiceProvider,
     public apInvoiceDetailProvider: AC_APInvoiceDetailProvider,
@@ -104,7 +102,7 @@ export class APInvoiceDetailPage extends PageBase {
       ////////
       Paid: new FormControl({ value: 0, disabled: true }),
       CalcBalance: new FormControl({ value: 0, disabled: true }),
-      InvoiceDetails:  this.formBuilder.array([]),
+      InvoiceDetails: this.formBuilder.array([]),
       DueDate: [''],
       Currency: [''],
       ExchangeRate: [''],
@@ -124,30 +122,35 @@ export class APInvoiceDetailPage extends PageBase {
       BuyerAddress: [''],
       DeletedFields: [''],
 
-      TrackingIDPurchaseOrder: [''],
-      TrackingIDReceipt: [''],
+      TrackingPurchaseOrder: [''],
+      TrackingReceipt: [''],
       IsAllChecked: [],
-
     });
 
     this.paymentFormGroup = formBuilder.group({
       PaymentType: [''],
-      PaymentSubType:[''],
-      PaymentReason : ['']      
+      PaymentSubType: [''],
+      PaymentReason: [''],
     });
   }
 
   preLoadData(event?: any): void {
-    Promise.all([this.env.getStatus('APInvoice'),this.env.getStatus('APInvoicePayment'),
+    Promise.all([
+      this.env.getStatus('APInvoice'),
+      this.env.getStatus('OutgoingPaymentStatus'),
       this.env.getType('PaymentType'),
-      this.env.getType('OutgoingPaymentReason')
-      ]) .then((values) => {
+      this.env.getType('OutgoingPaymentReasonType'),
+    ]).then((values) => {
       this.statusList = values[0];
-      this.apPaymentStatusList = values[1];
+      this.paymentStatusList = values[1];
       this.paymentTypeList = values[2].filter((d) => d.Code == 'Cash' || d.Code == 'Card' || d.Code == 'Transfer');
-      if(values[3]){
+      if (values[3]) {
         this.paymentReasonList = values[3];
-        if(values[3].length==0) this.paymentReasonList = [{Name : 'Payment of invoice', Code :'PaymentOfInvoice'},{Name : 'Payment of purchase order', Code :'PaymentOfPO'}]
+        if (values[3].length == 0)
+          this.paymentReasonList = [
+            { Name: 'Payment of invoice', Code: 'PaymentOfInvoice' },
+            { Name: 'Payment of purchase order', Code: 'PaymentOfPO' },
+          ];
       }
       super.preLoadData();
     });
@@ -160,60 +163,85 @@ export class APInvoiceDetailPage extends PageBase {
     } else {
       this.item.IDOwner = this.env.user.StaffID;
       this.item._Owner = {
-        Id : this.env.user.StaffID,
-        FullName : this.env.user.FullName
-      }
+        Id: this.env.user.StaffID,
+        FullName: this.env.user.FullName,
+      };
       console.log(this.env.user);
 
       this.formGroup.controls['IDOwner'].markAsDirty();
     }
     super.loadedData(event, ignoredFromGroup);
-  
+
     this.patchLinesValue();
 
-    if(this.item.IDSeller){
-      this._seller = {
-        Id : this.item.IDSeller,
-        Name : this.item.SellerName,
-        Address: this.item.SellerAddress,
-        TaxCode : this.item.SellerTaxCode
-      }
-    }
     if (this.item._Receipt) {
-      this.IDReceiptDataSource.selected = [...[],this.item._Receipt];
+      this.formGroup.get('TrackingReceipt').setValue({
+        BuyerName: this.item._Receipt.StorerName,
+        SellerName: this.item._Receipt.VendorName,
+        IDBuyer: this.item._Receipt.IDStorer,
+        IDSeller: this.item._Receipt.IDVendor,
+        Id: this.item._Receipt.Id,
+        Code: this.item._Receipt.Code,
+        Name: this.item._Receipt.Name,
+      });
+    }
+    if (this.item._PurchaseOrder) {
+      this.formGroup.get('TrackingPurchaseOrder').setValue({
+        BuyerName: this.item._PurchaseOrder.StorerName,
+        SellerName: this.item._PurchaseOrder.VendorName,
+        IDBuyer: this.item._PurchaseOrder.IDStorer,
+        IDSeller: this.item._PurchaseOrder.IDVendor,
+        Id: this.item._PurchaseOrder.Id,
+        Code: this.item._PurchaseOrder.Code,
+        Name: this.item._PurchaseOrder.Name,
+      });
+    }
+    // if (this.item.IDBuyer) {
+    //   this.formGroup.get('TrackingBuyer').setValue({
+    //     Id: this.item.IDBuyer,
+    //     Name: this.item.BuyerName,
+    //     Address: this.item.BuyerAddress,
+    //     TaxCode: this.item.BuyerTaxCode,
+    //   });
+    // }
+    if (this.item._Receipt) {
+      this.IDReceiptDataSource.selected = [...[], this.item._Receipt];
     }
 
     if (this.item._PurchaseOrder) {
-      this.IDPurchaseOrderDataSource.selected = [...[],this.item._PurchaseOrder];
+      this.IDPurchaseOrderDataSource.selected = [...[], this.item._PurchaseOrder];
     }
     if (this.item._Owner) {
-      this.IDOwnerDataSource.selected =[...[],this.item._Owner];
+      this.IDOwnerDataSource.selected = [...[], this.item._Owner];
     }
     this.IDReceiptDataSource.initSearch();
     this.IDPurchaseOrderDataSource.initSearch();
     this.IDOwnerDataSource.initSearch();
-    if(!this.formGroup.get('Id').value){
+    if (!this.formGroup.get('Id').value) {
       this.formGroup.get('Status').markAsDirty();
-    } 
+    }
 
-    if(this.pageConfig.canRequestOutgoingPayment)   this.pageConfig.ShowRequestOutgoingPayment = true;
-    let notShowRequestOutgoingPaymentPaymentStatus = ['Unapproved','Paid'];
+    if (this.pageConfig.canRequestOutgoingPayment) this.pageConfig.ShowRequestOutgoingPayment = true;
+    let notShowRequestOutgoingPaymentPaymentStatus = ['Unapproved', 'Paid'];
     let notShowRequestOutgoingPaymentAPStatus = ['Draft', 'Closed', 'Cancelled'];
-    if(notShowRequestOutgoingPaymentAPStatus.includes(this.formGroup.get('Status').value) || notShowRequestOutgoingPaymentPaymentStatus.includes(this.formGroup.get('PaymentStatus').value)){
-      this.pageConfig.ShowRequestOutgoingPayment = false
+    if (
+      notShowRequestOutgoingPaymentAPStatus.includes(this.formGroup.get('Status').value) ||
+      notShowRequestOutgoingPaymentPaymentStatus.includes(this.formGroup.get('PaymentStatus').value)
+    ) {
+      this.pageConfig.ShowRequestOutgoingPayment = false;
     }
   }
 
   private patchLinesValue() {
     this.formGroup.controls.InvoiceDetails = new FormArray([]);
-  
+
     if (this.item.InvoiceDetails?.length) {
       for (let i of this.item.InvoiceDetails) {
         this.addLine(i);
       }
     }
 
-    if (!this.pageConfig.canEdit ) {
+    if (!this.pageConfig.canEdit) {
       this.formGroup.controls.InvoiceDetails.disable();
     }
   }
@@ -232,8 +260,9 @@ export class APInvoiceDetailPage extends PageBase {
           input$: new Subject<string>(),
           selected: preLoadItems,
           items$: null,
+          that:this,
           initSearch() {
-            this.loading = false; 
+            this.loading = false;
             this.items$ = concat(
               of(this.selected),
               this.input$.pipe(
@@ -246,6 +275,8 @@ export class APInvoiceDetailPage extends PageBase {
                       Take: 20,
                       Skip: 0,
                       Term: term,
+                      IDBranch:this.that.formGroup.get('IDBranch').value,
+                      IDVendor:this.that.formGroup.get('IDSeller').value
                     })
                     .pipe(
                       catchError(() => of([])), // empty list on error
@@ -277,12 +308,12 @@ export class APInvoiceDetailPage extends PageBase {
       CalcTotalAfterDiscount: [line?.TotalAfterDiscount],
 
       CalcTax: [line?.CalcTax],
-      TaxRate : [line?.TaxRate],
+      TaxRate: [line?.TaxRate],
 
       TotalAfterTax: [line?.TotalAfterTax],
       UserDefineDetails: [line?.UserDefineDetails],
       Sort: [line?.Sort],
-      IsChecked:[],
+      IsChecked: [],
     });
     groups.push(group);
     group.get('_IDItemDataSource').value?.initSearch();
@@ -292,92 +323,47 @@ export class APInvoiceDetailPage extends PageBase {
     }
     group.valueChanges.subscribe((changes) => {
       this.calcTotal();
-  });
+    });
   }
 
-  getPaymentHistory(){
-  this.showSpinnerPayment = true;
-   let queryPayment = {
-    Id:this.formGroup.get('Id').value
-   }
-    this.commonService.connect('GET','AC/APInvoice/GetPaymentHistory/',queryPayment).toPromise()
-    .then((result: any) => {
-      this.paymentDetailList = result;
-      if(!this.paymentStatusList){
-        this.env.getStatus('OutgoingPaymentStatus').then(rs=>{
-          this.paymentStatusList = rs;
-          this.paymentDetailList.forEach(i=>{
-              i._Status = this.paymentStatusList.find((d) => d.Code == i.Status);
-          })
-        })
-      }else{
-        this.paymentDetailList.forEach(i=>{
-          i._Status = this.paymentStatusList.find((d) => d.Code == i.Status);
-      })
-      }
-      console.log(result);
-      
-    })
-    .catch(err=> this.env.showMessage(err,'danger'))
-    .finally(()=>{ this.showSpinnerPayment = false});
-  }
-  createOutgoingPayment(){
-    let date = new Date(this.formGroup.get('InvoiceDate').value).toISOString().split('Z')[0];
-
-    let navigationExtras: NavigationExtras = {
-      state: {
-           OutgoingPaymentDetails: [{
-            DocumentEntry:this.formGroup.get('Id').value,
-            Id:0,
-            Name: 'From AP invoice #'+this.formGroup.get('Id').value,
-            DocumentType:'Invoice',
-            Amount: this.formGroup.get('CalcBalance').value
-           }],
-           _BusinessPartner:this._seller,
-           IDStaff : this.env.user.StaffID,
-           IDBusinessPartner:this.formGroup.get('IDSeller').value,
-          IDBranch:this.formGroup.get('IDBranch').value,
-          Amount: this.formGroup.get('CalcBalance').value,
-          DocumentDate: date,
-          PostingDate:date,
-          DueDate: date,
-          
-      }
+  getPaymentHistory() {
+    this.showSpinnerPayment = true;
+    let queryPayment = {
+      Id: this.formGroup.get('Id').value,
     };
-    this.nav('/outgoing-payment/0', 'forward', navigationExtras);
+    this.commonService
+      .connect('GET', 'AC/APInvoice/GetPaymentHistory/', queryPayment)
+      .toPromise()
+      .then((result: any) => {
+        this.paymentDetailList = result;
+        this.paymentDetailList.forEach((i) => {
+          i._Status = this.paymentStatusList.find((d) => d.Code == i.Status);
+        });
+        console.log(result);
+      })
+      .catch((err) => this.env.showMessage(err, 'danger'))
+      .finally(() => {
+        this.showSpinnerPayment = false;
+      });
   }
+
   async saveChange() {
     super.saveChange2();
   }
 
-
-  calcTotal(){
+  calcTotal() {
     let invoiceDetails = this.formGroup.controls.InvoiceDetails.getRawValue();
-    let totalBeforeDiscount = invoiceDetails.map((x) =>  x.UoMPrice *  x.Quantity).reduce((a, b) => +a + +b, 0);
-    let totalDiscount = invoiceDetails.map((x) =>  x.TotalDiscount).reduce((a, b) => +a + +b, 0);
-    let tax = invoiceDetails.map((x) =>  x.CalcTax).reduce((a, b) => +a + +b, 0);
+    let totalBeforeDiscount = invoiceDetails.map((x) => x.UoMPrice * x.Quantity).reduce((a, b) => +a + +b, 0);
+    let totalDiscount = invoiceDetails.map((x) => x.TotalDiscount).reduce((a, b) => +a + +b, 0);
+    let tax = invoiceDetails.map((x) => x.CalcTax).reduce((a, b) => +a + +b, 0);
     let calcTotalAfterDiscount = totalBeforeDiscount - totalDiscount;
-    let calcTotalAfterTax = calcTotalAfterDiscount + tax - (this.formGroup.get('WithholdingTax').value ??0) ;
+    let calcTotalAfterTax = calcTotalAfterDiscount + tax - (this.formGroup.get('WithholdingTax').value ?? 0);
     this.formGroup.get('TotalBeforeDiscount').setValue(totalBeforeDiscount);
     this.formGroup.get('TotalDiscount').setValue(totalDiscount);
     this.formGroup.get('Tax').setValue(tax);
     this.formGroup.get('CalcTotalAfterDiscount').setValue(totalBeforeDiscount - totalDiscount);
     this.formGroup.get('CalcTotalAfterTax').setValue(calcTotalAfterTax);
-    this.formGroup.get('CalcBalance').setValue(calcTotalAfterTax -(this.formGroup.get('Paid').value ??0) );
-    // rvalue.CalcTotalAfterDiscount =  rvalue.TotalBeforeDiscount - rvalue.TotalDiscount;
-    // rvalue.CalcTotalAfterTax = rvalue.CalcTotalAfterDiscount + rvalue.Tax - rvalue.WithholdingTax;
-    // //
-    //  if(rvalue.CalcTotalAfterTax < this.formGroup.get('Paid').value){
-    //   this.env.showMessage('Total after tax is lower than paid amount!','danger');
-    //   return;
-    // }
-    // this.formGroup.get('CalcTotalAfterDiscount').setValue(rvalue.CalcTotalAfterDiscount);
-    // this.formGroup.get('CalcTotalAfterDiscount').markAsDirty();
-    // this.formGroup.get('CalcTotalAfterTax').setValue(rvalue.CalcTotalAfterTax);
-    // this.formGroup.get('CalcTotalAfterTax').markAsDirty();
-    
-    // this.formGroup.get('CalcBalance').setValue(rvalue.CalcTotalAfterTax - rvalue.Paid);
-    // this.formGroup.get('CalcBalance').markAsDirty();
+    this.formGroup.get('CalcBalance').setValue(calcTotalAfterTax - (this.formGroup.get('Paid').value ?? 0));
   }
   IDReceiptDataSource = {
     searchProvider: this.receiptProvider,
@@ -385,120 +371,304 @@ export class APInvoiceDetailPage extends PageBase {
     input$: new Subject<string>(),
     selected: [],
     items$: null,
+    that: this,
     initSearch() {
       this.loading = false;
       this.items$ = concat(
-        of(this.selected),
+        of(this.selected), // emit selected items first
         this.input$.pipe(
           distinctUntilChanged(),
           tap(() => (this.loading = true)),
-          switchMap((term) =>
-            this.searchProvider
-              .search({
-                SortBy: ['Id_desc'],
-                Take: 20,
-                Skip: 0,
-                Term: term,
-              })
-              .pipe(
-                catchError(() => of([])), // empty list on error
-                tap(() => (this.loading = false)),
-              ),
-          ),
+          switchMap((term: any) => {
+            const query: any = {
+              SortBy: ['Id_desc'],
+              Take: 20,
+              Skip: 0,
+              Term: term,
+            };
+            const formGroup = this.that.formGroup;
+            if (formGroup.get('IDSeller')?.value && formGroup.get('IDPurchaseOrder').value)
+              query.IDVendor = formGroup.get('IDSeller').value;
+            if (formGroup.get('IDBuyer')?.value && formGroup.get('IDPurchaseOrder').value)
+              query.IDStorer = formGroup.get('IDBuyer').value;
+            return this.searchProvider.search(query).pipe(
+              catchError(() => of([])), // emit an empty list on error
+              tap(() => (this.loading = false)),
+            );
+          }),
+          tap(() => (this.loading = false)), // Ensure loading is turned off after completion
         ),
       );
     },
   };
 
-  sourceChange(e,type) {
-    let groups = this.formGroup.controls.InvoiceDetails as FormArray;
-    if(e){
-      let query = {
-        Id: this.formGroup.get('Id').value,
-        IsOverride : false,
-        IDSource: e.Id,
-        SourceType : type
-      }
-      if(groups.controls.length >0){
-        this.env.showPrompt('Do you want to delete all invoice details ?', null,'You are attaching new source!','Delete','No')
-        .then((_) => {
-            query.IsOverride = true
-          }).catch(()=> {
-            query.IsOverride = false;
-          }).finally(()=>{
-            this.pageProvider.commonService.connect('GET','AC/APInvoice/CopyFromSource',query).toPromise().then((rs:any)=>{
-              this.item = rs;
-              this.env.showMessage('Saving completed!', 'success');
-              this.loadedData();
-              this.calcTotal();
+  copyFromSource(query){
+    this.pageProvider.commonService
+    .connect('GET', 'AC/APInvoice/CopyFromSource', query)
+    .toPromise()
+    .then((rs: any) => {
+      this.item = rs;
+      this.env.showMessage('Saving completed!', 'success');
+      this.loadedData();
+      this.calcTotal();
+    })
+    .catch((err) => {
+      this.env.showMessage('Cannot save, please try again', 'danger');
+    });
+  }
+  sourceChange(e, type) {
+    if (this.formGroup.get('Id').value > 0) {
+      let groups = this.formGroup.controls.InvoiceDetails as FormArray;
+      if (e) {
+        let query = {
+          Id: this.formGroup.get('Id').value,
+          IsOverride: false,
+          IDSource: e.Id,
+          SourceType: type,
+        };
+        let isCallAPI = false;
+        //từ chưa có data qua có 2 data
+        if (this.formGroup.get('IDPurchaseOrder').value && this.formGroup.get('IDReceipt').value) {
+          if (groups.controls.length > 0) {
+            this.env
+              .showPrompt(
+                'You are attaching new PO/Receipt ?',
+                null,
+                'Do you want to delete all current invoice details?',
+                'Yes',
+                'No',
+              )
+              .then((_) => {
+                isCallAPI = true;
+                query.IsOverride = true;
+                this.pageProvider.commonService
+                  .connect('GET', 'AC/APInvoice/CopyFromSource', query)
+                  .toPromise()
+                  .then((rs: any) => {
+                    this.item = rs;
+                    this.env.showMessage('Saving completed!', 'success');
+                    this.loadedData();
+                    this.calcTotal();
+                  })
+                  .catch((err) => {
+                    this.env.showMessage('Cannot save, please try again', 'danger');
+                  });
+              })
+              .catch(() => {
+                query.IsOverride = false;
+              }).finally(()=>{
+               this.copyFromSource(query);
+              });
+          } else {
+            this.copyFromSource(query);
 
-            }).catch(err=> {
-              this.env.showMessage('Cannot save, please try again', 'danger');
-              console.log(err)
+          }
+        }
+        //từ chưa có data qua có 1 data
+        else {
+          if(groups.controls.length>0){
+            //Hiện tại có seller rồi và change seller đó thì bảng giá bị thay đổi nên clear hết
+            if(e.IDVendor != this.formGroup.get('Tracking'+type).value?.IDSeller){
+              this.env
+              .showPrompt(
+                'Price list was changed, invoice details would be deleted ?',
+                null,
+                'Are you sure to continue ?',
+                'Yes',
+                'No',
+              )
+              .then((_) => {
+                query.IsOverride = true;
+                isCallAPI = true;
+              }).catch(()=>{
+                isCallAPI = false;
+                let trackingValue = this.formGroup.get('Tracking' + type).value;
+                this.formGroup.get('IDBuyer').setValue(trackingValue.IDStorer);
+                this.formGroup.get('IDSeller').setValue(trackingValue.IDVendor);
+                this.formGroup.get('BuyerName').setValue(trackingValue.BuyerName);
+                this.formGroup.get('SellerName').setValue(trackingValue.SellerName);
+                this.formGroup.get('ID' + type).setValue(trackingValue.Id);
+              }).finally(()=>{
+                if(isCallAPI){
+                  this.copyFromSource(query);
+                }
+              })
+              
+              ;
             }
-            )
-          })
-      }
-      else{
-        this.pageProvider.commonService.connect('GET','AC/APInvoice/CopyFromSource',query).toPromise().then((rs:any)=>{
-          this.item = rs;
-          this.env.showMessage('Saving completed!', 'success');
-          this.loadedData();
-          this.calcTotal();
-        }).catch(err=>  this.env.showMessage('Cannot save, please try again', 'danger')
-        )
-      }
-    }
-    else{
-      if(groups.controls.length>0){
-        this.env .showPrompt( 'Do you want to delete all invoice details?')
-        .then((_) => {
-          this.formGroup.get('DeletedFields').setValue(groups.getRawValue().map(s=>s.Id));
-          this.formGroup.get('DeletedFields').markAsDirty();
-          this.saveChange();
-        }).catch(()=>{
-        
-          //  this.formGroup.get('ID'+type).setValue(this.formGroup.get('TrackingID'+type).value);
-          //  this.formGroup.get('ID'+type).markAsDirty();
-          }).finally(()=>this.saveChange());
-      }
-      else this.saveChange();
+            else this.copyFromSource(query);
+          }
+          else this.copyFromSource(query);
+        }
+        // if (groups.controls.length > 0) {
+        //   //Hiện tại có seller rồi và change seller đó thì bảng giá bị thay đổi nên clear hết
+        //   if (
+        //     this.formGroup.get('Tracking' + type).value &&
+        //     e.IDVendor != this.formGroup.get('Tracking' + type).value?.IDSeller
+        //   ) {
+        //     this.env
+        //       .showPrompt(
+        //         'Price list was changed, invoice details would be deleted ?',
+        //         null,
+        //         'Are you sure to continue ?',
+        //         'Yes',
+        //         'No',
+        //       )
+        //       .then((_) => {
+        //         query.IsOverride = true;
+        //         isCallAPI = true;
 
-     
+        //         this.formGroup.get('Tracking' + type).setValue({
+        //           Id: e.Id,
+        //           IDSeller: e.IDVendor,
+        //           SellerName: e._Vendor?.Name,
+        //           IDBuyer: e.IDStorer,
+        //           BuyerName: e._Storer?.Name,
+        //         });
+        //       })
+        //       .catch(() => {
+        //         isCallAPI = false;
+        //         let trackingValue = this.formGroup.get('Tracking' + type).value;
+        //         this.formGroup.get('IDBuyer').setValue(trackingValue.IDStorer);
+        //         this.formGroup.get('IDSeller').setValue(trackingValue.IDVendor);
+        //         this.formGroup.get('BuyerName').setValue(trackingValue.BuyerName);
+        //         this.formGroup.get('SellerName').setValue(trackingValue.SellerName);
+        //         this.formGroup.get('ID' + type).setValue(trackingValue.Id);
+        //       })
+        //       .finally(() => {
+        //         if (isCallAPI) {
+        //           this.pageProvider.commonService
+        //             .connect('GET', 'AC/APInvoice/CopyFromSource', query)
+        //             .toPromise()
+        //             .then((rs: any) => {
+        //               this.item = rs;
+        //               this.env.showMessage('Saving completed!', 'success');
+        //               this.loadedData();
+        //               this.calcTotal();
+        //             })
+        //             .catch((err) => {
+        //               this.env.showMessage('Cannot save, please try again', 'danger');
+        //             });
+        //         }
+        //       });
+        //   } else {
+        //     this.pageProvider.commonService
+        //       .connect('GET', 'AC/APInvoice/CopyFromSource', query)
+        //       .toPromise()
+        //       .then((rs: any) => {
+        //         this.item = rs;
+        //         this.env.showMessage('Saving completed!', 'success');
+        //         this.loadedData();
+        //         this.calcTotal();
+        //       })
+        //       .catch((err) => this.env.showMessage('Cannot save, please try again', 'danger'));
+        //   }
+        // }
+      } 
+      else {
+        //todo
+        if (
+          groups.controls.length > 0 &&
+          (!this.formGroup.get('IDPurchaseOrder').value && !this.formGroup.get('IDReceipt').value)
+        ) {
+          this.env
+          .showPrompt(
+            'Price list was changed, invoice details would be deleted ?',
+            null,
+            'Are you sure to continue ?',
+            'Yes',
+            'No',
+          )
+            .then((_) => {
+              this.formGroup.get('IDPurchaseOrder').setValue(null);
+              this.formGroup.get('IDPurchaseOrder').markAsDirty();
+              this.formGroup.get('IDReceipt').setValue(null);
+              this.formGroup.get('IDReceipt').markAsDirty();
+              this.formGroup.get('DeletedFields').setValue(groups.getRawValue().map((s) => s.Id));
+              this.formGroup.get('DeletedFields').markAsDirty();
+              this.saveChange()
+            })
+            .catch(() => {
+               this.formGroup.get('ID'+type).setValue(this.formGroup.get('Tracking'+type).value?.Id);
+            })
+        } else this.saveChange();
+      }
+    } 
+    else {
+      if (e) {
+        if (e?.IDVendor) {
+          this.formGroup.controls['IDSeller'].setValue(e.IDVendor);
+          this.formGroup.controls['IDSeller'].markAsDirty();
+
+          if (e?.IDStorer) {
+            this.formGroup.controls['IDBuyer'].setValue(e.IDStorer);
+            this.formGroup.controls['IDBuyer'].markAsDirty();
+          }
+
+          if (e?.StorerName) {
+            this.formGroup.controls['BuyerName'].setValue(e.StorerName);
+            this.formGroup.controls['BuyerName'].markAsDirty();
+          }
+
+          if (e?.VendorName) {
+            this.formGroup.controls['SellerName'].setValue(e.VendorName);
+            this.formGroup.controls['SellerName'].markAsDirty();
+          }
+          if (e?._PurchaseOrder) {
+            this.formGroup.controls['IDPurchaseOrder'].setValue(e._PurchaseOrder.Id);
+            this.formGroup.controls['IDPurchaseOrder'].markAsDirty();
+            this.IDPurchaseOrderDataSource.selected = [...this.IDPurchaseOrderDataSource.selected,e._PurchaseOrder];
+            this.IDPurchaseOrderDataSource.initSearch();
+          }
+        }
+      } else {
+        if (!this.formGroup.get('IDReceipt').value && !this.formGroup.get('IDPurchaseOrder').value) {
+          this.formGroup.controls['IDSeller'].setValue(null);
+          this.formGroup.controls['IDBuyer'].setValue(null);
+          this.formGroup.controls['BuyerName'].setValue(null);
+          this.formGroup.controls['SellerName'].setValue(null);
+        }
+      }
+      this.saveChange();
     }
   }
- 
   IDPurchaseOrderDataSource = {
     searchProvider: this.purchaseOrderProvider,
     loading: false,
     input$: new Subject<string>(),
     selected: [],
     items$: null,
+    that: this,
     initSearch() {
       this.loading = false;
       this.items$ = concat(
-        of(this.selected),
+        of(this.selected), // emit selected items first
         this.input$.pipe(
           distinctUntilChanged(),
           tap(() => (this.loading = true)),
-          switchMap((term) =>
-            this.searchProvider
-              .search({
-                SortBy: ['Id_desc'],
-                Take: 20,
-                Skip: 0,
-                Term: term,
-              })
-              .pipe(
-                catchError(() => of([])), // empty list on error
-                tap(() => (this.loading = false)),
-              ),
-          ),
+          switchMap((term: any) => {
+            const query: any = {
+              SortBy: ['Id_desc'],
+              Take: 20,
+              Skip: 0,
+              Term: term,
+            };
+            const formGroup = this.that.formGroup;
+            if (formGroup.get('IDSeller')?.value && formGroup.get('IDReceipt').value)
+              query.IDVendor = formGroup.get('IDSeller').value;
+            if (formGroup.get('IDBuyer')?.value && formGroup.get('IDReceipt').value)
+              query.IDStorer = formGroup.get('IDBuyer').value;
+
+            return this.searchProvider.search(query).pipe(
+              catchError(() => of([])), // emit an empty list on error
+              tap(() => (this.loading = false)),
+            );
+          }),
+          tap(() => (this.loading = false)), // Ensure loading is turned off after completion
         ),
       );
     },
   };
-
   IDOwnerDataSource = {
     searchProvider: this.staffProvider,
     loading: false,
@@ -523,23 +693,22 @@ export class APInvoiceDetailPage extends PageBase {
     },
   };
 
-
   IDItemChange(e, group) {
     if (e) {
-      if (e.SalesTaxInPercent && e.SalesTaxInPercent != -99) {
+      if (e.PurchaseTaxInPercent && e.PurchaseTaxInPercent != -99) {
         group.controls._IDUoMDataSource.setValue(e.UoMs);
 
-        group.controls.IDUoM.setValue(e.SalesUoM);
+        group.controls.IDUoM.setValue(e.PurchasingUoM);
         group.controls.IDUoM.markAsDirty();
 
-        group.controls.TaxRate.setValue(e.SalesTaxInPercent);
+        group.controls.TaxRate.setValue(e.PurchaseTaxInPercent);
         group.controls.TaxRate.markAsDirty();
 
         this.IDUoMChange(group);
         return;
       }
 
-      if (e.SalesTaxInPercent != -99) this.env.showMessage('The item has not been set tax');
+      if (e.PurchaseTaxInPercent != -99) this.env.showMessage('The item has not been set tax');
     }
 
     group.controls.TaxRate.setValue(null);
@@ -559,11 +728,7 @@ export class APInvoiceDetailPage extends PageBase {
       let UoMs = group.controls._IDUoMDataSource.value;
       let u = UoMs.find((d) => d.Id == idUoM);
       if (u && u.PriceList) {
-       // let paymentMethod = this.formGroup.controls.PaymentReason.value;
-        // let p = u.PriceList.find(
-        //   (d) => d.Type == (paymentMethod == 'GoodsReturn' ? 'PriceListForVendor' : 'PriceListForCustomer'),
-        // );
-        let p = u.PriceList.find((d) => d.Type ==  'PriceListForCustomer')
+        let p = u.PriceList.find((d) => d.Type == 'PriceListForVendor');
         let taxRate = group.controls.TaxRate.value;
         if (p && taxRate != null) {
           let priceBeforeTax = null;
@@ -582,7 +747,7 @@ export class APInvoiceDetailPage extends PageBase {
           this.saveChange();
           return;
         }
-      } 
+      }
     }
     group.controls.UoMPrice.setValue(null);
     group.controls.UoMPrice.markAsDirty();
@@ -605,52 +770,48 @@ export class APInvoiceDetailPage extends PageBase {
       group.controls.UoMPrice.setValue(0);
     }
     this.saveChange();
-
   }
   TotalDiscountChange(group) {
     if (!group.controls.TotalDiscount.value) {
       group.controls.TotalDiscount.setValue(0);
     }
     this.saveChange();
-
   }
 
-  removeLine(fg){
+  removeLine(fg) {
     let groups = this.formGroup.controls.InvoiceDetails as FormArray;
-    if(fg.controls.Id.value){
-      this.env .showPrompt( { code: 'Do you want to delete?'} )
-      .then((_) => {
+    if (fg.controls.Id.value) {
+      this.env.showPrompt({ code: 'Do you want to delete?' }).then((_) => {
         this.formGroup.get('DeletedFields').setValue([fg.controls.Id.value]);
         this.formGroup.get('DeletedFields').markAsDirty();
-        this.saveChange().then(rs=>{
+        this.saveChange().then((rs) => {
           let indexSelectedAll = this.selectedInvoiceDetails.getRawValue().findIndex((d) => d.Id == fg.get('Id').value);
           this.selectedInvoiceDetails.removeAt(indexSelectedAll);
-          let index = groups.controls.findIndex(d=> d.get('Id').value == fg.get('Id').value);
+          let index = groups.controls.findIndex((d) => d.get('Id').value == fg.get('Id').value);
           groups.removeAt(index);
         });
-      })
-    }
-    else{
+      });
+    } else {
       let indexSelectedAll = this.selectedInvoiceDetails.getRawValue().findIndex((d) => d.Id == fg.get('Id').value);
       this.selectedInvoiceDetails.removeAt(indexSelectedAll);
-      let index = groups.controls.findIndex(d=> d.get('Id').value == fg.get('Id').value);
+      let index = groups.controls.findIndex((d) => d.get('Id').value == fg.get('Id').value);
       groups.removeAt(index);
     }
-  } 
+  }
   savedChange(savedItem = null, form = this.formGroup) {
-    super.savedChange(savedItem,form);
+    super.savedChange(savedItem, form);
     this.item = savedItem;
     this.loadedData();
   }
 
   selectedInvoiceDetails: any = new FormArray([]);
-  changeSelection(i,  e = null) {
-      if (i.get('IsChecked').value) {
-        this.selectedInvoiceDetails.push(i);
-      } else {
-        let index = this.selectedInvoiceDetails.getRawValue().findIndex((d) => d.Id == i.get('Id').value);
-        this.selectedInvoiceDetails.removeAt(index);
-      }
+  changeSelection(i, e = null) {
+    if (i.get('IsChecked').value) {
+      this.selectedInvoiceDetails.push(i);
+    } else {
+      let index = this.selectedInvoiceDetails.getRawValue().findIndex((d) => d.Id == i.get('Id').value);
+      this.selectedInvoiceDetails.removeAt(index);
+    }
   }
 
   deleteItems() {
@@ -663,13 +824,13 @@ export class APInvoiceDetailPage extends PageBase {
           { code: 'Xóa {{value1}} đang chọn?', value: { value1: itemsToDelete.length } },
         )
         .then((_) => {
-          this.formGroup.get('DeletedFields').setValue(itemsToDelete.map(i=>i.Id));
+          this.formGroup.get('DeletedFields').setValue(itemsToDelete.map((i) => i.Id));
           this.formGroup.get('DeletedFields').markAsDirty();
-          this.saveChange().then(rs=>{
+          this.saveChange().then((rs) => {
             this.removeSelectedItems();
             this.env.showMessage('erp.app.app-component.page-bage.delete-complete', 'success');
             this.formGroup.get('IsAllChecked').setValue(false);
-          })
+          });
         });
     }
   }
@@ -687,8 +848,7 @@ export class APInvoiceDetailPage extends PageBase {
   toggleSelectAll() {
     if (!this.pageConfig.canEdit) return;
     let groups = <FormArray>this.formGroup.controls.InvoiceDetails;
-    if (!this.formGroup.get('IsAllChecked').value)
-    {
+    if (!this.formGroup.get('IsAllChecked').value) {
       this.selectedInvoiceDetails = new FormArray([]);
     }
     groups.controls.forEach((i) => {
@@ -700,56 +860,62 @@ export class APInvoiceDetailPage extends PageBase {
   segmentView = 's1';
   segmentChanged(ev: any) {
     this.segmentView = ev.detail.value;
-    if(this.segmentView == 's3'){
+    if (this.segmentView == 's3') {
       this.getPaymentHistory();
     }
   }
-  
+
   ngOnDestroy() {
     this.dismissPopover();
   }
   @ViewChild('popover') popover;
   isOpenPopover = false;
   dismissPopover(apply: boolean = false) {
-   
     if (apply) {
       if (!this.formGroup.get('IDSeller').value) {
         this.isOpenPopover = false;
-        this.env.showMessage('Seller not valid!','danger')
+        this.env.showMessage('Seller not valid!', 'danger');
         return;
       }
       let date = new Date(this.formGroup.get('InvoiceDate').value).toISOString().split('Z')[0];
       this.submitAttempt = true;
       let obj = {
-        Id:0,
-        IDBusinessPartner:this.formGroup.get('IDSeller').value,
-        IDBranch:this.formGroup.get('IDBranch').value,
-        SourceType : 'Invoice',
-        IDStaff : this.formGroup.get('IDOwner').value,
-        Name: 'From AP invoices #'+this.formGroup.get('Id').value,
-        Type:this.paymentFormGroup.get('PaymentType').value,
-        SubType:this.paymentFormGroup.get('PaymentSubType').value,
-        PaymentReason:this.paymentFormGroup.get('PaymentReason').value,
+        Id: 0,
+        IDBusinessPartner: this.formGroup.get('IDSeller').value,
+        IDBranch: this.formGroup.get('IDBranch').value,
+        SourceType: 'Invoice',
+        IDStaff: this.formGroup.get('IDOwner').value,
+        Name: 'From AP invoices #' + this.formGroup.get('Id').value,
+        Type: this.paymentFormGroup.get('PaymentType').value,
+        SubType: this.paymentFormGroup.get('PaymentSubType').value,
+        PaymentReason: this.paymentFormGroup.get('PaymentReason').value,
         PostingDate: new Date(),
         DueDate: new Date(),
         DocumentDate: new Date(),
-        OutgoingPaymentDetails :[this.formGroup.get('Id').value] 
+        OutgoingPaymentDetails: [this.formGroup.get('Id').value],
       };
-      this.pageProvider.commonService.connect('POST','BANK/OutgoingPayment/PostFromSource',obj).toPromise().then((rs:any)=>{
-        this.env.showPrompt('Create outgoing payment successfully!','Do you want to navigate to outgoing payment ?').then(()=> {
-          this.nav('outgoing-payment/'+rs.Id, 'forward');
+      this.pageProvider.commonService
+        .connect('POST', 'BANK/OutgoingPayment/PostFromSource', obj)
+        .toPromise()
+        .then((rs: any) => {
+          this.env
+            .showPrompt('Create outgoing payment successfully!', 'Do you want to navigate to outgoing payment ?')
+            .then(() => {
+              this.nav('outgoing-payment/' + rs.Id, 'forward');
+            });
+          this.refresh();
         })
-        this.refresh();
-      }).catch(err=>{
-        this.env.showMessage(err.error?.Message?? err,'danger');
-  
-      }).finally(()=> {this.submitAttempt = false; this.refresh()});
+        .catch((err) => {
+          this.env.showMessage(err.error?.Message ?? err, 'danger');
+        })
+        .finally(() => {
+          this.submitAttempt = false;
+          this.refresh();
+        });
     }
     this.isOpenPopover = false;
-
   }
   presentPopover(event) {
     this.isOpenPopover = true;
-
   }
 }

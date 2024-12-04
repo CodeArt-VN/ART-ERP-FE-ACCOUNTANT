@@ -13,7 +13,7 @@ import { FormBuilder } from '@angular/forms';
 })
 export class APInvoicePage extends PageBase {
   statusList = [];
-  apPaymentStatusList = [];
+  paymentStatusList = [];
   paymentTypeList = [];
   paymentReasonList = [];
   paymentSubTypeList = [];
@@ -42,15 +42,15 @@ export class APInvoicePage extends PageBase {
   preLoadData(event?: any): void {
     this.query.SortBy = 'Id_desc';
     Promise.all([this.env.getStatus('APInvoice'),
-        this.env.getStatus('APInvoicePayment'),
+        this.env.getStatus('OutgoingPaymentStatus'),
        this.env.getType('PaymentType'),
-       this.env.getType('OutgoingPaymentReason')
+       this.env.getType('OutgoingPaymentReasonType')
       ]).then((values) => {
       if(values[0]){
         this.statusList = values[0];
       }
       if(values[1]){
-        this.apPaymentStatusList = values[1];
+        this.paymentStatusList = values[1];
       }
       if(values[2]){
         this.paymentTypeList = values[2].filter((d) => d.Code == 'Cash' || d.Code == 'Card' || d.Code == 'Transfer');
@@ -82,7 +82,7 @@ export class APInvoicePage extends PageBase {
         IDBranch:this.env.selectedBranch,
         SourceType : 'Invoice',
         IDStaff : this.env.user.StaffID,
-        Name: 'From AP invoices ['+this.selectedItems.map(d=> d.Id).join(',')+']',
+        Name: 'Pay for A/P invoice ['+this.selectedItems.map(d=> d.Id).join(',')+']',
         Type:this.formGroup.get('PaymentType').value,
         SubType:this.formGroup.get('PaymentSubType').value,
         PaymentReason:this.formGroup.get('PaymentReason').value,
