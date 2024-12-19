@@ -14,9 +14,10 @@ import {
 } from 'src/app/services/static/services.service';
 
 @Component({
-  selector: 'app-bank-transaction',
-  templateUrl: 'bank-transaction.page.html',
-  styleUrls: ['bank-transaction.page.scss'],
+    selector: 'app-bank-transaction',
+    templateUrl: 'bank-transaction.page.html',
+    styleUrls: ['bank-transaction.page.scss'],
+    standalone: false
 })
 export class BankTransactionPage extends PageBase {
   groupControl = {

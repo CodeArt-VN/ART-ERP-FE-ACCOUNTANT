@@ -7,9 +7,10 @@ import { Location } from '@angular/common';
 import { FormBuilder } from '@angular/forms';
 
 @Component({
-  selector: 'app-ap-invoice',
-  templateUrl: 'ap-invoice.page.html',
-  styleUrls: ['ap-invoice.page.scss'],
+    selector: 'app-ap-invoice',
+    templateUrl: 'ap-invoice.page.html',
+    styleUrls: ['ap-invoice.page.scss'],
+    standalone: false
 })
 export class APInvoicePage extends PageBase {
   statusList = [];

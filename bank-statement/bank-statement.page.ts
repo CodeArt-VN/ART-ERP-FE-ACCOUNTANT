@@ -6,9 +6,10 @@ import { BANK_TransactionProvider } from 'src/app/services/static/services.servi
 import { Location } from '@angular/common';
 
 @Component({
-  selector: 'app-bank-statement',
-  templateUrl: 'bank-statement.page.html',
-  styleUrls: ['bank-statement.page.scss'],
+    selector: 'app-bank-statement',
+    templateUrl: 'bank-statement.page.html',
+    styleUrls: ['bank-statement.page.scss'],
+    standalone: false
 })
 export class BankStatementPage extends PageBase {
   constructor(

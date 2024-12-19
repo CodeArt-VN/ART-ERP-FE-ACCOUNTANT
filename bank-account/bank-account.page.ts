@@ -5,9 +5,10 @@ import { PageBase } from 'src/app/page-base';
 import { BANK_AccountProvider } from 'src/app/services/static/services.service';
 
 @Component({
-  selector: 'app-bank-account',
-  templateUrl: 'bank-account.page.html',
-  styleUrls: ['bank-account.page.scss'],
+    selector: 'app-bank-account',
+    templateUrl: 'bank-account.page.html',
+    styleUrls: ['bank-account.page.scss'],
+    standalone: false
 })
 export class BankAccountPage extends PageBase {
   itemsState: any = [];

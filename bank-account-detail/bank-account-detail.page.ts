@@ -14,9 +14,10 @@ import { CommonService } from 'src/app/services/core/common.service';
 import { lib } from 'src/app/services/static/global-functions';
 
 @Component({
-  selector: 'app-bank-account-detail',
-  templateUrl: './bank-account-detail.page.html',
-  styleUrls: ['./bank-account-detail.page.scss'],
+    selector: 'app-bank-account-detail',
+    templateUrl: './bank-account-detail.page.html',
+    styleUrls: ['./bank-account-detail.page.scss'],
+    standalone: false
 })
 export class BankAccountDetailPage extends PageBase {
   ChartOfAccount = [];

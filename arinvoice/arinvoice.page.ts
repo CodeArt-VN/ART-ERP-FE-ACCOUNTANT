@@ -19,9 +19,10 @@ import { lib } from 'src/app/services/static/global-functions';
 import { SortConfig } from 'src/app/models/options-interface';
 
 @Component({
-  selector: 'app-arinvoice',
-  templateUrl: './arinvoice.page.html',
-  styleUrls: ['./arinvoice.page.scss'],
+    selector: 'app-arinvoice',
+    templateUrl: './arinvoice.page.html',
+    styleUrls: ['./arinvoice.page.scss'],
+    standalone: false
 })
 export class ARInvoicePage extends PageBase {
   branchList = [];

@@ -7,9 +7,10 @@ import { Location } from '@angular/common';
 import { SortConfig } from 'src/app/models/options-interface';
 
 @Component({
-  selector: 'app-incoming-payment',
-  templateUrl: 'incoming-payment.page.html',
-  styleUrls: ['incoming-payment.page.scss'],
+    selector: 'app-incoming-payment',
+    templateUrl: 'incoming-payment.page.html',
+    styleUrls: ['incoming-payment.page.scss'],
+    standalone: false
 })
 export class IncomingPaymentPage extends PageBase {
   statusList: [];

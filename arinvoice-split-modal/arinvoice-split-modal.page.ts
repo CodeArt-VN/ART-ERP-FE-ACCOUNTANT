@@ -17,9 +17,10 @@ import { lib } from 'src/app/services/static/global-functions';
 import { ApiSetting } from 'src/app/services/static/api-setting';
 
 @Component({
-  selector: 'app-arinvoice-split-modal',
-  templateUrl: './arinvoice-split-modal.page.html',
-  styleUrls: ['./arinvoice-split-modal.page.scss'],
+    selector: 'app-arinvoice-split-modal',
+    templateUrl: './arinvoice-split-modal.page.html',
+    styleUrls: ['./arinvoice-split-modal.page.scss'],
+    standalone: false
 })
 export class ARInvoiceSplitModalPage extends PageBase {
   @Input() selectedInvoice;

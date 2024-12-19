@@ -8,9 +8,10 @@ import { FormBuilder } from '@angular/forms';
 import { lib } from 'src/app/services/static/global-functions';
 
 @Component({
-  selector: 'app-incoming-payment-invoice-modal',
-  templateUrl: './incoming-payment-invoice-modal.page.html',
-  styleUrls: ['./incoming-payment-invoice-modal.page.scss'],
+    selector: 'app-incoming-payment-invoice-modal',
+    templateUrl: './incoming-payment-invoice-modal.page.html',
+    styleUrls: ['./incoming-payment-invoice-modal.page.scss'],
+    standalone: false
 })
 export class IncomingPaymentInvoiceModalPage extends PageBase {
   IDBusinessPartner;

@@ -19,9 +19,10 @@ import { concat, of, Subject } from 'rxjs';
 import { catchError, distinctUntilChanged, switchMap, tap } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-ap-invoice-detail',
-  templateUrl: './ap-invoice-detail.page.html',
-  styleUrls: ['./ap-invoice-detail.page.scss'],
+    selector: 'app-ap-invoice-detail',
+    templateUrl: './ap-invoice-detail.page.html',
+    styleUrls: ['./ap-invoice-detail.page.scss'],
+    standalone: false
 })
 export class APInvoiceDetailPage extends PageBase {
   statusList = [];

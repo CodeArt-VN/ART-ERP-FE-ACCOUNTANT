@@ -9,9 +9,10 @@ import { lib } from 'src/app/services/static/global-functions';
 import { CommonService } from 'src/app/services/core/common.service';
 
 @Component({
-  selector: 'app-incoming-payment-sale-order-modal',
-  templateUrl: './incoming-payment-sale-order-modal.page.html',
-  styleUrls: ['./incoming-payment-sale-order-modal.page.scss'],
+    selector: 'app-incoming-payment-sale-order-modal',
+    templateUrl: './incoming-payment-sale-order-modal.page.html',
+    styleUrls: ['./incoming-payment-sale-order-modal.page.scss'],
+    standalone: false
 })
 export class IncomingPaymentSaleOrderModalPage extends PageBase {
   IDContact;

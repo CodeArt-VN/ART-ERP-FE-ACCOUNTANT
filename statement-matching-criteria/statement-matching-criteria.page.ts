@@ -6,9 +6,10 @@ import { StatementMatchingCriteriaDetailPage } from '../statement-matching-crite
 import { BANK_StatementMatchingCriteriaProvider } from 'src/app/services/static/services.service';
 
 @Component({
-  selector: 'app-statement-matching-criteria',
-  templateUrl: 'statement-matching-criteria.page.html',
-  styleUrls: ['statement-matching-criteria.page.scss'],
+    selector: 'app-statement-matching-criteria',
+    templateUrl: 'statement-matching-criteria.page.html',
+    styleUrls: ['statement-matching-criteria.page.scss'],
+    standalone: false
 })
 export class StatementMatchingCriteriaPage extends PageBase {
   itemsState: any = [];

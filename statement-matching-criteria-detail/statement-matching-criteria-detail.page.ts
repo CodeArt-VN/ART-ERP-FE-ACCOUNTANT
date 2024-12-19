@@ -8,9 +8,10 @@ import { lib } from 'src/app/services/static/global-functions';
 import { BANK_StatementMatchingCriteriaProvider, BRA_BranchProvider } from 'src/app/services/static/services.service';
 
 @Component({
-  selector: 'app-statement-matching-criteria-detail',
-  templateUrl: './statement-matching-criteria-detail.page.html',
-  styleUrls: ['./statement-matching-criteria-detail.page.scss'],
+    selector: 'app-statement-matching-criteria-detail',
+    templateUrl: './statement-matching-criteria-detail.page.html',
+    styleUrls: ['./statement-matching-criteria-detail.page.scss'],
+    standalone: false
 })
 export class StatementMatchingCriteriaDetailPage extends PageBase {
   branchList;

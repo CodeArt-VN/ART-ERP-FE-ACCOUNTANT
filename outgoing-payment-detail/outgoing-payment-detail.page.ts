@@ -16,9 +16,10 @@ import { OutgoingPaymentPurchaseOrderModalPage } from '../outgoing-payment-purch
 import { OutgoingPaymentInvoiceModalPage } from '../outgoing-payment-invoice-modal/outgoing-payment-invoice-modal.page';
 
 @Component({
-  selector: 'app-outgoing-payment-detail',
-  templateUrl: './outgoing-payment-detail.page.html',
-  styleUrls: ['./outgoing-payment-detail.page.scss'],
+    selector: 'app-outgoing-payment-detail',
+    templateUrl: './outgoing-payment-detail.page.html',
+    styleUrls: ['./outgoing-payment-detail.page.scss'],
+    standalone: false
 })
 export class OutgoingPaymentDetailPage extends PageBase {
   statusList: [];

@@ -14,9 +14,10 @@ import { OutgoingPaymentPurchaseOrderModalPage } from '../outgoing-payment-purch
 import { OutgoingPaymentInvoiceModalPage } from '../outgoing-payment-invoice-modal/outgoing-payment-invoice-modal.page';
 
 @Component({
-  selector: 'app-bank-transaction-detail',
-  templateUrl: './bank-transaction-detail.page.html',
-  styleUrls: ['./bank-transaction-detail.page.scss'],
+    selector: 'app-bank-transaction-detail',
+    templateUrl: './bank-transaction-detail.page.html',
+    styleUrls: ['./bank-transaction-detail.page.scss'],
+    standalone: false
 })
 export class BankTransactionDetailPage extends PageBase {
   reconciliationStatusList;

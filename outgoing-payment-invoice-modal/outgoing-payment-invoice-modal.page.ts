@@ -9,9 +9,10 @@ import { lib } from 'src/app/services/static/global-functions';
 import { CommonService } from 'src/app/services/core/common.service';
 
 @Component({
-  selector: 'app-outgoing-payment-invoice-modal',
-  templateUrl: './outgoing-payment-invoice-modal.page.html',
-  styleUrls: ['./outgoing-payment-invoice-modal.page.scss'],
+    selector: 'app-outgoing-payment-invoice-modal',
+    templateUrl: './outgoing-payment-invoice-modal.page.html',
+    styleUrls: ['./outgoing-payment-invoice-modal.page.scss'],
+    standalone: false
 })
 export class OutgoingPaymentInvoiceModalPage extends PageBase {
   IDBusinessPartner;

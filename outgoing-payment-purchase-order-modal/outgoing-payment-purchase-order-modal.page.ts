@@ -9,9 +9,10 @@ import { lib } from 'src/app/services/static/global-functions';
 import { CommonService } from 'src/app/services/core/common.service';
 
 @Component({
-  selector: 'app-outgoing-payment-purchase-order-modal',
-  templateUrl: './outgoing-payment-purchase-order-modal.page.html',
-  styleUrls: ['./outgoing-payment-purchase-order-modal.page.scss'],
+    selector: 'app-outgoing-payment-purchase-order-modal',
+    templateUrl: './outgoing-payment-purchase-order-modal.page.html',
+    styleUrls: ['./outgoing-payment-purchase-order-modal.page.scss'],
+    standalone: false
 })
 export class OutgoingPaymentPurchaseOrderModalPage extends PageBase {
   IDBusinessPartner; 

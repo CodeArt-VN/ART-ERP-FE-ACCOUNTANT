@@ -7,9 +7,10 @@ import { FormBuilder, Validators, FormGroup, FormControl, FormArray } from '@ang
 import { catchError, concat, distinctUntilChanged, of, Subject, switchMap, tap } from 'rxjs';
 
 @Component({
-  selector: 'app-ar-contact-modal',
-  templateUrl: './ar-contact-modal.page.html',
-  styleUrls: ['./ar-contact-modal.page.scss'],
+    selector: 'app-ar-contact-modal',
+    templateUrl: './ar-contact-modal.page.html',
+    styleUrls: ['./ar-contact-modal.page.scss'],
+    standalone: false
 })
 export class ARContactModalPage extends PageBase {
   IsBtnNew = true;

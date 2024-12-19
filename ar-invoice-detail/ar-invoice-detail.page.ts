@@ -15,9 +15,10 @@ import { ARContactModalPage } from './components/ar-contact-modal/ar-contact-mod
 import { ApiSetting } from 'src/app/services/static/api-setting';
 
 @Component({
-  selector: 'app-ar-invoice-detail',
-  templateUrl: './ar-invoice-detail.page.html',
-  styleUrls: ['./ar-invoice-detail.page.scss'],
+    selector: 'app-ar-invoice-detail',
+    templateUrl: './ar-invoice-detail.page.html',
+    styleUrls: ['./ar-invoice-detail.page.scss'],
+    standalone: false
 })
 export class ARInvoiceDetailPage extends PageBase {
   statusList = [];

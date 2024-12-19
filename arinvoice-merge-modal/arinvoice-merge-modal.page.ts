@@ -12,9 +12,10 @@ import { lib } from 'src/app/services/static/global-functions';
 import { ApiSetting } from 'src/app/services/static/api-setting';
 
 @Component({
-  selector: 'app-arinvoice-merge-modal',
-  templateUrl: './arinvoice-merge-modal.page.html',
-  styleUrls: ['./arinvoice-merge-modal.page.scss'],
+    selector: 'app-arinvoice-merge-modal',
+    templateUrl: './arinvoice-merge-modal.page.html',
+    styleUrls: ['./arinvoice-merge-modal.page.scss'],
+    standalone: false
 })
 export class ARInvoiceMergeModalPage extends PageBase {
   @Input() selectedInvoices;

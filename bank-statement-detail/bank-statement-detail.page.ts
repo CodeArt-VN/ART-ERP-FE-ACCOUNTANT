@@ -8,9 +8,10 @@ import { FormBuilder, Validators, FormControl } from '@angular/forms';
 import { CommonService } from 'src/app/services/core/common.service';
 
 @Component({
-  selector: 'app-bank-statement-detail',
-  templateUrl: './bank-statement-detail.page.html',
-  styleUrls: ['./bank-statement-detail.page.scss'],
+    selector: 'app-bank-statement-detail',
+    templateUrl: './bank-statement-detail.page.html',
+    styleUrls: ['./bank-statement-detail.page.scss'],
+    standalone: false
 })
 export class BankStatementDetailPage extends PageBase {
   constructor(

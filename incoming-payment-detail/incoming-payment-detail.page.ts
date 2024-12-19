@@ -17,9 +17,10 @@ import { IncomingPaymentSaleOrderModalPage } from '../incoming-payment-sale-orde
 import { IncomingPaymentInvoiceModalPage } from '../incoming-payment-invoice-modal/incoming-payment-invoice-modal.page';
 
 @Component({
-  selector: 'app-incoming-payment-detail',
-  templateUrl: './incoming-payment-detail.page.html',
-  styleUrls: ['./incoming-payment-detail.page.scss'],
+    selector: 'app-incoming-payment-detail',
+    templateUrl: './incoming-payment-detail.page.html',
+    styleUrls: ['./incoming-payment-detail.page.scss'],
+    standalone: false
 })
 export class IncomingPaymentDetailPage extends PageBase {
   statusList: [];

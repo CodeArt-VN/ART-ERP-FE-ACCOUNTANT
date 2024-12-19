@@ -7,9 +7,10 @@ import { Location } from '@angular/common';
 import { EInvoiceService } from 'src/app/services/einvoice.service';
 
 @Component({
-  selector: 'app-child-invoice',
-  templateUrl: 'child-invoice.component.html',
-  styleUrls: ['child-invoice.component.scss'],
+    selector: 'app-child-invoice',
+    templateUrl: 'child-invoice.component.html',
+    styleUrls: ['child-invoice.component.scss'],
+    standalone: false
 })
 export class ChildInvoiceComponent extends PageBase {
   @Input() canEdit;
