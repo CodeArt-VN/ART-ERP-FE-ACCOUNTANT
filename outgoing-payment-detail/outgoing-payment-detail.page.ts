@@ -474,6 +474,7 @@ export class OutgoingPaymentDetailPage extends PageBase {
                 Take: 20,
                 Skip: 0,
                 Term: term ? term : 'BP:' + this.item?.IDCustomer,
+                SkipAddress:true
               })
               .pipe(
                 catchError(() => of([])), // empty list on error

@@ -433,9 +433,9 @@ export class APInvoiceDetailPage extends PageBase {
           if (groups.controls.length > 0) {
             this.env
               .showPrompt(
-                'You are attaching new PO/Receipt ?',
-                null,
                 'Do you want to delete all current invoice details?',
+                null,
+                'You are attaching new PO/Receipt!',
                 'Yes',
                 'No',
               )
@@ -472,9 +472,9 @@ export class APInvoiceDetailPage extends PageBase {
             if(e.IDVendor != this.formGroup.get('Tracking'+type).value?.IDSeller){
               this.env
               .showPrompt(
-                'Price list was changed, invoice details would be deleted ?',
-                null,
                 'Are you sure to continue ?',
+                null,
+                'Price list was changed, invoice details would be deleted!',
                 'Yes',
                 'No',
               )
@@ -574,9 +574,9 @@ export class APInvoiceDetailPage extends PageBase {
         ) {
           this.env
           .showPrompt(
-            'Price list was changed, invoice details would be deleted ?',
-            null,
             'Are you sure to continue ?',
+            null,
+            'Price list was changed, invoice details would be deleted!',
             'Yes',
             'No',
           )
@@ -886,13 +886,13 @@ export class APInvoiceDetailPage extends PageBase {
         IDBranch: this.formGroup.get('IDBranch').value,
         SourceType: 'Invoice',
         IDStaff: this.formGroup.get('IDOwner').value,
-        Name: 'From AP invoices #' + this.formGroup.get('Id').value,
+        Name: 'Pay for A/P invoices #' + this.formGroup.get('Id').value,
         Type: this.paymentFormGroup.get('PaymentType').value,
         SubType: this.paymentFormGroup.get('PaymentSubType').value,
         PaymentReason: this.paymentFormGroup.get('PaymentReason').value,
-        PostingDate: new Date(),
-        DueDate: new Date(),
-        DocumentDate: new Date(),
+        PostingDate: date,
+        DueDate: date,
+        DocumentDate: date,
         OutgoingPaymentDetails: [this.formGroup.get('Id').value],
       };
       this.pageProvider.commonService
