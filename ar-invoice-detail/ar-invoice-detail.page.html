@@ -1,21 +1,21 @@
 <ion-header>
   <app-toolbar [page]="this">
     <ion-button
-    title="{{ 'Create E-Invoice' | translate }}"
-    *ngIf="pageConfig.canCreateEInvoice && this.formGroup.get('Status').value =='ARInvoiceApproved'"
-    (click)="createEInvoice()"
-  >
-    <ion-icon color="success" slot="icon-only" name="receipt-outline"></ion-icon>
-  </ion-button>
+      title="{{ 'Create E-Invoice' | translate }}"
+      *ngIf="pageConfig.canCreateEInvoice && this.formGroup.get('Status').value =='ARInvoiceApproved'"
+      (click)="createEInvoice()"
+    >
+      <ion-icon color="success" slot="icon-only" name="receipt-outline"></ion-icon>
+    </ion-button>
 
     <ion-button
-    class="ion-hide-md-down"
-    title="{{ 'Approve' | translate }}"
-    *ngIf="pageConfig.canApproveInvoice && this.formGroup.get('Status').value =='ARInvoicePending'"
-    (click)="approveInvoices()"
-  >
-    <ion-icon color="success" slot="icon-only" name="thumbs-up-outline"></ion-icon>
-  </ion-button>
+      class="ion-hide-md-down"
+      title="{{ 'Approve' | translate }}"
+      *ngIf="pageConfig.canApproveInvoice && this.formGroup.get('Status').value =='ARInvoicePending'"
+      (click)="approveInvoices()"
+    >
+      <ion-icon color="success" slot="icon-only" name="thumbs-up-outline"></ion-icon>
+    </ion-button>
   </app-toolbar>
 </ion-header>
 
@@ -43,19 +43,21 @@
               (change)="IDBusinessPartnerChange($event);"
               (nav)="nav($event)"
             >
-            <small label><ion-button label
-            *ngIf=" pageConfig.canAddCustomer && isShowAddContactBtn"
-            style="position: absolute;top: -13px;"
-            class="ion-float-right"
-            size="small"
-            (click)="addContact()"
-          >
-            <ion-icon slot="start" name="add-circle-outline"></ion-icon>
-            {{'Create new customer' | translate}}
-          </ion-button></small
-          >
-        </app-form-control>
-   
+              <small label
+                ><ion-button
+                  label
+                  *ngIf=" pageConfig.canAddCustomer && isShowAddContactBtn"
+                  style="position: absolute; top: -13px"
+                  class="ion-float-right"
+                  size="small"
+                  (click)="addContact()"
+                >
+                  <ion-icon slot="start" name="add-circle-outline"></ion-icon>
+                  {{'Create new customer' | translate}}
+                </ion-button></small
+              >
+            </app-form-control>
+
             <app-form-control
               [field]="{id:'TypeCreateInvoice', label: 'A/R content type', type : 'ng-select', form : formGroup,  dataSource: contentTypeList,  bindLabel: 'Name',  bindValue: 'Code' }"
               (change)="TypeCreateInvoiceChange($event)"
@@ -140,7 +142,10 @@
                   <div class="col-id cell">{{idx+1}}</div>
                   <div class="col-name cell">
                     <app-input-control
-                      [field]="{id:'IDItem', label: 'Item', type : 'ng-select-item', form : g,  dataSource: g.get('_IDItemDataSource').value,  bindValue: 'Id', clearable: true, placeholder: 'Type to search...' }"
+                      [field]="{id:'IDItem', label: 'Item', type : 'ng-select-item', 
+                      form : g,  dataSource: g.get('_IDItemDataSource').value,  
+                      bindValue: 'Id', clearable: true, 
+                      placeholder: 'Type to search...' }"
                       (change)="IDItemChange($event, g);"
                       (nav)="nav($event)"
                     ></app-input-control>
@@ -162,11 +167,14 @@
 										</ng-select> -->
                   </div>
                   <div class="col-number cell">
-                    <select formControlName="IDUoM" class="c-input c-dropdown" (change)="IDUoMChange(g)">
-                      <option [disabled]="t.Flag" *ngFor="let t of g.controls._IDUoMDataSource.value" [value]="t.Id">
-                        {{t.Name}}
-                      </option>
-                    </select>
+                    <app-input-control
+                      [field]="{id:'IDUoM', lable:'UoM',
+                      type : 'ng-select', form : g, 
+                      dataSource: g.controls._IDUoMDataSource.value, 
+                      bindLabel: 'Name',  bindValue: 'Id'}"
+                      (change)="IDUoMChange(g)"
+                    >
+                    </app-input-control>
                   </div>
                   <div class="col-number cell">
                     <input

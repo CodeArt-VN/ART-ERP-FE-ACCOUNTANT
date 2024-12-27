@@ -130,39 +130,12 @@ export class ARInvoiceDetailPage extends PageBase {
     });
   }
 
-  IDBusinessPartnerDataSource = {
-    searchProvider: this.contactProvider,
-    loading: false,
-    input$: new Subject<string>(),
-    selected: [],
-    items$: null,
-    initSearch() {
-      this.loading = false;
-      this.items$ = concat(
-        of(this.selected),
-        this.input$.pipe(
-          distinctUntilChanged(),
-          tap(() => (this.loading = true)),
-          switchMap((term) =>
-            this.searchProvider
-              .search({
-                SortBy: ['Id_desc'],
-                Take: 20,
-                Skip: 0,
-                SkipMCP: true,
-                SkipAddress: true,
-                Term: term,
-              })
-              .pipe(
-                catchError(() => of([])), // empty list on error
-                tap(() => (this.loading = false)),
-              ),
-          ),
-        ),
-      );
-    },
-  };
-
+  IDBusinessPartnerDataSource = this.buildSelectDataSource((term) => {
+    return this.contactProvider.search({
+      SortBy: ['Id_desc'], Take: 20, Skip: 0, Term: term,
+      SkipMCP: true, SkipAddress: true,
+    });
+  });
   TaxCodeDataSource = [];
   LoadTaxCodeDataSource(i, markAsDirty = false) {
     this.TaxCodeDataSource = [];
@@ -206,7 +179,7 @@ export class ARInvoiceDetailPage extends PageBase {
     this.formGroup.get('BuyerName').setValue(i.IsPersonal ? i.Name : '');
     this.formGroup.get('BuyerName').markAsDirty();
     this.isBindingTaxCode = true;
-    if(this.item?.DefaultBusinessPartner?.Id !=  i?.Id){
+    if(this.item?._DefaultBusinessPartner?.Id !=  i?.Id){
       this.isShowAddContactBtn = false;
     }
     this.saveChange();
@@ -265,7 +238,7 @@ export class ARInvoiceDetailPage extends PageBase {
       }
      
     }
-    if(this.item?.DefaultBusinessPartner?.Id ==  this.item.IDBusinessPartner){
+    if(this.item?._DefaultBusinessPartner?.Id ==  this.item.IDBusinessPartner){
       this.isShowAddContactBtn = true;
     }
     super.loadedData(event, ignoredFromGroup);
@@ -317,42 +290,12 @@ export class ARInvoiceDetailPage extends PageBase {
     let groups = <FormArray>this.formGroup.controls.Lines;
 
     let preLoadItems = this.item._Items;
-    let selectedItem = preLoadItems.find((d) => d.Id == line.IDItem);
+    let selectedItem = preLoadItems?.find((d) => d.Id == line.IDItem);
 
     let group = this.formBuilder.group({
-      _IDItemDataSource: [
-        {
-          searchProvider: this.itemProvider,
-          loading: false,
-          input$: new Subject<string>(),
-          selected: preLoadItems,
-          items$: null,
-          initSearch() {
-            this.loading = false;
-            this.items$ = concat(
-              of(this.selected),
-              this.input$.pipe(
-                distinctUntilChanged(),
-                tap(() => (this.loading = true)),
-                switchMap((term) =>
-                  this.searchProvider
-                    .search({
-                      ARSearch: true,
-                      SortBy: ['Id_desc'],
-                      Take: 20,
-                      Skip: 0,
-                      Term: term,
-                    })
-                    .pipe(
-                      catchError(() => of([])), // empty list on error
-                      tap(() => (this.loading = false)),
-                    ),
-                ),
-              ),
-            );
-          },
-        },
-      ],
+      _IDItemDataSource: this.buildSelectDataSource((term) => {
+        return this.itemProvider.search({ ARSearch: true, SortBy: ['Id_desc'], Take: 20, Skip: 0, Term: term });
+      }),
 
       _IDUoMDataSource: [selectedItem ? selectedItem.UoMs : ''],
 
@@ -386,7 +329,7 @@ export class ARInvoiceDetailPage extends PageBase {
       Remark: new FormControl({ value: line.Remark, disabled: true }),
     });
     groups.push(group);
-
+    if (selectedItem) group.get('_IDItemDataSource').value?.selected.push(selectedItem);
     group.get('_IDItemDataSource').value?.initSearch();
 
     if (markAsDirty) {
@@ -402,7 +345,24 @@ export class ARInvoiceDetailPage extends PageBase {
     this.addLine(newLine, true);
   }
 
-  removeLine(g, index) {}
+  removeLine(g, index) {
+    let groups = <FormArray>this.formGroup.controls.Lines;
+    if(!g.get('Id').value){
+      groups.removeAt(index);
+    }else{
+      this.env
+      .showPrompt('Bạn có chắc muốn xóa sản phẩm?', null, 'Xóa sản phẩm')
+      .then((_) => {
+        this.formGroup.get('DeletedLines').setValue([g.get('Id').value]);
+        this.formGroup.get('DeletedLines').markAsDirty();
+        this.saveChange().then(s=>{
+          groups.removeAt(index);
+        });
+      })
+      .catch((_) => { });
+    }
+
+  }
 
   IDItemChange(e, group) {
     if (e) {
@@ -787,8 +747,7 @@ export class ARInvoiceDetailPage extends PageBase {
   }
 
   async saveChange() {
-    super.saveChange2();
-  }
+    return super.saveChange2();  }
 
   savedChange(savedItem?: any, form?: FormGroup<any>): void {
     super.savedChange(savedItem, form);
