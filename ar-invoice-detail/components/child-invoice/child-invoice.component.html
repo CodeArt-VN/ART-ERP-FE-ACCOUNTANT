@@ -229,8 +229,8 @@
     <div (click)="nav(this.pageConfig.pageName + '/' + i.Id, 'forward')" class="col-id cell">
       <a [routerLink]="['/' + pageConfig.pageName + '/' + i.Id]">{{ i.Id }}</a>
     </div>
-    <div (click)="nav('/sale-order-mobile-viewer/' + i.Id, 'forward')" class="col-id cell">
-      <a *ngIf="i.IDSaleOrder" [routerLink]="['/sale-order-mobile-viewer/' + i.IDSaleOrder]" class="col-id cell"
+    <div (click)="nav('/sale-order-mobile/viewer/' + i.Id, 'forward')" class="col-id cell">
+      <a *ngIf="i.IDSaleOrder" [routerLink]="['/sale-order-mobile/viewer/' + i.IDSaleOrder]" class="col-id cell"
         ><span class="show-small-inline">SO: </span> {{ i.IDSaleOrder }}</a
       >
     </div>

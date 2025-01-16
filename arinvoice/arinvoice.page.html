@@ -68,7 +68,7 @@
     </datatable-column>
     <datatable-column class="col-id" name="SO Id" property="IDSaleOrder">
       <ng-template let-i="row" datatable-cell-template>
-        <a *ngIf="i.IDSaleOrder" [routerLink]="['/sale-order-mobile-viewer/'+i.IDSaleOrder]" class="col-id cell"
+        <a *ngIf="i.IDSaleOrder" [routerLink]="['/sale-order-mobile/viewer/'+i.IDSaleOrder]" class="col-id cell"
           ><span class="show-small-inline">{{'SO:' | translate}} </span> {{i.IDSaleOrder}}</a
         >
       </ng-template>
