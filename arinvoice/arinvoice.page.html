@@ -124,8 +124,10 @@
     <datatable-column class="col-remark" name="Invoice No." property="InvoiceNo">
       <ng-template let-i="row" datatable-cell-template>
         <span *ngIf="i.InvoiceNo">
+          <!-- [href]="'http://tracuu.ehoadon.vn/'+i.InvoiceCode" -->
+          <!-- https://tchd.ehoadon.vn/Lookup?InvoiceGUID=83f78b70-ef0b-4442-b471-88cc413bd8f5 -->
           <a
-            [href]="'http://tracuu.ehoadon.vn/'+i.InvoiceCode"
+            [href]="'https://tchd.ehoadon.vn/Lookup?InvoiceGUID='+i.InvoiceGUID+''"
             target="_blank"
             title="{{'Search e-invoice' | translate}}"
           >
