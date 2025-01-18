@@ -15,7 +15,7 @@
       ></ion-icon>
     </div>
     <div class="col-id cell" (click)="sortToggle('IDSaleOrder')">
-      {{ 'SO Id' | translate }}
+      {{ 'IDSO' | translate }}
       <ion-icon
         class="min-btn"
         *ngIf="sort.IDSaleOrder"
@@ -132,7 +132,7 @@
       </div>
       <div class="col-id cell">
         <input
-          placeholder="{{ 'SO Id' | translate }}"
+          placeholder="{{ 'IDSO' | translate }}"
           [ngModelOptions]="{ standalone: true }"
           [(ngModel)]="query.IDSaleOrder"
           class="c-input"

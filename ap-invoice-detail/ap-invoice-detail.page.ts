@@ -412,6 +412,7 @@ export class APInvoiceDetailPage extends PageBase {
       this.env.showMessage('Saving completed!', 'success');
       this.loadedData();
       this.calcTotal();
+      if (this.pageConfig.pageName) this.env.publishEvent({ Code: this.pageConfig.pageName });
     })
     .catch((err) => {
       this.env.showMessage('Cannot save, please try again', 'danger');
