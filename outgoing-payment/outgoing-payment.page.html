@@ -1,10 +1,6 @@
 <ion-header>
   <app-toolbar
     [page]="this"
-    [ShowApprove]="pageConfig.ShowApprove"
-    [ShowDisapprove]="pageConfig.ShowDisapprove"
-    [ShowCancel]="pageConfig.ShowCancel"
-    [ShowSubmit]="pageConfig.ShowSubmit"
   >
     <ion-button
       *ngIf="pageConfig.ShowMarkAsPaid && pageConfig.canMarkAsPaid && selectedItems.length>0 && pageConfig.canEdit"
