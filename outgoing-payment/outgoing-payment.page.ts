@@ -56,48 +56,31 @@ export class OutgoingPaymentPage extends PageBase {
   }
   changeSelection(i, e = null) {
     super.changeSelection(i, e);
-    if (this.pageConfig.canApprove) {
-      this.pageConfig.ShowApprove = true;
-      this.pageConfig.ShowDisapprove = true;
-    }
-    if (this.pageConfig.canSubmit) {
-      this.pageConfig.ShowSubmit = true;
-    }
-    if (this.pageConfig.canCancel) {
-      this.pageConfig.ShowCancel = true;
-    }
-    if (this.pageConfig.canMarkAsPaid) {
-      this.pageConfig.ShowMarkAsPaid = true;
-    }
-    if (this.pageConfig.canPay) {
-      this.pageConfig.ShowPay = true;
-    }
-    this.selectedItems?.forEach((i) => {
-      let notShowApprove = [ 'Approved','Paid','Cancelled','NotSubmittedYet'];
-      if (notShowApprove.indexOf(i.Status) > -1 || i.DifferenceAmount != 0) {
-        this.pageConfig.ShowApprove = false;
-      }
-      let notShowDisapprove = ['Unapproved','Paid', 'Approved','Cancelled','NotSubmittedYet'];
-      if (notShowDisapprove.indexOf(i.Status) > -1 || i.DifferenceAmount != 0) {
-        this.pageConfig.ShowDisapprove = false;
-      }
-      let notShowCancel = ['Approved','Paid','Cancelled'];
-      if (notShowCancel.indexOf(i.Status) > -1 || i.DifferenceAmount != 0) {
-        this.pageConfig.ShowCancel = false;
-      }
-      let notShowSubmit = ['Unapproved','Paid', 'Approved','Cancelled','Submitted'];
-      if (notShowSubmit.indexOf(i.Status) > -1 || i.DifferenceAmount != 0) {
-        this.pageConfig.ShowSubmit = false;
-      }
-      let notShowMarkAsPaid = ['NotSubmittedYet','Paid','Unapproved', 'Cancelled','Submitted'];
-      if (notShowMarkAsPaid.indexOf(i.Status) > -1 || i.DifferenceAmount != 0) {
-        this.pageConfig.ShowMarkAsPaid = false;
-      }
-      let notShowPay = ['NotSubmittedYet','Unapproved','Paid', 'Cancelled','Submitted'];
-      if (notShowPay.indexOf(i.Status) > -1 || i.DifferenceAmount != 0) {
-        this.pageConfig.ShowPay = false;
-      }
-    });
+  //NotSubmittedYet // Cancelled // Unapproved // Submitted // Approved 
+  //WaitForPayment // Paid // PartiallyPaid // Unapproved
+    const approveSet = new Set(['Submitted']);
+    const disApproveSet = new Set(['Approved','Submitted']);
+    const submitSet = new Set(['NotSubmittedYet', 'Unapproved']);
+    const cancelSet = new Set(['NotSubmittedYet', 'Unapproved','Approved','Submitted']);
+    const deleteSet = new Set(['NotSubmittedYet', 'Unapproved', 'Cancelled']);
+    const paySet = new Set(['Approved', 'WaitForPayment', 'PartiallyPaid']);
+    const markAsPaidtSet = new Set(['Approved', 'WaitForPayment', 'PartiallyPaid']);
+    const toolbarSet = new Set(['NotSubmittedYet', 'Unapproved', 'Submitted']);
+    this.pageConfig.ShowApprove = this.selectedItems.every((i) => approveSet.has(i.Status));
+    this.pageConfig.ShowSubmit = this.selectedItems.every((i) => submitSet.has(i.Status));
+    this.pageConfig.ShowDisapprove = this.selectedItems.every((i) => disApproveSet.has(i.Status));
+    this.pageConfig.ShowCancel = this.selectedItems.every((i) => cancelSet.has(i.Status));
+    this.pageConfig.ShowDelete = this.selectedItems.every((i) => deleteSet.has(i.Status));
+    this.pageConfig.ShowMarkAsPaid = this.selectedItems.every((i) => markAsPaidtSet.has(i.Status));
+    this.pageConfig.ShowPay = this.selectedItems.every((i) => paySet.has(i.Status));
+    this.pageConfig.ShowChangeBranch =
+    this.pageConfig.ShowApprove =
+    this.pageConfig.ShowDisapprove =
+    this.pageConfig.ShowArchive =
+    this.pageConfig.ShowDelete =
+    this.pageConfig.ShowMerge =
+    this.pageConfig.ShowSplit =
+      this.selectedItems.every((i) => toolbarSet.has(i.Status));
   }
 
   submit(){
