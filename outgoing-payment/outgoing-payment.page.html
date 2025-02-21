@@ -42,7 +42,7 @@
     [(selectedRows)]="selectedItems"
     [showSpinner]="pageConfig.showSpinner"
     [showFilter]="pageConfig.isShowSearch"
-    (activate)="changeSelection($event)"
+    (selectedRowsChange)="showCommandBySelectedRows($event)"
     [(query)]="query"
     (dataInfinite)="loadData($event)"
     (filter)="onDatatableFilter($event)"

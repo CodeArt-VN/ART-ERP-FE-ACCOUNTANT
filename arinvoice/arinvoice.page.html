@@ -59,13 +59,10 @@
     (dataInfinite)="loadData($event)"
     (filter)="onDatatableFilter($event)"
     (sort)="onSort($event)"
+    (selectedRowsChange)="showCommandBySelectedRows($event)"
   >
     <datatable-column [checkbox]="true"></datatable-column>
-    <datatable-column class="col-id" name="Id" property="Id">
-      <ng-template let-i="row" datatable-cell-template>
-        <a [routerLink]="['/'+pageConfig.pageName+'/'+i.Id]">{{i.Id}}</a>
-      </ng-template>
-    </datatable-column>
+    <datatable-column class="col-id" name="#" property="Id" [navLink]="pageConfig.pageName"></datatable-column>
     <datatable-column class="col-id" name="SO Id" property="IDSaleOrder">
       <ng-template let-i="row" datatable-cell-template>
         <a *ngIf="i.IDSaleOrder" [routerLink]="['/sale-order-mobile/viewer/'+i.IDSaleOrder]" class="col-id cell"
