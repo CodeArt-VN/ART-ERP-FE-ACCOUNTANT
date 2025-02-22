@@ -6,22 +6,22 @@ import { BANK_TransactionProvider } from 'src/app/services/static/services.servi
 import { Location } from '@angular/common';
 
 @Component({
-    selector: 'app-bank-statement',
-    templateUrl: 'bank-statement.page.html',
-    styleUrls: ['bank-statement.page.scss'],
-    standalone: false
+	selector: 'app-bank-statement',
+	templateUrl: 'bank-statement.page.html',
+	styleUrls: ['bank-statement.page.scss'],
+	standalone: false,
 })
 export class BankStatementPage extends PageBase {
-  constructor(
-    public pageProvider: BANK_TransactionProvider,
-    public modalController: ModalController,
-    public popoverCtrl: PopoverController,
-    public alertCtrl: AlertController,
-    public loadingController: LoadingController,
-    public env: EnvService,
-    public navCtrl: NavController,
-    public location: Location,
-  ) {
-    super();
-  }
+	constructor(
+		public pageProvider: BANK_TransactionProvider,
+		public modalController: ModalController,
+		public popoverCtrl: PopoverController,
+		public alertCtrl: AlertController,
+		public loadingController: LoadingController,
+		public env: EnvService,
+		public navCtrl: NavController,
+		public location: Location
+	) {
+		super();
+	}
 }

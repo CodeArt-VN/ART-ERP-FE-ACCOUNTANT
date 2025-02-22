@@ -1,15 +1,16 @@
 .full-screen {
-  min-height: calc(100vh - 97px);
+	min-height: calc(100vh - 97px);
 }
 .textarea-style {
-  display: inline-flex;
-  width: 100%;
-  height: auto;
-  font-family: inherit;
-  font-size: inherit;
-  white-space: pre-wrap;
-  overflow-wrap: break-word;
+	display: inline-flex;
+	width: 100%;
+	height: auto;
+	font-family: inherit;
+	font-size: inherit;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
 }
-app-data-table .row, .table .row{
-  padding : 0 !important;
+app-data-table .row,
+.table .row {
+	padding: 0 !important;
 }

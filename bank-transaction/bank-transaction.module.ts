@@ -7,13 +7,7 @@ import { BankTransactionPage } from './bank-transaction.page';
 import { ShareModule } from 'src/app/share.module';
 
 @NgModule({
-  imports: [
-    IonicModule,
-    CommonModule,
-    FormsModule,
-    ShareModule,
-    RouterModule.forChild([{ path: '', component: BankTransactionPage }])
-  ],
-  declarations: [BankTransactionPage]
+	imports: [IonicModule, CommonModule, FormsModule, ShareModule, RouterModule.forChild([{ path: '', component: BankTransactionPage }])],
+	declarations: [BankTransactionPage],
 })
 export class BankTransactionPageModule {}

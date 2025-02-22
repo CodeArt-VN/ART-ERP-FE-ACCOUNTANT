@@ -7,13 +7,7 @@ import { OutgoingPaymentPage } from './outgoing-payment.page';
 import { ShareModule } from 'src/app/share.module';
 
 @NgModule({
-  imports: [
-    IonicModule,
-    CommonModule,
-    FormsModule,
-    ShareModule,
-    RouterModule.forChild([{ path: '', component: OutgoingPaymentPage }])
-  ],
-  declarations: [OutgoingPaymentPage]
+	imports: [IonicModule, CommonModule, FormsModule, ShareModule, RouterModule.forChild([{ path: '', component: OutgoingPaymentPage }])],
+	declarations: [OutgoingPaymentPage],
 })
 export class OutgoingPaymentPageModule {}

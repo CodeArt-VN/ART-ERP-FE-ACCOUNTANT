@@ -6,16 +6,15 @@ import { IonicModule } from '@ionic/angular';
 import { ShareModule } from 'src/app/share.module';
 import { BankStatementDetailPage } from './bank-statement-detail.page';
 
-
 const routes: Routes = [
-  {
-    path: '',
-    component: BankStatementDetailPage,
-  },
+	{
+		path: '',
+		component: BankStatementDetailPage,
+	},
 ];
 
 @NgModule({
-  imports: [CommonModule, FormsModule, IonicModule, ReactiveFormsModule, ShareModule, RouterModule.forChild(routes)],
-  declarations: [BankStatementDetailPage],
+	imports: [CommonModule, FormsModule, IonicModule, ReactiveFormsModule, ShareModule, RouterModule.forChild(routes)],
+	declarations: [BankStatementDetailPage],
 })
 export class BankStatementDetailPageModule {}

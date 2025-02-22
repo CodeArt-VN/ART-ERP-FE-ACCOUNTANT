@@ -9,22 +9,14 @@ import { OutgoingPaymentPurchaseOrderModalPage } from '../outgoing-payment-purch
 import { OutgoingPaymentInvoiceModalPage } from '../outgoing-payment-invoice-modal/outgoing-payment-invoice-modal.page';
 
 const routes: Routes = [
-  {
-    path: '',
-    component: OutgoingPaymentDetailPage
-  }
+	{
+		path: '',
+		component: OutgoingPaymentDetailPage,
+	},
 ];
 
 @NgModule({
-  imports: [
-    CommonModule,
-    FormsModule,
-    IonicModule,
-    ReactiveFormsModule,
-    ShareModule,
-    RouterModule.forChild(routes)                                                        
-  ],
-  declarations: [OutgoingPaymentDetailPage,OutgoingPaymentPurchaseOrderModalPage,OutgoingPaymentInvoiceModalPage]
+	imports: [CommonModule, FormsModule, IonicModule, ReactiveFormsModule, ShareModule, RouterModule.forChild(routes)],
+	declarations: [OutgoingPaymentDetailPage, OutgoingPaymentPurchaseOrderModalPage, OutgoingPaymentInvoiceModalPage],
 })
-export class OutgoingPaymentDetailPageModule { }
-                                               
+export class OutgoingPaymentDetailPageModule {}

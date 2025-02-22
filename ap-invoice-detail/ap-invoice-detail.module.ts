@@ -7,14 +7,14 @@ import { ShareModule } from 'src/app/share.module';
 import { APInvoiceDetailPage } from './ap-invoice-detail.page';
 
 const routes: Routes = [
-  {
-    path: '',
-    component: APInvoiceDetailPage,
-  },
+	{
+		path: '',
+		component: APInvoiceDetailPage,
+	},
 ];
 
 @NgModule({
-  imports: [CommonModule, FormsModule, IonicModule, ReactiveFormsModule, ShareModule, RouterModule.forChild(routes)],
-  declarations: [APInvoiceDetailPage],
+	imports: [CommonModule, FormsModule, IonicModule, ReactiveFormsModule, ShareModule, RouterModule.forChild(routes)],
+	declarations: [APInvoiceDetailPage],
 })
 export class APInvoiceDetailPageModule {}

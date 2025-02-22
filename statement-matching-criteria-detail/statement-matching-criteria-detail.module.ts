@@ -7,22 +7,14 @@ import { StatementMatchingCriteriaDetailPage } from './statement-matching-criter
 import { ShareModule } from 'src/app/share.module';
 
 const routes: Routes = [
-  {
-    path: '',
-    component: StatementMatchingCriteriaDetailPage,
-  },
+	{
+		path: '',
+		component: StatementMatchingCriteriaDetailPage,
+	},
 ];
 
 @NgModule({
-  imports: [
-    CommonModule,
-    FormsModule,
-    ShareModule,
-    IonicModule,
-    ReactiveFormsModule,
-    ShareModule,
-    RouterModule.forChild(routes),
-  ],
-  declarations: [StatementMatchingCriteriaDetailPage],
+	imports: [CommonModule, FormsModule, ShareModule, IonicModule, ReactiveFormsModule, ShareModule, RouterModule.forChild(routes)],
+	declarations: [StatementMatchingCriteriaDetailPage],
 })
 export class StatementMatchingCriteriaDetailPageModule {}

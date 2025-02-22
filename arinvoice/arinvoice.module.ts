@@ -7,13 +7,7 @@ import { ARInvoicePage } from './arinvoice.page';
 import { ShareModule } from 'src/app/share.module';
 
 @NgModule({
-  imports: [
-    IonicModule,
-    CommonModule,
-    FormsModule,
-    ShareModule,
-    RouterModule.forChild([{ path: '', component: ARInvoicePage }]),
-  ],
-  declarations: [ARInvoicePage],
+	imports: [IonicModule, CommonModule, FormsModule, ShareModule, RouterModule.forChild([{ path: '', component: ARInvoicePage }])],
+	declarations: [ARInvoicePage],
 })
 export class ARInvoicePageModule {}

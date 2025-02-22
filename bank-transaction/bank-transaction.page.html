@@ -1,77 +1,65 @@
 <ion-header>
-  <app-toolbar [page]="this">
-    <ion-button
-      *ngIf="ShowAssignBranchAndBP && selectedItems.length>0 && pageConfig.canEdit"
-      title="{{'Assign branch and contact' | translate}}"
-      color="secondary"
-      (click)="presentPopover()"
-    >
-      <ion-icon color="success" slot="icon-only" name="layers-outline"></ion-icon>
-    </ion-button>
-    <ion-button
-      *ngIf="pageConfig.canEdit"
-      (click)="FindMatchingCriteria()"
-      title="{{'Find mactching criteria' | translate}}"
-      color="danger"
-    >
-      <ion-icon name="git-compare-outline"></ion-icon>
-    </ion-button>
-  </app-toolbar>
+	<app-toolbar [page]="this">
+		<ion-button
+			*ngIf="ShowAssignBranchAndBP && selectedItems.length>0 && pageConfig.canEdit"
+			title="{{'Assign branch and contact' | translate}}"
+			color="secondary"
+			(click)="presentPopover()"
+		>
+			<ion-icon color="success" slot="icon-only" name="layers-outline"></ion-icon>
+		</ion-button>
+		<ion-button *ngIf="pageConfig.canEdit" (click)="FindMatchingCriteria()" title="{{'Find mactching criteria' | translate}}" color="danger">
+			<ion-icon name="git-compare-outline"></ion-icon>
+		</ion-button>
+	</app-toolbar>
 </ion-header>
 <ion-content appScrollbarTheme class="left" [ngClass]="{withFeature: pageConfig.isShowFeature}" forceOverscroll="false">
-  <ion-fab
-    *ngIf="pageConfig.isShowFeature && groupControl.groupList.length>1"
-    [ngClass]="{'ion-hide-md-down' : pageConfig.isSubActive}"
-    class="feature no-print"
-    vertical="bottom"
-    horizontal="start"
-    slot="fixed"
-  >
-    <ng-container *ngFor="let g of groupControl.groupList">
-      <ion-list *ngIf="!g.IDParent">
-        <!-- <ion-item-divider *ngIf="!g.IDParent">
+	<ion-fab
+		*ngIf="pageConfig.isShowFeature && groupControl.groupList.length>1"
+		[ngClass]="{'ion-hide-md-down' : pageConfig.isSubActive}"
+		class="feature no-print"
+		vertical="bottom"
+		horizontal="start"
+		slot="fixed"
+	>
+		<ng-container *ngFor="let g of groupControl.groupList">
+			<ion-list *ngIf="!g.IDParent">
+				<!-- <ion-item-divider *ngIf="!g.IDParent">
           <ion-label>{{g.Name}}</ion-label>
         </ion-item-divider> -->
 
-        <ion-list-header lines="full">
-          <ion-label color="dark">{{g.Name}}</ion-label>
-        </ion-list-header>
-      </ion-list>
-      <ion-card
-        *ngIf="g.IDParent"
-        (click)="onGroupChange(g)"
-        class="clickable"
-        [color]="g.Id == groupControl.selectedGroup?.Id? 'primary': 'light' "
-      >
-        <ion-card-header>
-          <ion-card-title title="{{'Working balance' | translate}}">
-            {{g.WorkingBalance | number: '1.0-0' }}
-            <small
-              ><small><small> {{g.Currency}} </small></small></small
-            >
-          </ion-card-title>
-          <ion-card-subtitle style="display: flex; justify-content: space-between">
-            <span title="{{'Bank account' | translate}}">{{g.Code}}</span>
-            <span title="{{'Last checked date' | translate}}">{{g.LastCheckedDate | date: 'HH:mm dd/MM'}}</span>
-          </ion-card-subtitle>
-        </ion-card-header>
+				<ion-list-header lines="full">
+					<ion-label color="dark">{{g.Name}}</ion-label>
+				</ion-list-header>
+			</ion-list>
+			<ion-card *ngIf="g.IDParent" (click)="onGroupChange(g)" class="clickable" [color]="g.Id == groupControl.selectedGroup?.Id? 'primary': 'light' ">
+				<ion-card-header>
+					<ion-card-title title="{{'Working balance' | translate}}">
+						{{g.WorkingBalance | number: '1.0-0' }}
+						<small
+							><small><small> {{g.Currency}} </small></small></small
+						>
+					</ion-card-title>
+					<ion-card-subtitle style="display: flex; justify-content: space-between">
+						<span title="{{'Bank account' | translate}}">{{g.Code}}</span>
+						<span title="{{'Last checked date' | translate}}">{{g.LastCheckedDate | date: 'HH:mm dd/MM'}}</span>
+					</ion-card-subtitle>
+				</ion-card-header>
 
-        <ion-item *ngIf="g._TransactionTotal != g.WorkingBalance">
-          <ion-icon slot="start" name="flash-outline" size="small"></ion-icon>
-          <ion-label>{{'Transactions' | translate}}</ion-label>
-          <ion-badge [color]="g._TransactionTotal > 0 ? 'success':'danger'"
-            >{{g._TransactionTotal | number: '1.0-0' }}</ion-badge
-          >
-        </ion-item>
-        <ion-item lines="none" *ngIf="g._UnrecognizedCount > 0">
-          <ion-icon slot="start" name="git-compare-outline" size="small"></ion-icon>
-          <ion-label>{{'Unrecognized' | translate}}</ion-label>
-          <ion-badge color="warning">{{g._UnrecognizedCount | number: '1.0-0' }}</ion-badge>
-        </ion-item>
-      </ion-card>
-    </ng-container>
+				<ion-item *ngIf="g._TransactionTotal != g.WorkingBalance">
+					<ion-icon slot="start" name="flash-outline" size="small"></ion-icon>
+					<ion-label>{{'Transactions' | translate}}</ion-label>
+					<ion-badge [color]="g._TransactionTotal > 0 ? 'success':'danger'">{{g._TransactionTotal | number: '1.0-0' }}</ion-badge>
+				</ion-item>
+				<ion-item lines="none" *ngIf="g._UnrecognizedCount > 0">
+					<ion-icon slot="start" name="git-compare-outline" size="small"></ion-icon>
+					<ion-label>{{'Unrecognized' | translate}}</ion-label>
+					<ion-badge color="warning">{{g._UnrecognizedCount | number: '1.0-0' }}</ion-badge>
+				</ion-item>
+			</ion-card>
+		</ng-container>
 
-    <!-- <ion-card color="blue">
+		<!-- <ion-card color="blue">
     <ion-card-header>
       <ion-card-title>{{1000000 | number: '1.0-0' }}</ion-card-title>
       <ion-card-subtitle style="display: flex; justify-content: space-between;"> 
@@ -86,105 +74,90 @@
       <ion-note color="warning" slot="end">10:34 30/04</ion-note>
     </ion-item>
   </ion-card> -->
-  </ion-fab>
+	</ion-fab>
 
-  <div style="max-width: 1440px; margin: auto; width: 100%; position: sticky; left: 0" class="ion-padding">
-    <app-page-title [pageConfig]="pageConfig"></app-page-title>
-  </div>
+	<div style="max-width: 1440px; margin: auto; width: 100%; position: sticky; left: 0" class="ion-padding">
+		<app-page-title [pageConfig]="pageConfig"></app-page-title>
+	</div>
 
-  <div style="max-width: 1440px; margin: auto; width: 100%">
-    <app-data-table
-      style="width: 100%; min-width: calc(100% - 32px)"
-      class="box-shadow responsive small-width"
-      [rows]="items"
-      [trackBy]="'Id'"
-      [(selectedRows)]="selectedItems"
-      [showSpinner]="pageConfig.showSpinner"
-      [showFilter]="pageConfig.isShowSearch"
-      [(query)]="query"
-      (dataInfinite)="loadData($event)"
-      (filter)="onDatatableFilter($event)"
-      (sort)="onSort($event)"
-      (selectedRowsChange)="showCommandBySelectedRows($event)"
-    >
-      <datatable-column [checkbox]="true" name=""></datatable-column>
-      <datatable-column class="col-id" name="Reference number" property="ReferenceNumber">
-        <ng-template let-i="row" datatable-cell-template>
-          <a [routerLink]="['/'+pageConfig.pageName+'/'+i.Id]">{{i.ReferenceNumber}}</a>
-        </ng-template>
-      </datatable-column>
-      <datatable-column
-        class="col-date"
-        format="yyyy-MM-dd HH:mm"
-        name="Transaction date"
-        property="TransactionDate"
-        filterControlType="time-frame"
-      ></datatable-column>
-      <datatable-column class="col-name flex-break" name="Remark" property="Remark">
-        <ng-template let-i="row" datatable-cell-template>
-          <div>
-            <a *ngIf="!query.IDAccount && i._BankAccount" class="bold" [routerLink]="['/bank-account/'+i._BankAccount.Id]">
-              <ion-text>{{i._BankAccount.Code}}</ion-text>
-              <small>{{i._BankAccount.Name}}</small>
-            </a>
-            <a *ngIf="i._BusinessPartner" class="bold" [routerLink]="['/business-partner/'+i._BusinessPartner.Id]">
-              <ion-text [color]="i._ReconciliationStatus?.Color">{{i._BusinessPartner.Name}}</ion-text>
-              <small>{{i._BusinessPartner.Id}}</small>
-            </a>
-            <div *ngIf="i.Remark">{{i.Remark}}</div>
-          </div>
-        </ng-template>
-      </datatable-column>
-      <datatable-column class="col-number" name="Amount" property="Amount">
-        <ng-template let-i="row" datatable-cell-template>
-          <ion-text class="bold" color="{{i.Amount > 0 ? 'success' : 'danger'}}">{{i.Amount | number: '1.0'}}</ion-text>
-        </ng-template>
-      </datatable-column>
-      <datatable-column class="col-status" name="Reconciliation status" property="ReconciliationStatus">
-        <ng-template let-i="row" datatable-cell-template>
-          <ion-badge
-            *ngIf="i._ReconciliationStatus"
-            [color]="i._ReconciliationStatus?.Color"
-            [title]="i._ReconciliationStatus?.Name"
-          >
-            {{i._ReconciliationStatus?.Name}}
-          </ion-badge>
-        </ng-template>
-      </datatable-column>
-    </app-data-table>
-  </div>
-  <ion-popover class="w300" #popover [isOpen]="isOpenPopover" (didDismiss)="dismissPopover()">
-    <ng-template>
-      <ion-content appScrollbarTheme>
-        <ion-grid>
-          <form [formGroup]="formGroup" (submit)="dismissPopover(true)">
-            <ion-row>
-              <ion-col size="12" size-sm size-xl="12">
-                <app-form-control
-                [field]="{ branchConfig:{selectedBranch:env.selectedBranch},id: 'IDBranch', type: 'ng-select-branch', label: 'Branch', dataSource: branchList, 
+	<div style="max-width: 1440px; margin: auto; width: 100%">
+		<app-data-table
+			style="width: 100%; min-width: calc(100% - 32px)"
+			class="box-shadow responsive small-width"
+			[rows]="items"
+			[trackBy]="'Id'"
+			[(selectedRows)]="selectedItems"
+			[showSpinner]="pageConfig.showSpinner"
+			[showFilter]="pageConfig.isShowSearch"
+			[(query)]="query"
+			(dataInfinite)="loadData($event)"
+			(filter)="onDatatableFilter($event)"
+			(sort)="onSort($event)"
+			(selectedRowsChange)="showCommandBySelectedRows($event)"
+		>
+			<datatable-column [checkbox]="true" name=""></datatable-column>
+			<datatable-column class="col-id" name="Reference number" property="ReferenceNumber">
+				<ng-template let-i="row" datatable-cell-template>
+					<a [routerLink]="['/'+pageConfig.pageName+'/'+i.Id]">{{i.ReferenceNumber}}</a>
+				</ng-template>
+			</datatable-column>
+			<datatable-column class="col-date" format="yyyy-MM-dd HH:mm" name="Transaction date" property="TransactionDate" filterControlType="time-frame"></datatable-column>
+			<datatable-column class="col-name flex-break" name="Remark" property="Remark">
+				<ng-template let-i="row" datatable-cell-template>
+					<div>
+						<a *ngIf="!query.IDAccount && i._BankAccount" class="bold" [routerLink]="['/bank-account/'+i._BankAccount.Id]">
+							<ion-text>{{i._BankAccount.Code}}</ion-text>
+							<small>{{i._BankAccount.Name}}</small>
+						</a>
+						<a *ngIf="i._BusinessPartner" class="bold" [routerLink]="['/business-partner/'+i._BusinessPartner.Id]">
+							<ion-text [color]="i._ReconciliationStatus?.Color">{{i._BusinessPartner.Name}}</ion-text>
+							<small>{{i._BusinessPartner.Id}}</small>
+						</a>
+						<div *ngIf="i.Remark">{{i.Remark}}</div>
+					</div>
+				</ng-template>
+			</datatable-column>
+			<datatable-column class="col-number" name="Amount" property="Amount">
+				<ng-template let-i="row" datatable-cell-template>
+					<ion-text class="bold" color="{{i.Amount > 0 ? 'success' : 'danger'}}">{{i.Amount | number: '1.0'}}</ion-text>
+				</ng-template>
+			</datatable-column>
+			<datatable-column class="col-status" name="Reconciliation status" property="ReconciliationStatus">
+				<ng-template let-i="row" datatable-cell-template>
+					<ion-badge *ngIf="i._ReconciliationStatus" [color]="i._ReconciliationStatus?.Color" [title]="i._ReconciliationStatus?.Name">
+						{{i._ReconciliationStatus?.Name}}
+					</ion-badge>
+				</ng-template>
+			</datatable-column>
+		</app-data-table>
+	</div>
+	<ion-popover class="w300" #popover [isOpen]="isOpenPopover" (didDismiss)="dismissPopover()">
+		<ng-template>
+			<ion-content appScrollbarTheme>
+				<ion-grid>
+					<form [formGroup]="formGroup" (submit)="dismissPopover(true)">
+						<ion-row>
+							<ion-col size="12" size-sm size-xl="12">
+								<app-form-control
+									[field]="{ branchConfig:{selectedBranch:env.selectedBranch},id: 'IDBranch', type: 'ng-select-branch', label: 'Branch', dataSource: branchList, 
                 bindValue: 'Id', bindLabel: 'Name', form: formGroup, clearable: true, placeholder:'Search...'}"
-                  (change)="changeIDBranch()"
-                ></app-form-control>
-                <app-form-control
-                [field]="{ id: 'IDContact', type: 'ng-select-bp', label: 'Contact', dataSource: _contactDataSource, 
+									(change)="changeIDBranch()"
+								></app-form-control>
+								<app-form-control
+									[field]="{ id: 'IDContact', type: 'ng-select-bp', label: 'Contact', dataSource: _contactDataSource, 
                 bindValue: 'Id', bindLabel: 'Name', form: formGroup, clearable: true}"
-                  (change)="changeBP($event)"
-                ></app-form-control>
-              </ion-col>
-            </ion-row>
-          </form>
-        </ion-grid>
-      </ion-content>
-      <ion-button class="ion-margin" size="small" expand="block" (click)="dismissPopover(true)">Apply</ion-button>
-    </ng-template>
-  </ion-popover>
-  <div class="ion-padding"></div>
-  <ion-infinite-scroll
-    color="primary"
-    threshold="30%"
-    (ionInfinite)="loadData($event)"
-    [disabled]="!pageConfig.infiniteScroll || pageConfig.isEndOfData"
-  >
-    <ion-infinite-scroll-content loadingSpinner="dots"></ion-infinite-scroll-content>
-  </ion-infinite-scroll>
+									(change)="changeBP($event)"
+								></app-form-control>
+							</ion-col>
+						</ion-row>
+					</form>
+				</ion-grid>
+			</ion-content>
+			<ion-button class="ion-margin" size="small" expand="block" (click)="dismissPopover(true)">Apply</ion-button>
+		</ng-template>
+	</ion-popover>
+	<div class="ion-padding"></div>
+	<ion-infinite-scroll color="primary" threshold="30%" (ionInfinite)="loadData($event)" [disabled]="!pageConfig.infiniteScroll || pageConfig.isEndOfData">
+		<ion-infinite-scroll-content loadingSpinner="dots"></ion-infinite-scroll-content>
+	</ion-infinite-scroll>
 </ion-content>

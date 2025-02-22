@@ -13,18 +13,8 @@ import { ARContactModalPage } from './ar-contact-modal/ar-contact-modal.page';
 import { BusinessPartnerComponentsModule } from 'src/app/pages/CRM/business-partner-detail/components/business-partner-components.module';
 
 @NgModule({
-  imports: [
-    IonicModule,
-    CommonModule,
-    ShareModule,
-    RouterModule,
-    FormsModule,
-    MapCompsModule,
-    ReactiveFormsModule,
-    GoogleMapsModule,
-    BusinessPartnerComponentsModule
-  ],
-  declarations: [ChildInvoiceComponent,ARContactModalPage],
-  exports: [ChildInvoiceComponent,ARContactModalPage],
+	imports: [IonicModule, CommonModule, ShareModule, RouterModule, FormsModule, MapCompsModule, ReactiveFormsModule, GoogleMapsModule, BusinessPartnerComponentsModule],
+	declarations: [ChildInvoiceComponent, ARContactModalPage],
+	exports: [ChildInvoiceComponent, ARContactModalPage],
 })
 export class ARInvoiceComponentsModule {}

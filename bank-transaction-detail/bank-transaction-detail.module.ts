@@ -7,14 +7,14 @@ import { ShareModule } from 'src/app/share.module';
 import { BankTransactionDetailPage } from './bank-transaction-detail.page';
 
 const routes: Routes = [
-  {
-    path: '',
-    component: BankTransactionDetailPage,
-  },
+	{
+		path: '',
+		component: BankTransactionDetailPage,
+	},
 ];
 
 @NgModule({
-  imports: [CommonModule, FormsModule, IonicModule, ReactiveFormsModule, ShareModule, RouterModule.forChild(routes)],
-  declarations: [BankTransactionDetailPage],
+	imports: [CommonModule, FormsModule, IonicModule, ReactiveFormsModule, ShareModule, RouterModule.forChild(routes)],
+	declarations: [BankTransactionDetailPage],
 })
 export class BankTransactionDetailPageModule {}

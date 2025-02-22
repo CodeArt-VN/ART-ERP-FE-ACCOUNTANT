@@ -9,14 +9,14 @@ import { ARInvoiceDetailPage } from './ar-invoice-detail.page';
 import { ARInvoiceComponentsModule } from './components/ar-invoice-components.module';
 
 const routes: Routes = [
-  {
-    path: '',
-    component: ARInvoiceDetailPage,
-  },
+	{
+		path: '',
+		component: ARInvoiceDetailPage,
+	},
 ];
 
 @NgModule({
-  imports: [ARInvoiceComponentsModule, ShareModule, RouterModule.forChild(routes)],
-  declarations: [ARInvoiceDetailPage],
+	imports: [ARInvoiceComponentsModule, ShareModule, RouterModule.forChild(routes)],
+	declarations: [ARInvoiceDetailPage],
 })
 export class ARInvoiceDetailPageModule {}

@@ -1,164 +1,143 @@
 <ion-header>
-  <ion-toolbar>
-    <ion-title>{{'Add new customer' | translate}}</ion-title>
-    <ion-buttons slot="primary">
-      <ion-button title="{{'Close' | translate}}" color="primary" (click)="reset()">
-        <ion-icon slot="icon-only" name="refresh-outline"></ion-icon>
-      </ion-button>
-      <ion-button title="{{'Close' | translate}}" color="secondary" (click)="Apply()">
-        <ion-icon slot="icon-only" name="close"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
+	<ion-toolbar>
+		<ion-title>{{'Add new customer' | translate}}</ion-title>
+		<ion-buttons slot="primary">
+			<ion-button title="{{'Close' | translate}}" color="primary" (click)="reset()">
+				<ion-icon slot="icon-only" name="refresh-outline"></ion-icon>
+			</ion-button>
+			<ion-button title="{{'Close' | translate}}" color="secondary" (click)="Apply()">
+				<ion-icon slot="icon-only" name="close"></ion-icon>
+			</ion-button>
+		</ion-buttons>
+	</ion-toolbar>
 </ion-header>
 <ion-content appScrollbarTheme class="ion-padding">
-  
-      <form [formGroup]="formGroup">
-        <ion-grid fixed>
-        <ion-row class="hr-group">
-          <ion-col size="12" size-sm="12" size-md="12" size-xl="3">
-            <ion-list-header class="ion-no-padding">
-              <ion-label color="primary">{{'Phone number' | translate}}</ion-label>
-            </ion-list-header>
-          </ion-col>
-          <ion-col size="12" size-sm size-xl="8">
-            <div class="c-control">
-              <label class="c-label" for="WorkPhone"
-                >{{'Work phone number' | translate}}
-                <span
-                  *ngIf="!formGroup.controls.WorkPhone.valid && !formGroup.controls.WorkPhone.pending && (formGroup.controls.WorkPhone.dirty || submitAttempt)"
-                  ion-text
-                  color="danger"
-                  >(*)</span
-                >
-              </label>
-        
-            <input class="c-input" formControlName="WorkPhone" type="text" (blur)="checkPhoneNumber()" />
-              <!-- <app-input-control
+	<form [formGroup]="formGroup">
+		<ion-grid fixed>
+			<ion-row class="hr-group">
+				<ion-col size="12" size-sm="12" size-md="12" size-xl="3">
+					<ion-list-header class="ion-no-padding">
+						<ion-label color="primary">{{'Phone number' | translate}}</ion-label>
+					</ion-list-header>
+				</ion-col>
+				<ion-col size="12" size-sm size-xl="8">
+					<div class="c-control">
+						<label class="c-label" for="WorkPhone"
+							>{{'Work phone number' | translate}}
+							<span
+								*ngIf="!formGroup.controls.WorkPhone.valid && !formGroup.controls.WorkPhone.pending && (formGroup.controls.WorkPhone.dirty || submitAttempt)"
+								ion-text
+								color="danger"
+								>(*)</span
+							>
+						</label>
+
+						<input class="c-input" formControlName="WorkPhone" type="text" (blur)="checkPhoneNumber()" />
+						<!-- <app-input-control
              [field]="{id :'WorkPhone' , label:'Work phone number',form:formGroup}" (blur)="checkPhoneNumber()"
               ></app-input-control> -->
-              <ion-text
-              color="success"
-              *ngIf="formGroup.controls.WorkPhone.valid && formGroup.controls.WorkPhone.dirty"
-            >
-              {{'Số điện thoại hợp lệ' | translate}}
-            </ion-text>
-            <ion-text color="danger" *ngIf="!formGroup.controls.WorkPhone.valid">
-              {{'Số điện thoại không hợp lệ hoặc đã được sử dụng' | translate}}
-            </ion-text>
-            </div>
-          
-           
-            <!-- <div class="c-control">
+						<ion-text color="success" *ngIf="formGroup.controls.WorkPhone.valid && formGroup.controls.WorkPhone.dirty">
+							{{'Số điện thoại hợp lệ' | translate}}
+						</ion-text>
+						<ion-text color="danger" *ngIf="!formGroup.controls.WorkPhone.valid"> {{'Số điện thoại không hợp lệ hoặc đã được sử dụng' | translate}} </ion-text>
+					</div>
+
+					<!-- <div class="c-control">
                                 <label class="c-label" for="Phone1">{{'Phone number' | translate}}</label>
                                 <input class="c-input" id="Phone1" required [(ngModel)]="PhoneCheck" [ngModelOptions]="{standalone: true}" type="tel">
                             </div> -->
-          </ion-col>
-        </ion-row>
-        <ion-row class="hr-group">
-       
-          <ion-col size="12" size-sm="12" size-md="12" size-xl="3">
-            <ion-list-header class="ion-no-padding">
-              <ion-label color="primary">{{'General information' | translate}}</ion-label>
-            </ion-list-header>
-          </ion-col>
+				</ion-col>
+			</ion-row>
+			<ion-row class="hr-group">
+				<ion-col size="12" size-sm="12" size-md="12" size-xl="3">
+					<ion-list-header class="ion-no-padding">
+						<ion-label color="primary">{{'General information' | translate}}</ion-label>
+					</ion-list-header>
+				</ion-col>
 
-          <ion-col size="12" size-sm size-xl="4">
-            <app-form-control [field]="{id :'Id' ,type:'span-text', label:'Id',form:formGroup}" *ngIf="formGroup.get('Id').value">
-            </app-form-control>
-       
-            <app-form-control [field]="{id :'Code' , label:'Customner code',form:formGroup}">
-            </app-form-control>
-            <app-form-control [field]="{id :'Name' , label:'Customer name',form:formGroup}">
-            </app-form-control>
-            <app-form-control [field]="{id :'IsCustomer' , label:'Customer', type:'checkbox', form:formGroup}">
-            </app-form-control>
-            <!-- <div class="c-control">
+				<ion-col size="12" size-sm size-xl="4">
+					<app-form-control [field]="{id :'Id' ,type:'span-text', label:'Id',form:formGroup}" *ngIf="formGroup.get('Id').value"> </app-form-control>
+
+					<app-form-control [field]="{id :'Code' , label:'Customner code',form:formGroup}"> </app-form-control>
+					<app-form-control [field]="{id :'Name' , label:'Customer name',form:formGroup}"> </app-form-control>
+					<app-form-control [field]="{id :'IsCustomer' , label:'Customer', type:'checkbox', form:formGroup}"> </app-form-control>
+					<!-- <div class="c-control">
                                 <label class="c-label" for="OtherPhone">{{'Telephone number (other)' | translate}}
                                     <span *ngIf="!formGroup.controls.OtherPhone.valid && !formGroup.controls.OtherPhone.pending && (formGroup.controls.OtherPhone.dirty || submitAttempt)" ion-text color="danger">(*)</span>
                                 </label>
                                 <input (change)="saveChange()" class="c-input" formControlName="OtherPhone" type="text">
                             </div> -->
-            <div class="c-control">
-              <span class="no-warp">
-                <input
-                  id="IsPersonal1"
-                  type="radio"
-                  [value]="true"
-                  formControlName="IsPersonal"
-                  class="c-checkbox"
-                />
-                <label class="c-label radio" for="IsPersonal1">
-                  <span>{{'Individual' | translate}}</span>
-                </label>
-              </span>
-              <span class="no-warp">
-                <input
-                  id="IsPersonal2"
-                  type="radio"
-                  [value]="false"
-                  formControlName="IsPersonal"
-                  class="c-checkbox"
-                />
-                <label class="c-label radio" for="IsPersonal2">
-                  <span>{{'Organization' | translate}}</span>
-                  <span
-                    *ngIf="!formGroup.controls.IsPersonal.valid && !formGroup.controls.IsPersonal.pending && (formGroup.controls.IsPersonal.dirty || submitAttempt)"
-                    ion-text
-                    color="danger"
-                    >(*)</span
-                  >
-                </label>
-              </span>
-            </div>
-          </ion-col>
-          <ion-col size="12" size-sm size-xl="4">
-            <app-form-control [field]="{id :'IDOwner' , label:'Customer care staff', type:'ng-select-staff', dataSource: salemanDataSource, bindLabel:'Id', bindValue:'Name',form:formGroup}">
-            </app-form-control>
+					<div class="c-control">
+						<span class="no-warp">
+							<input id="IsPersonal1" type="radio" [value]="true" formControlName="IsPersonal" class="c-checkbox" />
+							<label class="c-label radio" for="IsPersonal1">
+								<span>{{'Individual' | translate}}</span>
+							</label>
+						</span>
+						<span class="no-warp">
+							<input id="IsPersonal2" type="radio" [value]="false" formControlName="IsPersonal" class="c-checkbox" />
+							<label class="c-label radio" for="IsPersonal2">
+								<span>{{'Organization' | translate}}</span>
+								<span
+									*ngIf="!formGroup.controls.IsPersonal.valid && !formGroup.controls.IsPersonal.pending && (formGroup.controls.IsPersonal.dirty || submitAttempt)"
+									ion-text
+									color="danger"
+									>(*)</span
+								>
+							</label>
+						</span>
+					</div>
+				</ion-col>
+				<ion-col size="12" size-sm size-xl="4">
+					<app-form-control
+						[field]="{id :'IDOwner' , label:'Customer care staff', type:'ng-select-staff', dataSource: salemanDataSource, bindLabel:'Id', bindValue:'Name',form:formGroup}"
+					>
+					</app-form-control>
 
-            <app-form-control [field]="{id :'Remark' , label:'Remark', type:'textarea', form:formGroup}">
-            </app-form-control>
-       
-          </ion-col>
-        </ion-row>
-      </ion-grid>
- 
-        <!-- Thông tin hóa đơn -->
-      <app-bp-tax-address [bpId]="item.Id" *ngIf="item.Id >0"></app-bp-tax-address>
-       <ion-grid fixed>
-        <ion-row class="hr-group" *ngIf="!item.Id">
-          <ion-col size="12" size-sm="12" size-md="12" size-xl="3">
-            <ion-list-header class="ion-no-padding">
-              <ion-label color="primary">{{'Invoice information' | translate}}</ion-label>
-            </ion-list-header>
-          </ion-col>
-          <ng-container *ngFor="let taxInfo of formGroup.get('TaxInfos')['controls']">
-          <ion-col size="12" size-sm="6" size-xl="4">
-            <app-form-control [field]="{id:'TaxCode',label:'Tax code', type:'text', form:taxInfo}" (controlChange)="onChangedTaxCode($event,taxInfo)" ></app-form-control>
-            <app-form-control [field]="{id:'CompanyName',label:'Company / organization name', type:'text', form:taxInfo}"></app-form-control>
-            <app-form-control [field]="{id:'Email',label:'Email', type:'text', form:taxInfo}"></app-form-control>
-          </ion-col>
-          <ion-col size="12" size-sm="6" size-xl="4">
-            <app-form-control [field]="{id:'WorkPhone',label:'Work phone number', type:'text', form:taxInfo}"></app-form-control>
-            <app-form-control [field]="{id:'BillingAddress',label:'Invoice address', type:'textarea', form:taxInfo}"></app-form-control>
-          </ion-col>
-          </ng-container>
-        </ion-row>
-        <ion-row>
-          <ion-col size="0" size-sm="0" size-xl="4"></ion-col>
-          <ion-col size="12" size-sm="6" size-xl="4">
-          <div  class="c-control ion-text-right"*ngIf="!item.Id">
-            <label class="c-label" for=""></label>
-            <ion-button expand="block" (click)="saveChange()">{{'Save and apply' | translate}}</ion-button>
-          </div>
-        </ion-col>
-        <ion-col size="12" size-sm="6" size-xl="4">
-          <div  class="c-control ion-text-right" *ngIf="this.formGroup.get('Id').value">
-            <label class="c-label" for=""></label>
-            <ion-button expand="block" (click)="Apply(true)">{{'Apply' | translate}}</ion-button>
-          </div>
-          </ion-col>
-        </ion-row>
-      </ion-grid>
-      </form>
+					<app-form-control [field]="{id :'Remark' , label:'Remark', type:'textarea', form:formGroup}"> </app-form-control>
+				</ion-col>
+			</ion-row>
+		</ion-grid>
+
+		<!-- Thông tin hóa đơn -->
+		<app-bp-tax-address [bpId]="item.Id" *ngIf="item.Id >0"></app-bp-tax-address>
+		<ion-grid fixed>
+			<ion-row class="hr-group" *ngIf="!item.Id">
+				<ion-col size="12" size-sm="12" size-md="12" size-xl="3">
+					<ion-list-header class="ion-no-padding">
+						<ion-label color="primary">{{'Invoice information' | translate}}</ion-label>
+					</ion-list-header>
+				</ion-col>
+				<ng-container *ngFor="let taxInfo of formGroup.get('TaxInfos')['controls']">
+					<ion-col size="12" size-sm="6" size-xl="4">
+						<app-form-control
+							[field]="{id:'TaxCode',label:'Tax code', type:'text', form:taxInfo}"
+							(controlChange)="onChangedTaxCode($event,taxInfo)"
+						></app-form-control>
+						<app-form-control [field]="{id:'CompanyName',label:'Company / organization name', type:'text', form:taxInfo}"></app-form-control>
+						<app-form-control [field]="{id:'Email',label:'Email', type:'text', form:taxInfo}"></app-form-control>
+					</ion-col>
+					<ion-col size="12" size-sm="6" size-xl="4">
+						<app-form-control [field]="{id:'WorkPhone',label:'Work phone number', type:'text', form:taxInfo}"></app-form-control>
+						<app-form-control [field]="{id:'BillingAddress',label:'Invoice address', type:'textarea', form:taxInfo}"></app-form-control>
+					</ion-col>
+				</ng-container>
+			</ion-row>
+			<ion-row>
+				<ion-col size="0" size-sm="0" size-xl="4"></ion-col>
+				<ion-col size="12" size-sm="6" size-xl="4">
+					<div class="c-control ion-text-right" *ngIf="!item.Id">
+						<label class="c-label" for=""></label>
+						<ion-button expand="block" (click)="saveChange()">{{'Save and apply' | translate}}</ion-button>
+					</div>
+				</ion-col>
+				<ion-col size="12" size-sm="6" size-xl="4">
+					<div class="c-control ion-text-right" *ngIf="this.formGroup.get('Id').value">
+						<label class="c-label" for=""></label>
+						<ion-button expand="block" (click)="Apply(true)">{{'Apply' | translate}}</ion-button>
+					</div>
+				</ion-col>
+			</ion-row>
+		</ion-grid>
+	</form>
 </ion-content>
