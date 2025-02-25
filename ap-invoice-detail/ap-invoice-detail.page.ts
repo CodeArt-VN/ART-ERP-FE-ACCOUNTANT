@@ -787,7 +787,7 @@ export class APInvoiceDetailPage extends PageBase {
 		}
 	}
 
-	deleteItems() {
+	delete() {
 		if (this.pageConfig.canEdit) {
 			let itemsToDelete = this.selectedInvoiceDetails.getRawValue();
 			this.env

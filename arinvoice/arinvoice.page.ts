@@ -377,7 +377,7 @@ export class ARInvoicePage extends PageBase {
 		}
 	}
 
-	deleteItems() {
+	delete() {
 		let itemsCanNotDelete = this.selectedItems.filter(
 			(i) =>
 				i.Status == 'ARInvoiceApproved' ||
@@ -412,7 +412,7 @@ export class ARInvoicePage extends PageBase {
 								this.selectedItems = this.selectedItems.filter(
 									(i) => i.Status == 'ARInvoiceNew' || i.Status == 'ARInvoiceRejected' || i.Status == 'ARInvoiceDraft'
 								);
-								super.deleteItems();
+								super.delete();
 							},
 						},
 					],
@@ -421,7 +421,7 @@ export class ARInvoicePage extends PageBase {
 					alert.present();
 				});
 		} else {
-			super.deleteItems();
+			super.delete();
 		}
 	}
 
