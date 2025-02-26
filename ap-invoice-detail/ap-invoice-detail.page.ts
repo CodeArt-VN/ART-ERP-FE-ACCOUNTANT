@@ -224,7 +224,7 @@ export class APInvoiceDetailPage extends PageBase {
 
 		if (this.pageConfig.canRequestOutgoingPayment) this.pageConfig.ShowRequestOutgoingPayment = true;
 		let notShowRequestOutgoingPaymentPaymentStatus = ['Unapproved', 'Paid'];
-		let notShowRequestOutgoingPaymentAPStatus = ['Draft', 'Closed', 'Cancelled'];
+		let notShowRequestOutgoingPaymentAPStatus = ['Draft', 'Closed', 'Canceled'];
 		if (
 			notShowRequestOutgoingPaymentAPStatus.includes(this.formGroup.get('Status').value) ||
 			notShowRequestOutgoingPaymentPaymentStatus.includes(this.formGroup.get('PaymentStatus').value)

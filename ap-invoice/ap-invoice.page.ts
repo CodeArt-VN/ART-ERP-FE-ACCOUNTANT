@@ -130,7 +130,7 @@ export class APInvoicePage extends PageBase {
 		}
 		const uniqueSellerIDs = new Set(this.selectedItems.map((i) => i.IDSeller));
 		this.selectedItems?.forEach((i) => {
-			let notShowRequestOutgoingPaymentAPStatus = ['Draft', 'Closed', 'Cancelled'];
+			let notShowRequestOutgoingPaymentAPStatus = ['Draft', 'Closed', 'Canceled'];
 			let notShowRequestOutgoingPaymentPaymentStatus = ['Unapproved', 'Paid'];
 			if (notShowRequestOutgoingPaymentAPStatus.indexOf(i.Status) != -1 || notShowRequestOutgoingPaymentPaymentStatus.indexOf(i.PaymentStatus) != -1) {
 				this.ShowRequestOutgoingPayment = false;

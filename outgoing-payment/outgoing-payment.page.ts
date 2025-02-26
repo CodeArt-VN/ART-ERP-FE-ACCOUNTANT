@@ -55,13 +55,13 @@ export class OutgoingPaymentPage extends PageBase {
 	}
 	changeSelection(i, e = null) {
 		super.changeSelection(i, e);
-		//NotSubmittedYet // Cancelled // Unapproved // Submitted // Approved
+		//NotSubmittedYet // Canceled // Unapproved // Submitted // Approved
 		//WaitForPayment // Paid // PartiallyPaid // Unapproved
 		const approveSet = new Set(['Submitted']);
 		const disApproveSet = new Set(['Approved', 'Submitted']);
 		const submitSet = new Set(['NotSubmittedYet', 'Unapproved']);
 		const cancelSet = new Set(['NotSubmittedYet', 'Unapproved', 'Approved', 'Submitted']);
-		const deleteSet = new Set(['NotSubmittedYet', 'Unapproved', 'Cancelled']);
+		const deleteSet = new Set(['NotSubmittedYet', 'Unapproved', 'Canceled']);
 		const paySet = new Set(['Approved', 'WaitForPayment', 'PartiallyPaid']);
 		const markAsPaidtSet = new Set(['Approved', 'WaitForPayment', 'PartiallyPaid']);
 		const toolbarSet = new Set(['NotSubmittedYet', 'Unapproved', 'Submitted']);
@@ -82,7 +82,7 @@ export class OutgoingPaymentPage extends PageBase {
 				this.selectedItems.every((i) => toolbarSet.has(i.Status));
 	}
 
-	submit() {
+	submitForApproval() {
 		if (!this.pageConfig.canSubmit) return;
 		let ids = this.selectedItems.map((i) => i.Id);
 		this.env.showPrompt({ code: 'Are you sure you want to submit {{value}} selected item(s)?', value: this.selectedItems.length }).then(() => {
