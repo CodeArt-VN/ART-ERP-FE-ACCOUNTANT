@@ -14,8 +14,8 @@ import { SortConfig } from 'src/app/models/options-interface';
 
 @Component({
 	selector: 'app-arinvoice',
-	templateUrl: './arinvoice.page.html',
-	styleUrls: ['./arinvoice.page.scss'],
+	templateUrl: './ar-invoice.page.html',
+	styleUrls: ['./ar-invoice.page.scss'],
 	standalone: false,
 })
 export class ARInvoicePage extends PageBase {
@@ -83,10 +83,8 @@ export class ARInvoicePage extends PageBase {
 	loadedData(event) {
 		this.items.forEach((i) => {
 			i._Status = this.statusList.find((d) => d.Code == i.Status);
-			i._QueryDate = lib.dateFormat(i.InvoiceDate);
 		});
 		super.loadedData(event);
-		console.log(this.items);
 	}
 
 	approveInvoices() {

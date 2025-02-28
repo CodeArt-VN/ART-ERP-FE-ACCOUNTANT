@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
 
-import { ARInvoicePage } from './arinvoice.page';
+import { ARInvoicePage } from './ar-invoice.page';
 
 describe('ARInvoicePage', () => {
 	let component: ARInvoicePage;

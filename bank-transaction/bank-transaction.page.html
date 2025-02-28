@@ -76,13 +76,10 @@
   </ion-card> -->
 	</ion-fab>
 
-	<div style="max-width: 1440px; margin: auto; width: 100%; position: sticky; left: 0" class="ion-padding">
-		<app-page-title [pageConfig]="pageConfig"></app-page-title>
-	</div>
+	<app-page-title class="ion-padding safe-max-width" [pageConfig]="pageConfig"></app-page-title>
 
-	<div style="max-width: 1440px; margin: auto; width: 100%">
+	<div class="safe-max-width">
 		<app-data-table
-			style="width: 100%; min-width: calc(100% - 32px)"
 			class="box-shadow responsive small-width"
 			[rows]="items"
 			[trackBy]="'Id'"
