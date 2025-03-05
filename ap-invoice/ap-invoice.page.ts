@@ -207,7 +207,7 @@ export class APInvoicePage extends PageBase {
 				component: SearchAsyncPopoverPage,
 				componentProps: {
 					title: 'Purchase order',
-					type:'PurchaseOrder',
+					type: 'PurchaseOrder',
 					provider: this.purchaseOrderProvider,
 					query: queryPO,
 					searchFunction: searchFn,
@@ -241,18 +241,18 @@ export class APInvoicePage extends PageBase {
 	}
 
 	async openGoodsReceiptPopover(ev: any) {
-		let queryPO = {
+		let queryGR = {
 			IDBranch: this.env.selectedBranchAndChildren,
 			Take: 20,
 			Skip: 0,
 			Status: '["Received"]',
 		};
 		let searchFn = this.buildSelectDataSource((term) => {
-			return this.receiptProvider.search({ ...queryPO, Term: term });
+			return this.receiptProvider.search({ ...queryGR, Term: term });
 		}, false);
 
 		if (this.initGRDatasource.length == 0) {
-			this.receiptProvider.read(queryPO).then(async (rs: any) => {
+			this.receiptProvider.read(queryGR).then(async (rs: any) => {
 				if (rs && rs.data) {
 					this.initGRDatasource = rs.data;
 					searchFn.selected = this.initGRDatasource;
@@ -260,8 +260,9 @@ export class APInvoicePage extends PageBase {
 						component: SearchAsyncPopoverPage,
 						componentProps: {
 							title: 'Goods receipt',
+							type: 'Receipt',
 							provider: this.receiptProvider,
-							query: queryPO,
+							query: queryGR,
 							searchFunction: searchFn,
 						},
 						event: ev,
@@ -283,8 +284,9 @@ export class APInvoicePage extends PageBase {
 				component: SearchAsyncPopoverPage,
 				componentProps: {
 					title: 'Goods receipt',
+					type: 'Receipt',
 					provider: this.receiptProvider,
-					query: queryPO,
+					query: queryGR,
 					searchFunction: searchFn,
 				},
 				event: ev,
