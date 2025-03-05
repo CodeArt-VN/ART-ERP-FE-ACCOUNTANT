@@ -164,33 +164,33 @@ export class OutgoingPaymentPage extends PageBase {
 				});
 		});
 	}
-	cancel() {
-		if (!this.pageConfig.canCancel) return;
-		let ids = this.selectedItems.map((i) => i.Id);
-		this.env.showPrompt({ code: 'Are you sure you want to cancel {{value}} selected item(s)?', value: this.selectedItems.length }).then(() => {
-			this.env
-				.showLoading('Please wait for a few moments', this.pageProvider.commonService.connect('POST', 'BANK/OutgoingPayment/Cancel', ids).toPromise())
-				.then((rs) => {
-					this.env.showMessage('Saved', 'success');
-					this.refresh();
-				})
-				.catch((err) => {
-					if (err.error?.Message) {
-						try {
-							let messageObj = JSON.parse(err.error?.Message);
-							if (messageObj && messageObj.Message1 && messageObj.Message2) {
-								this.env.showPrompt({ code: messageObj.Message2 + '{{value}}', value: messageObj.DocumentEntry.toString() }, null, {
-									code: messageObj.Message1 + '{{value}}',
-									value: '[' + messageObj.payments.join(',') + ']',
-								});
-							} else this.env.showMessage(err.error?.Message ?? err, 'danger');
-						} catch (e) {
-							this.env.showMessage(err.error?.Message ?? err, 'danger');
-						}
-					} else this.env.showMessage(err, 'danger');
-				});
-		});
-	}
+	// cancel() {
+	// 	if (!this.pageConfig.canCancel) return;
+	// 	let ids = this.selectedItems.map((i) => i.Id);
+	// 	this.env.showPrompt({ code: 'Are you sure you want to cancel {{value}} selected item(s)?', value: this.selectedItems.length }).then(() => {
+	// 		this.env
+	// 			.showLoading('Please wait for a few moments', this.pageProvider.commonService.connect('POST', 'BANK/OutgoingPayment/Cancel', ids).toPromise())
+	// 			.then((rs) => {
+	// 				this.env.showMessage('Saved', 'success');
+	// 				this.refresh();
+	// 			})
+	// 			.catch((err) => {
+	// 				if (err.error?.Message) {
+	// 					try {
+	// 						let messageObj = JSON.parse(err.error?.Message);
+	// 						if (messageObj && messageObj.Message1 && messageObj.Message2) {
+	// 							this.env.showPrompt({ code: messageObj.Message2 + '{{value}}', value: messageObj.DocumentEntry.toString() }, null, {
+	// 								code: messageObj.Message1 + '{{value}}',
+	// 								value: '[' + messageObj.payments.join(',') + ']',
+	// 							});
+	// 						} else this.env.showMessage(err.error?.Message ?? err, 'danger');
+	// 					} catch (e) {
+	// 						this.env.showMessage(err.error?.Message ?? err, 'danger');
+	// 					}
+	// 				} else this.env.showMessage(err, 'danger');
+	// 			});
+	// 	});
+	// }
 
 	markAsPaid() {
 		if (!this.pageConfig.canMarkAsPaid) return;
