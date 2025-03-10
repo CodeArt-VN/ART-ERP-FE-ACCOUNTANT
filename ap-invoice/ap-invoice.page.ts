@@ -2,9 +2,11 @@ import { Component, ViewChild } from '@angular/core';
 import { NavController, ModalController, AlertController, LoadingController, PopoverController } from '@ionic/angular';
 import { EnvService } from 'src/app/services/core/env.service';
 import { PageBase } from 'src/app/page-base';
-import { AC_APInvoiceProvider, BANK_OutgoingPaymentProvider } from 'src/app/services/static/services.service';
+import { AC_APInvoiceProvider, BANK_OutgoingPaymentProvider, WMS_ReceiptProvider } from 'src/app/services/static/services.service';
 import { Location } from '@angular/common';
 import { FormBuilder } from '@angular/forms';
+import { PURCHASE_OrderService } from '../../PURCHASE/purchase-order-service';
+import { SearchAsyncPopoverPage } from '../../PURCHASE/search-async-popover/search-async-popover.page';
 
 @Component({
 	selector: 'app-ap-invoice',
@@ -29,7 +31,9 @@ export class APInvoicePage extends PageBase {
 		public env: EnvService,
 		public formBuilder: FormBuilder,
 		public navCtrl: NavController,
-		public location: Location
+		public location: Location,
+		public purchaseOrderProvider: PURCHASE_OrderService,
+		public receiptProvider: WMS_ReceiptProvider
 	) {
 		super();
 
@@ -38,6 +42,8 @@ export class APInvoicePage extends PageBase {
 			PaymentSubType: [''],
 			PaymentReason: [''],
 		});
+		this.pageConfig.ShowAdd = false;
+		this.pageConfig.ShowAddNew = true;
 	}
 
 	preLoadData(event?: any): void {
@@ -146,5 +152,171 @@ export class APInvoicePage extends PageBase {
 		if (this.selectedItems?.length == 0) {
 			this.ShowRequestOutgoingPayment = false;
 		}
+	}
+
+	isOpenAddNewPopover = false;
+	@ViewChild('addNewPopover') addNewPopover!: HTMLIonPopoverElement;
+	presentAddNewPopover(e) {
+		this.addNewPopover.event = e;
+		this.isOpenAddNewPopover = !this.isOpenAddNewPopover;
+	}
+	initPODatasource = [];
+	initGRDatasource = [];
+
+	async openPurchaseOrderPopover(ev: any) {
+		let queryPO = {
+			IDBranch: this.env.selectedBranchAndChildren,
+			Take: 20,
+			Skip: 0,
+			Status: '["Approved"]',
+		};
+		let searchFn = this.buildSelectDataSource((term) => {
+			return this.purchaseOrderProvider.search({ ...queryPO, Term: term });
+		}, false);
+
+		if (this.initPODatasource.length == 0) {
+			this.purchaseOrderProvider.read(queryPO).then(async (rs: any) => {
+				if (rs && rs.data) {
+					this.initPODatasource = rs.data;
+					searchFn.selected = this.initPODatasource;
+					let popover = await this.popoverCtrl.create({
+						component: SearchAsyncPopoverPage,
+						componentProps: {
+							title: 'Purchase order',
+							type: 'PurchaseOrder',
+							provider: this.purchaseOrderProvider,
+							query: queryPO,
+							searchFunction: searchFn,
+						},
+						event: ev,
+						cssClass: 'w300',
+						translucent: true,
+					});
+					popover.onDidDismiss().then((result: any) => {
+						console.log(result);
+						if (result.data) {
+							this.copyFromPurchaseOrder(result.data.Id);
+						}
+					});
+					return await popover.present();
+				}
+			});
+		} else {
+			searchFn.selected = this.initPODatasource;
+			let popover = await this.popoverCtrl.create({
+				component: SearchAsyncPopoverPage,
+				componentProps: {
+					title: 'Purchase order',
+					type: 'PurchaseOrder',
+					provider: this.purchaseOrderProvider,
+					query: queryPO,
+					searchFunction: searchFn,
+				},
+				event: ev,
+				cssClass: 'w300',
+				translucent: true,
+			});
+			popover.onDidDismiss().then((result: any) => {
+				console.log(result);
+				if (result.data) {
+					this.copyFromPurchaseOrder(result.data.Id);
+				}
+			});
+			return await popover.present();
+		}
+	}
+
+	copyFromPurchaseOrder(id) {
+		this.env.showLoading('Please wait for a few moments', this.purchaseOrderProvider.getAnItem(id, null)).then((item) => {
+			this.purchaseOrderProvider
+				.createInvoice(item, this.env, this.pageConfig)
+				.then((resp: any) => {
+					this.env.showMessage('APInvoice created!', 'success');
+
+					this.refresh();
+					this.env.publishEvent({ Code: this.pageConfig.pageName });
+				})
+				.catch((err) => this.env.showMessage(err));
+		});
+	}
+
+	async openGoodsReceiptPopover(ev: any) {
+		let queryGR = {
+			IDBranch: this.env.selectedBranchAndChildren,
+			Take: 20,
+			Skip: 0,
+			Status: '["Received"]',
+		};
+		let searchFn = this.buildSelectDataSource((term) => {
+			return this.receiptProvider.search({ ...queryGR, Term: term });
+		}, false);
+
+		if (this.initGRDatasource.length == 0) {
+			this.receiptProvider.read(queryGR).then(async (rs: any) => {
+				if (rs && rs.data) {
+					this.initGRDatasource = rs.data;
+					searchFn.selected = this.initGRDatasource;
+					let popover = await this.popoverCtrl.create({
+						component: SearchAsyncPopoverPage,
+						componentProps: {
+							title: 'Goods receipt',
+							type: 'Receipt',
+							provider: this.receiptProvider,
+							query: queryGR,
+							searchFunction: searchFn,
+						},
+						event: ev,
+						cssClass: 'w300',
+						translucent: true,
+					});
+					popover.onDidDismiss().then((result: any) => {
+						console.log(result);
+						if (result.data) {
+							this.copyFromGoodsReceipt(result.data.Id);
+						}
+					});
+					return await popover.present();
+				}
+			});
+		} else {
+			searchFn.selected = this.initGRDatasource;
+			let popover = await this.popoverCtrl.create({
+				component: SearchAsyncPopoverPage,
+				componentProps: {
+					title: 'Goods receipt',
+					type: 'Receipt',
+					provider: this.receiptProvider,
+					query: queryGR,
+					searchFunction: searchFn,
+				},
+				event: ev,
+				cssClass: 'w300',
+				translucent: true,
+			});
+			popover.onDidDismiss().then((result: any) => {
+				console.log(result);
+				if (result.data) {
+					this.copyFromGoodsReceipt(result.data.Id);
+				}
+			});
+			return await popover.present();
+		}
+	}
+
+	copyFromGoodsReceipt(id) {
+		this.env.showLoading('Please wait for a few moments', this.receiptProvider.getAnItem(id, null)).then((item: any) => {
+			this.receiptProvider.commonService
+				.connect('POST', 'WMS/Receipt/CreateInvoice/', {
+					Ids: [item.Id],
+				})
+				.toPromise()
+				.then((rs) => {
+					this.env.showMessage('APInvoice created!', 'success');
+
+					this.refresh();
+					this.env.publishEvent({ Code: this.pageConfig.pageName });
+				})
+				.catch((err) => this.env.showMessage(err));
+		});
 	}
 }
