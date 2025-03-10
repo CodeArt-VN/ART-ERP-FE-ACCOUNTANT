@@ -306,7 +306,7 @@
 										<app-input-control [field]="{id:'IsChecked', type : 'checkbox', form : g, }" (change)="changeSelection(g, $event)"></app-input-control>
 									</div>
 									<div class="col-id cell">{{idx+1}}</div>
-									<div class="col-name cell">
+									<div class="col-name item-name cell">
 										<app-input-control
 											[field]="{id:'IDItem', label: 'Item', type : 'ng-select-item', form : g,  dataSource: g.get('_IDItemDataSource').value,  bindValue: 'Id', clearable: true, placeholder: 'Type to search...' }"
 											(change)="IDItemChange($event, g);"
