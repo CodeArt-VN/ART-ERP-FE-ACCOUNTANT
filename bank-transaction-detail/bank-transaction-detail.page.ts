@@ -83,47 +83,57 @@ export class BankTransactionDetailPage extends PageBase {
 			ModifiedDate: new FormControl({ value: '', disabled: true }),
 		});
 	}
-	_contactDataSource = {
-		searchProvider: this.contactProvider,
-		loading: false,
-		input$: new Subject<string>(),
-		selected: [],
-		items$: null,
-		id: this.id,
+	_contactDataSource = this.buildSelectDataSource((term) => {
+		return this.contactProvider.search({
+			SkipMCP: term ? false : true,
+			SortBy: ['Id_desc'],
+			Take: 20,
+			Skip: 0,
+			Term: term ? term : 'BP:' + this.item?.IDBusinessPartner,
+		});
+	});
+	
+	// {
+	// 	searchProvider: this.contactProvider,
+	// 	loading: false,
+	// 	input$: new Subject<string>(),
+	// 	selected: [],
+	// 	items$: null,
+	// 	id: this.id,
 
-		initSearch() {
-			// Load selected items initially, but don't reset them on subsequent searches
-			this.items$ = of(this.selected).pipe(
-				switchMap((selectedItems) =>
-					concat(
-						of(selectedItems),
-						this.input$.pipe(
-							distinctUntilChanged(),
-							tap(() => (this.loading = true)),
-							switchMap((term) =>
-								this.searchProvider
-									.search({
-										SkipMCP: term ? false : true,
-										SortBy: ['Id_desc'],
-										Take: 20,
-										Skip: 0,
-										Term: term ? term : 'BP:' + this.item?.IDBusinessPartner,
-									})
-									.pipe(
-										catchError(() => of([])),
-										map((searchResults: any) => {
-											// Combine selected items with search results, ensuring no duplicates
-											return [...this.selected, ...searchResults.filter((item) => !this.selected.some((selectedItem) => selectedItem.Id === item.Id))];
-										}), // empty list on error
-										tap(() => (this.loading = false))
-									)
-							)
-						)
-					)
-				)
-			);
-		},
-	};
+	// 	initSearch() {
+	// 		// Load selected items initially, but don't reset them on subsequent searches
+	// 		this.items$ = of(this.selected).pipe(
+	// 			switchMap((selectedItems) =>
+	// 				concat(
+	// 					of(selectedItems),
+	// 					this.input$.pipe(
+	// 						distinctUntilChanged(),
+	// 						tap(() => (this.loading = true)),
+	// 						switchMap((term) =>
+	// 							this.searchProvider
+	// 								.search({
+	// 									SkipMCP: term ? false : true,
+	// 									SortBy: ['Id_desc'],
+	// 									Take: 20,
+	// 									Skip: 0,
+	// 									Term: term ? term : 'BP:' + this.item?.IDBusinessPartner,
+	// 								})
+	// 								.pipe(
+	// 									catchError(() => of([])),
+	// 									map((searchResults: any) => {
+	// 										// Combine selected items with search results, ensuring no duplicates
+	// 										return [...this.selected, ...searchResults.filter((item) => !this.selected.some((selectedItem) => selectedItem.Id === item.Id))];
+	// 									}), // empty list on error
+	// 									tap(() => (this.loading = false))
+	// 								)
+	// 						)
+	// 					)
+	// 				)
+	// 			)
+	// 		);
+	// 	},
+	// };
 	// #region load
 	preLoadData(event?: any): void {
 		this.selectedItems = [];
