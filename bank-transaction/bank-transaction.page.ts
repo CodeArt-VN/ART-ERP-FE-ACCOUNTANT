@@ -47,38 +47,49 @@ export class BankTransactionPage extends PageBase {
 			IDContact: [''],
 		});
 	}
-	_contactDataSource = {
-		searchProvider: this.contactProvider,
-		loading: false,
-		input$: new Subject<string>(),
-		selected: [],
-		items$: null,
-		id: this.id,
-		initSearch() {
-			this.loading = false;
-			this.items$ = concat(
-				of(this.selected),
-				this.input$.pipe(
-					distinctUntilChanged(),
-					tap(() => (this.loading = true)),
-					switchMap((term) =>
-						this.searchProvider
-							.search({
-								SkipMCP: term ? false : true,
-								SortBy: ['Id_desc'],
-								Take: 20,
-								Skip: 0,
-								Term: term ? term : 'BP:' + this.item?.IDCustomer,
-							})
-							.pipe(
-								catchError(() => of([])), // empty list on error
-								tap(() => (this.loading = false))
-							)
-					)
-				)
-			);
-		},
-	};
+	_contactDataSource = this.buildSelectDataSource((term) => {
+		return this.contactProvider.search({
+			SkipMCP: term ? false : true,
+			SortBy: ['Id_desc'],
+			Take: 20,
+			Skip: 0,
+			Term: term ? term : 'BP:' + this.item?.IDCustomer,
+		});
+	});
+	
+	
+	// {
+	// 	searchProvider: this.contactProvider,
+	// 	loading: false,
+	// 	input$: new Subject<string>(),
+	// 	selected: [],
+	// 	items$: null,
+	// 	id: this.id,
+	// 	initSearch() {
+	// 		this.loading = false;
+	// 		this.items$ = concat(
+	// 			of(this.selected),
+	// 			this.input$.pipe(
+	// 				distinctUntilChanged(),
+	// 				tap(() => (this.loading = true)),
+	// 				switchMap((term) =>
+	// 					this.searchProvider
+	// 						.search({
+	// 							SkipMCP: term ? false : true,
+	// 							SortBy: ['Id_desc'],
+	// 							Take: 20,
+	// 							Skip: 0,
+	// 							Term: term ? term : 'BP:' + this.item?.IDCustomer,
+	// 						})
+	// 						.pipe(
+	// 							catchError(() => of([])), // empty list on error
+	// 							tap(() => (this.loading = false))
+	// 						)
+	// 				)
+	// 			)
+	// 		);
+	// 	},
+	// };
 	preLoadData(event?: any): void {
 		this.query.SortBy = 'TransactionDate_desc';
 		this.selectedItems = [];

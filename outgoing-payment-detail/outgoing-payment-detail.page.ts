@@ -415,63 +415,79 @@ export class OutgoingPaymentDetailPage extends PageBase {
 		}
 	}
 
-	_contactDataSource = {
-		searchProvider: this.contactProvider,
-		loading: false,
-		input$: new Subject<string>(),
-		selected: [],
-		items$: null,
-		id: this.id,
-		initSearch() {
-			this.loading = false;
-			this.items$ = concat(
-				of(this.selected),
-				this.input$.pipe(
-					distinctUntilChanged(),
-					tap(() => (this.loading = true)),
-					switchMap((term) =>
-						this.searchProvider
-							.search({
-								SkipMCP: term ? false : true,
-								SortBy: ['Id_desc'],
-								Take: 20,
-								Skip: 0,
-								Term: term ? term : 'BP:' + this.item?.IDCustomer,
-								SkipAddress: true,
-							})
-							.pipe(
-								catchError(() => of([])), // empty list on error
-								tap(() => (this.loading = false))
-							)
-					)
-				)
-			);
-		},
-	};
+	_contactDataSource =this.buildSelectDataSource((term) => {
+		return this.contactProvider.search({
+			SkipMCP: term ? false : true,
+			SortBy: ['Id_desc'],
+			Take: 20,
+			Skip: 0,
+			Term: term ? term : 'BP:' + this.item?.IDCustomer,
+			SkipAddress: true,
+		});
+	});
+	
+	// {
+	// 	searchProvider: this.contactProvider,
+	// 	loading: false,
+	// 	input$: new Subject<string>(),
+	// 	selected: [],
+	// 	items$: null,
+	// 	id: this.id,
+	// 	initSearch() {
+	// 		this.loading = false;
+	// 		this.items$ = concat(
+	// 			of(this.selected),
+	// 			this.input$.pipe(
+	// 				distinctUntilChanged(),
+	// 				tap(() => (this.loading = true)),
+	// 				switchMap((term) =>
+	// 					this.searchProvider
+	// 						.search({
+	// 							SkipMCP: term ? false : true,
+	// 							SortBy: ['Id_desc'],
+	// 							Take: 20,
+	// 							Skip: 0,
+	// 							Term: term ? term : 'BP:' + this.item?.IDCustomer,
+	// 							SkipAddress: true,
+	// 						})
+	// 						.pipe(
+	// 							catchError(() => of([])), // empty list on error
+	// 							tap(() => (this.loading = false))
+	// 						)
+	// 				)
+	// 			)
+	// 		);
+	// 	},
+	// };
 
-	_staffDataSource = {
-		searchProvider: this.staffProvider,
-		loading: false,
-		input$: new Subject<string>(),
-		selected: [],
-		items$: null,
-		initSearch() {
-			this.loading = false;
-			this.items$ = concat(
-				of(this.selected),
-				this.input$.pipe(
-					distinctUntilChanged(),
-					tap(() => (this.loading = true)),
-					switchMap((term) =>
-						this.searchProvider.search({ Take: 20, Skip: 0, Term: term }).pipe(
-							catchError(() => of([])), // empty list on error
-							tap(() => (this.loading = false))
-						)
-					)
-				)
-			);
-		},
-	};
+	_staffDataSource = this.buildSelectDataSource((term) => {
+		return this.staffProvider.search({ Take: 20, Skip: 0, Term: term });
+	});
+	
+	
+	// {
+	// 	searchProvider: this.staffProvider,
+	// 	loading: false,
+	// 	input$: new Subject<string>(),
+	// 	selected: [],
+	// 	items$: null,
+	// 	initSearch() {
+	// 		this.loading = false;
+	// 		this.items$ = concat(
+	// 			of(this.selected),
+	// 			this.input$.pipe(
+	// 				distinctUntilChanged(),
+	// 				tap(() => (this.loading = true)),
+	// 				switchMap((term) =>
+	// 					this.searchProvider.search({ Take: 20, Skip: 0, Term: term }).pipe(
+	// 						catchError(() => of([])), // empty list on error
+	// 						tap(() => (this.loading = false))
+	// 					)
+	// 				)
+	// 			)
+	// 		);
+	// 	},
+	// };
 
 	removeField(deletedFields) {
 		this.formGroup.get('DeletedFields').setValue(deletedFields);

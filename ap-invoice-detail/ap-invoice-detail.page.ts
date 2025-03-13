@@ -254,41 +254,54 @@ export class APInvoiceDetailPage extends PageBase {
 		let selectedItem = preLoadItems?.find((d) => d.Id == line.IDItem);
 
 		let group = this.formBuilder.group({
-			_IDItemDataSource: [
-				{
-					searchProvider: this.itemProvider,
-					loading: false,
-					input$: new Subject<string>(),
-					selected: preLoadItems,
-					items$: null,
-					that: this,
-					initSearch() {
-						this.loading = false;
-						this.items$ = concat(
-							of(this.selected),
-							this.input$.pipe(
-								distinctUntilChanged(),
-								tap(() => (this.loading = true)),
-								switchMap((term) =>
-									this.searchProvider
-										.search({
-											SortBy: ['Id_desc'],
-											Take: 20,
-											Skip: 0,
-											Term: term,
-											IDBranch: this.that.formGroup.get('IDBranch').value,
-											IDVendor: this.that.formGroup.get('IDSeller').value,
-										})
-										.pipe(
-											catchError(() => of([])), // empty list on error
-											tap(() => (this.loading = false))
-										)
-								)
-							)
-						);
-					},
-				},
-			],
+			_IDItemDataSource: this.buildSelectDataSource((term) => {
+				return this.itemProvider
+				.search({
+					SortBy: ['Id_desc'],
+					Take: 20,
+					Skip: 0,
+					Term: term,
+					IDBranch: this.formGroup.get('IDBranch').value,
+					IDVendor: this.formGroup.get('IDSeller').value,
+				})
+			}),
+			
+			
+			// [
+			// 	{
+			// 		searchProvider: this.itemProvider,
+			// 		loading: false,
+			// 		input$: new Subject<string>(),
+			// 		selected: preLoadItems,
+			// 		items$: null,
+			// 		that: this,
+			// 		initSearch() {
+			// 			this.loading = false;
+			// 			this.items$ = concat(
+			// 				of(this.selected),
+			// 				this.input$.pipe(
+			// 					distinctUntilChanged(),
+			// 					tap(() => (this.loading = true)),
+			// 					switchMap((term) =>
+			// 						this.searchProvider
+			// 							.search({
+			// 								SortBy: ['Id_desc'],
+			// 								Take: 20,
+			// 								Skip: 0,
+			// 								Term: term,
+			// 								IDBranch: this.that.formGroup.get('IDBranch').value,
+			// 								IDVendor: this.that.formGroup.get('IDSeller').value,
+			// 							})
+			// 							.pipe(
+			// 								catchError(() => of([])), // empty list on error
+			// 								tap(() => (this.loading = false))
+			// 							)
+			// 					)
+			// 				)
+			// 			);
+			// 		},
+			// 	},
+			// ],
 
 			_IDUoMDataSource: [selectedItem ? selectedItem.UoMs : ''],
 
@@ -366,40 +379,55 @@ export class APInvoiceDetailPage extends PageBase {
 		this.formGroup.get('CalcTotalAfterTax').setValue(calcTotalAfterTax);
 		this.formGroup.get('CalcBalance').setValue(calcTotalAfterTax - (this.formGroup.get('Paid').value ?? 0));
 	}
-	IDReceiptDataSource = {
-		searchProvider: this.receiptProvider,
-		loading: false,
-		input$: new Subject<string>(),
-		selected: [],
-		items$: null,
-		that: this,
-		initSearch() {
-			this.loading = false;
-			this.items$ = concat(
-				of(this.selected), // emit selected items first
-				this.input$.pipe(
-					distinctUntilChanged(),
-					tap(() => (this.loading = true)),
-					switchMap((term: any) => {
-						const query: any = {
-							SortBy: ['Id_desc'],
-							Take: 20,
-							Skip: 0,
-							Term: term,
-						};
-						const formGroup = this.that.formGroup;
-						if (formGroup.get('IDSeller')?.value && formGroup.get('IDPurchaseOrder').value) query.IDVendor = formGroup.get('IDSeller').value;
-						if (formGroup.get('IDBuyer')?.value && formGroup.get('IDPurchaseOrder').value) query.IDStorer = formGroup.get('IDBuyer').value;
-						return this.searchProvider.search(query).pipe(
-							catchError(() => of([])), // emit an empty list on error
-							tap(() => (this.loading = false))
-						);
-					}),
-					tap(() => (this.loading = false)) // Ensure loading is turned off after completion
-				)
-			);
-		},
-	};
+	
+	IDReceiptDataSource =this.buildSelectDataSource((term) => {
+		const query: any = {
+			SortBy: ['Id_desc'],
+			Take: 20,
+			Skip: 0,
+			Term: term,
+		};
+		const formGroup = this.formGroup;
+		if (this.formGroup.get('IDSeller')?.value && this.formGroup.get('IDPurchaseOrder').value) query.IDVendor =this. formGroup.get('IDSeller').value;
+		if (this.formGroup.get('IDBuyer')?.value && this.formGroup.get('IDPurchaseOrder').value) query.IDStorer =this. formGroup.get('IDBuyer').value;
+		return this.receiptProvider.search(query);
+	});
+	
+	
+	// {
+	// 	searchProvider: this.receiptProvider,
+	// 	loading: false,
+	// 	input$: new Subject<string>(),
+	// 	selected: [],
+	// 	items$: null,
+	// 	that: this,
+	// 	initSearch() {
+	// 		this.loading = false;
+	// 		this.items$ = concat(
+	// 			of(this.selected), // emit selected items first
+	// 			this.input$.pipe(
+	// 				distinctUntilChanged(),
+	// 				tap(() => (this.loading = true)),
+	// 				switchMap((term: any) => {
+	// 					const query: any = {
+	// 						SortBy: ['Id_desc'],
+	// 						Take: 20,
+	// 						Skip: 0,
+	// 						Term: term,
+	// 					};
+	// 					const formGroup = this.that.formGroup;
+	// 					if (formGroup.get('IDSeller')?.value && formGroup.get('IDPurchaseOrder').value) query.IDVendor = formGroup.get('IDSeller').value;
+	// 					if (formGroup.get('IDBuyer')?.value && formGroup.get('IDPurchaseOrder').value) query.IDStorer = formGroup.get('IDBuyer').value;
+	// 					return this.searchProvider.search(query).pipe(
+	// 						catchError(() => of([])), // emit an empty list on error
+	// 						tap(() => (this.loading = false))
+	// 					);
+	// 				}),
+	// 				tap(() => (this.loading = false)) // Ensure loading is turned off after completion
+	// 			)
+	// 		);
+	// 	},
+	// };
 
 	copyFromSource(query) {
 		this.pageProvider.commonService
@@ -607,64 +635,84 @@ export class APInvoiceDetailPage extends PageBase {
 			this.saveChange();
 		}
 	}
-	IDPurchaseOrderDataSource = {
-		searchProvider: this.purchaseOrderProvider,
-		loading: false,
-		input$: new Subject<string>(),
-		selected: [],
-		items$: null,
-		that: this,
-		initSearch() {
-			this.loading = false;
-			this.items$ = concat(
-				of(this.selected), // emit selected items first
-				this.input$.pipe(
-					distinctUntilChanged(),
-					tap(() => (this.loading = true)),
-					switchMap((term: any) => {
-						const query: any = {
-							SortBy: ['Id_desc'],
-							Take: 20,
-							Skip: 0,
-							Term: term,
-						};
-						const formGroup = this.that.formGroup;
-						if (formGroup.get('IDSeller')?.value && formGroup.get('IDReceipt').value) query.IDVendor = formGroup.get('IDSeller').value;
-						if (formGroup.get('IDBuyer')?.value && formGroup.get('IDReceipt').value) query.IDStorer = formGroup.get('IDBuyer').value;
+	IDPurchaseOrderDataSource = this.buildSelectDataSource((term) => {
+		const query: any = {
+			SortBy: ['Id_desc'],
+			Take: 20,
+			Skip: 0,
+			Term: term,
+		};
+		if (this.formGroup.get('IDSeller')?.value &&this. formGroup.get('IDReceipt').value) query.IDVendor = this.formGroup.get('IDSeller').value;
+		if (this.formGroup.get('IDBuyer')?.value && this.formGroup.get('IDReceipt').value) query.IDStorer = this.formGroup.get('IDBuyer').value;
 
-						return this.searchProvider.search(query).pipe(
-							catchError(() => of([])), // emit an empty list on error
-							tap(() => (this.loading = false))
-						);
-					}),
-					tap(() => (this.loading = false)) // Ensure loading is turned off after completion
-				)
-			);
-		},
-	};
-	IDOwnerDataSource = {
-		searchProvider: this.staffProvider,
-		loading: false,
-		input$: new Subject<string>(),
-		selected: [],
-		items$: null,
-		initSearch() {
-			this.loading = false;
-			this.items$ = concat(
-				of(this.selected),
-				this.input$.pipe(
-					distinctUntilChanged(),
-					tap(() => (this.loading = true)),
-					switchMap((term) =>
-						this.searchProvider.search({ Take: 20, Skip: 0, Term: term }).pipe(
-							catchError(() => of([])), // empty list on error
-							tap(() => (this.loading = false))
-						)
-					)
-				)
-			);
-		},
-	};
+		return this.purchaseOrderProvider.search(query);
+	});
+	
+	
+	// {
+	// 	searchProvider: this.purchaseOrderProvider,
+	// 	loading: false,
+	// 	input$: new Subject<string>(),
+	// 	selected: [],
+	// 	items$: null,
+	// 	that: this,
+	// 	initSearch() {
+	// 		this.loading = false;
+	// 		this.items$ = concat(
+	// 			of(this.selected), // emit selected items first
+	// 			this.input$.pipe(
+	// 				distinctUntilChanged(),
+	// 				tap(() => (this.loading = true)),
+	// 				switchMap((term: any) => {
+	// 					const query: any = {
+	// 						SortBy: ['Id_desc'],
+	// 						Take: 20,
+	// 						Skip: 0,
+	// 						Term: term,
+	// 					};
+	// 					const formGroup = this.that.formGroup;
+	// 					if (formGroup.get('IDSeller')?.value && formGroup.get('IDReceipt').value) query.IDVendor = formGroup.get('IDSeller').value;
+	// 					if (formGroup.get('IDBuyer')?.value && formGroup.get('IDReceipt').value) query.IDStorer = formGroup.get('IDBuyer').value;
+
+	// 					return this.searchProvider.search(query).pipe(
+	// 						catchError(() => of([])), // emit an empty list on error
+	// 						tap(() => (this.loading = false))
+	// 					);
+	// 				}),
+	// 				tap(() => (this.loading = false)) // Ensure loading is turned off after completion
+	// 			)
+	// 		);
+	// 	},
+	// };
+	
+	IDOwnerDataSource = this.buildSelectDataSource((term) => {
+		return this.staffProvider.search({ Take: 20, Skip: 0, Term: term });
+	});
+	
+	
+	// {
+	// 	searchProvider: this.staffProvider,
+	// 	loading: false,
+	// 	input$: new Subject<string>(),
+	// 	selected: [],
+	// 	items$: null,
+	// 	initSearch() {
+	// 		this.loading = false;
+	// 		this.items$ = concat(
+	// 			of(this.selected),
+	// 			this.input$.pipe(
+	// 				distinctUntilChanged(),
+	// 				tap(() => (this.loading = true)),
+	// 				switchMap((term) =>
+	// 					this.searchProvider.search({ Take: 20, Skip: 0, Term: term }).pipe(
+	// 						catchError(() => of([])), // empty list on error
+	// 						tap(() => (this.loading = false))
+	// 					)
+	// 				)
+	// 			)
+	// 		);
+	// 	},
+	// };
 
 	IDItemChange(e, group) {
 		if (e) {

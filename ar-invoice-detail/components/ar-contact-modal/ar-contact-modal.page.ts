@@ -56,37 +56,49 @@ export class ARContactModalPage extends PageBase {
 		console.log(this.item);
 		this.salemanDataSource.initSearch();
 	}
-	salemanDataSource = {
-		searchProvider: this.staffProvider,
-		loading: false,
-		input$: new Subject<string>(),
-		selected: [],
-		searchQuery: {
+	salemanDataSource = this.buildSelectDataSource((term) => {
+		return this.staffProvider.search({
 			Take: 20,
 			Skip: 0,
 			SkipMCP: true,
-			Term: '', // term ? term : this.item?.IDSeller,
+			Term: this.item?.IDSeller,
 			IDOwner: '',
-		},
-		items$: null,
-		initSearch() {
-			this.loading = false;
-			this.items$ = concat(
-				of(this.selected),
-				this.input$.pipe(
-					distinctUntilChanged(),
-					tap(() => (this.loading = true)),
-					switchMap(
-						(term) => (this.searchQuery.Term = term ? term : this.item?.IDSeller),
-						this.searchProvider.search(this.searchQuery).pipe(
-							catchError(() => of([])), // empty list on error
-							tap(() => (this.loading = false))
-						)
-					)
-				)
-			);
-		},
-	};
+		});
+	});
+	
+	
+	
+	// {
+	// 	searchProvider: this.staffProvider,
+	// 	loading: false,
+	// 	input$: new Subject<string>(),
+	// 	selected: [],
+	// 	searchQuery: {
+	// 		Take: 20,
+	// 		Skip: 0,
+	// 		SkipMCP: true,
+	// 		Term: '', // term ? term : this.item?.IDSeller,
+	// 		IDOwner: '',
+	// 	},
+	// 	items$: null,
+	// 	initSearch() {
+	// 		this.loading = false;
+	// 		this.items$ = concat(
+	// 			of(this.selected),
+	// 			this.input$.pipe(
+	// 				distinctUntilChanged(),
+	// 				tap(() => (this.loading = true)),
+	// 				switchMap(
+	// 					(term) => (this.searchQuery.Term = term ? term : this.item?.IDSeller),
+	// 					this.searchProvider.search(this.searchQuery).pipe(
+	// 						catchError(() => of([])), // empty list on error
+	// 						tap(() => (this.loading = false))
+	// 					)
+	// 				)
+	// 			)
+	// 		);
+	// 	},
+	// };
 
 	addTaxInfo(taxInfo) {
 		let groups = this.formGroup.get('TaxInfos') as FormArray;
