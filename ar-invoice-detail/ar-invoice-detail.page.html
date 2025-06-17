@@ -360,16 +360,19 @@
 								</ion-list-header>
 							</ion-col>
 							<ion-col size="12" size-sm size-xl="4">
-								<app-form-control [field]="{id:'BuyerName', label: 'Customer name', type : 'text', form : formGroup }" (change)="saveChange()"></app-form-control>
+									<app-form-control
+									[field]="{id:'BuyerTaxCode', label: 'Invoice required', type : 'ng-select', dataSource: TaxCodeDataSource, bindLabel: 'CompanyName', bindValue: 'TaxCode', form : formGroup }"
+									(change)="onBuyerTaxCodeChange($event)"
+								></app-form-control>
 								<app-form-control
 									[field]="{id:'ReceiveType', label: 'Types of invoice delivery', type : 'select', form : formGroup,  dataSource: receiveTypeList,  bindLabel: 'Name',  bindValue: 'Code' }"
 									(change)="saveChange()"
 								></app-form-control>
-								<app-form-control
-									[field]="{id:'BuyerTaxCode', label: 'Invoice required', type : 'ng-select', dataSource: TaxCodeDataSource, bindLabel: 'CompanyName', bindValue: 'TaxCode', form : formGroup }"
-									(change)="onBuyerTaxCodeChange($event)"
-								></app-form-control>
+								
+								<app-form-control [field]="{id:'BuyerName', label: 'Customer name', type : 'text', form : formGroup }" (change)="saveChange()"></app-form-control>
+							
 								<app-form-control [field]="{id:'BuyerTaxCode', label: 'Tax code', type : 'text', form : formGroup }" (change)="saveChange()"></app-form-control>
+								<app-form-control [field]="{id:'BuyerIdentityNumber', label: 'Identity number', type : 'text', form : formGroup }" (change)="saveChange()"></app-form-control>
 							</ion-col>
 							<ion-col size="12" size-sm size-xl="4">
 								<app-form-control
