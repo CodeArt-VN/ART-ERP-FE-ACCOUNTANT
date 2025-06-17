@@ -89,7 +89,15 @@ export class ARInvoiceDetailPage extends PageBase {
 			BuyerUnitName: new FormControl(),
 			BuyerAddress: new FormControl(),
 			ReceiverMobile: new FormControl(),
-			ReceiverEmail: new FormControl('', Validators.compose([Validators.pattern('^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$')])),
+			// Allow multiple emails separated by ';'
+			ReceiverEmail: new FormControl(
+				'',
+				Validators.compose([
+					Validators.pattern(
+						/^(\s*[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+\s*;)*\s*[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+\s*$/
+					),
+				])
+			),
 
 			Status: new FormControl({ value: 'ARInvoiceNew', disabled: true }),
 			Type: new FormControl({ value: 'InvoiceTypeVAT', disabled: false }),
