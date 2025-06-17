@@ -79,6 +79,7 @@ export class ARInvoiceDetailPage extends PageBase {
 
 			IDBusinessPartner: ['', Validators.required],
 			BuyerName: new FormControl(),
+			BuyerIdentityNumber: new FormControl(),
 			ReceiveType: new FormControl({
 				value: 'EInvoiceReceiveTypeEmailSMS',
 				disabled: false,
