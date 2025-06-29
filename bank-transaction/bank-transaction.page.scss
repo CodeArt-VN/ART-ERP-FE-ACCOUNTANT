@@ -6,6 +6,12 @@
 	background: linear-gradient(180deg, var(--main-background-top), var(--main-background-bottom));
 }
 
+ion-item, ion-list{
+	--ion-item-background-activated: transparent;
+	--ion-item-background: transparent;
+	--ion-card-background: transparent;
+}
+
 ion-item.item-label {
 	--color: var(--ion-color-contrast);
 }
