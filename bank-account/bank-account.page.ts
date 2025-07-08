@@ -30,19 +30,4 @@ export class BankAccountPage extends PageBase {
 		this.query.AllChildren = true;
 		this.query.AllParent = true;
 	}
-
-	loadedData(event) {
-		this.buildFlatTree(this.items, this.itemsState, this.isAllRowOpened).then((resp: any) => {
-			this.itemsState = resp;
-		});
-		super.loadedData(event);
-	}
-
-	toggleRowAll() {
-		this.isAllRowOpened = !this.isAllRowOpened;
-		this.itemsState.forEach((i) => {
-			i.showdetail = !this.isAllRowOpened;
-			this.toggleRow(this.itemsState, i, true);
-		});
-	}
 }

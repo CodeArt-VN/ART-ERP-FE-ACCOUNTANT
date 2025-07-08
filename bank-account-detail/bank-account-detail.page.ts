@@ -51,7 +51,7 @@ export class BankAccountDetailPage extends PageBase {
 			SWIFT: [''],
 			Currency: [''],
 			WorkingBalance: [''],
-			LastCheckedDate: [''],
+			LastCheckedDate: ['', Validators.required],
 			NextCheckNo: [''],
 			//-----------------
 			GLAccount: [''],

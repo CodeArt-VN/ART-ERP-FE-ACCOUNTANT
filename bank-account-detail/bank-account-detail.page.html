@@ -68,7 +68,7 @@
 							<app-form-control
 								*ngIf="pageConfig.canChangeBranch"
 								[field]="{id: 'IDBranch', label: 'Branch', type: 'ng-select-branch',dataSource:branchList, form: formGroup,bindLabel:'Name',bindValue:'Id',clearable:true}"
-								(controlChange)="changeIDBranch($event)"
+								(controlChange)="saveChange()"
 							>
 							</app-form-control>
 
