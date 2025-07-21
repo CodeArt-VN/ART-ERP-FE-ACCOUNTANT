@@ -153,6 +153,7 @@ export class ARInvoiceDetailPage extends PageBase {
 			WorkPhone: '',
 		});
 		if (!this.item?.BuyerTaxCode) this.item.BuyerTaxCode = '';
+		this.formGroup.get('BuyerTaxCode').setValue(this.item.BuyerTaxCode);
 		if (markAsDirty) {
 			let defaultTaxAddress = this.TaxCodeDataSource.find((d) => d.IsDefault);
 			if (!defaultTaxAddress) defaultTaxAddress = this.TaxCodeDataSource[0];
