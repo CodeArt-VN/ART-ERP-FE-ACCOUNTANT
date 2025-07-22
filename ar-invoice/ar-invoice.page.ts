@@ -45,6 +45,23 @@ export class ARInvoicePage extends PageBase {
 
 		let today = new Date();
 		today.setDate(today.getDate() + 1);
+
+		this.pageConfig.dividers = [
+			{
+				field: 'InvoiceDate',
+				dividerFn: (record, recordIndex, records) => {
+					let a: any = recordIndex == 0 ? new Date('2000-01-01') : new Date(records[recordIndex - 1].InvoiceDate);
+					let b: any = new Date(record.InvoiceDate);
+					let mins = Math.floor((b - a) / 1000 / 60);
+
+					if (Math.abs(mins) < 600) {
+						return null;
+					}
+					return  lib.dateFormat(record.InvoiceDate, 'yyyy-mm-dd') ;
+				},
+			},
+		];
+
 	}
 
 	preLoadData(event) {
