@@ -92,11 +92,7 @@ export class ARInvoiceDetailPage extends PageBase {
 			// Allow multiple emails separated by ';'
 			ReceiverEmail: new FormControl(
 				'',
-				Validators.compose([
-					Validators.pattern(
-						/^(\s*[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+\s*;)*\s*[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+\s*$/
-					),
-				])
+				Validators.compose([Validators.pattern(/^(\s*[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+\s*;)*\s*[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+\s*$/)])
 			),
 
 			Status: new FormControl({ value: 'ARInvoiceNew', disabled: true }),
@@ -135,7 +131,7 @@ export class ARInvoiceDetailPage extends PageBase {
 			Skip: 0,
 			Term: term,
 			SkipMCP: true,
-			SkipAddress: true,
+			SkipAddress: false,
 		});
 	});
 	TaxCodeDataSource = [];
@@ -153,10 +149,11 @@ export class ARInvoiceDetailPage extends PageBase {
 			WorkPhone: '',
 		});
 		if (!this.item?.BuyerTaxCode) this.item.BuyerTaxCode = '';
+		this.formGroup.get('BuyerTaxCode').setValue(this.item?.BuyerTaxCode);
 		if (markAsDirty) {
 			let defaultTaxAddress = this.TaxCodeDataSource.find((d) => d.IsDefault);
 			if (!defaultTaxAddress) defaultTaxAddress = this.TaxCodeDataSource[0];
-			this.onBuyerTaxCodeChange(defaultTaxAddress, true);
+			this.onBuyerTaxCodeChange(defaultTaxAddress, false);
 		}
 	}
 
@@ -173,7 +170,16 @@ export class ARInvoiceDetailPage extends PageBase {
 		this.formGroup.get('ReceiverEmail').markAsDirty();
 		this.formGroup.get('ReceiverMobile').markAsDirty();
 
-		if (forceSave) this.saveChange();
+		if (forceSave) {
+			this.saveChange();
+		}else {
+			this.formGroup.get('BuyerTaxCode').markAsPristine();
+			this.formGroup.get('BuyerUnitName').markAsPristine();
+			this.formGroup.get('BuyerAddress').markAsPristine();
+			this.formGroup.get('ReceiverEmail').markAsPristine();
+			this.formGroup.get('ReceiverMobile').markAsPristine();
+		}
+		
 	}
 
 	IDBusinessPartnerChange(i) {
@@ -183,6 +189,9 @@ export class ARInvoiceDetailPage extends PageBase {
 		this.isBindingTaxCode = true;
 		if (this.item?._DefaultBusinessPartner?.Id != i?.Id) {
 			this.isShowAddContactBtn = false;
+		}
+		if(!this.item.Id && i) {
+			this.LoadTaxCodeDataSource(i, this.isBindingTaxCode)
 		}
 		this.saveChange();
 	}
