@@ -35,7 +35,7 @@
 							<small label *ngIf="item.IDSaleOrder"><a [routerLink]="['/sale-order/'+item.IDSaleOrder]">{{'From' | translate}} SO: {{item.IDSaleOrder}}</a></small>
 						</app-form-control>
 						<app-form-control
-							[field]="{id:'IDBusinessPartner', label: 'Customer', type : 'ng-select-bp', form : formGroup,  dataSource: IDBusinessPartnerDataSource,  bindValue: 'Id' }"
+							[field]="{id:'IDBusinessPartner', label: 'Customer', type : 'ng-select-bp', form : formGroup,  dataSource: IDBusinessPartnerDataSource,  bindValue: 'Id', appendTo:'#order-detail-page' }"	
 							(change)="IDBusinessPartnerChange($event);"
 							(nav)="nav($event)"
 						>
@@ -55,7 +55,7 @@
 						</app-form-control>
 
 						<app-form-control
-							[field]="{id:'TypeCreateInvoice', label: 'A/R content type', type : 'ng-select', form : formGroup,  dataSource: contentTypeList,  bindLabel: 'Name',  bindValue: 'Code' }"
+							[field]="{id:'TypeCreateInvoice', label: 'A/R content type', type : 'ng-select', form : formGroup,  dataSource: contentTypeList,  bindLabel: 'Name',  bindValue: 'Code' , appendTo:'#order-detail-page'}"
 							(change)="TypeCreateInvoiceChange($event)"
 						></app-form-control>
 						<app-form-control
@@ -65,7 +65,7 @@
 					</ion-col>
 					<ion-col size="12" size-sm size-xl="4">
 						<app-form-control
-							[field]="{id:'Status', type : 'ng-select-status', form : formGroup,  dataSource: statusList,  bindValue: 'Code' }"
+							[field]="{id:'Status', type : 'ng-select-status', form : formGroup,  dataSource: statusList,  bindValue: 'Code', appendTo:'#order-detail-page' }"
 							(change)="saveChange()"
 						></app-form-control>
 						<app-form-control [field]="{id:'InvoiceNo', label: 'Invoice No.', type : 'text', form : formGroup }" (change)="saveChange()"></app-form-control>
@@ -126,9 +126,10 @@
 									<div class="col-name cell">
 										<app-input-control
 											[field]="{id:'IDItem', label: 'Item', type : 'ng-select-item', 
-                      form : g,  dataSource: g.get('_IDItemDataSource').value,  
-                      bindValue: 'Id', clearable: true, 
-                      placeholder: 'Type to search...' }"
+											form : g,  dataSource: g.get('_IDItemDataSource').value,  
+											bindValue: 'Id', clearable: true, 
+											placeholder: 'Type to search...', 
+											appendTo:'#order-detail-page'}"
 											(change)="IDItemChange($event, g);"
 											(nav)="nav($event)"
 										></app-input-control>
@@ -152,9 +153,10 @@
 									<div class="col-number cell">
 										<app-input-control
 											[field]="{id:'IDUoM', lable:'UoM',
-                      type : 'ng-select', form : g, 
-                      dataSource: g.controls._IDUoMDataSource.value, 
-                      bindLabel: 'Name',  bindValue: 'Id'}"
+											type : 'ng-select', form : g, 
+											dataSource: g.controls._IDUoMDataSource.value, 
+											bindLabel: 'Name',  bindValue: 'Id',
+											appendTo:'#order-detail-page'}"
 											(change)="IDUoMChange(g)"
 										>
 										</app-input-control>
@@ -324,7 +326,7 @@
 									(change)="saveChange()"
 								></app-form-control>
 								<app-form-control
-									[field]="{id:'TypeCreateInvoice', label: 'A/R content type', type : 'ng-select', form : formGroup,  dataSource: contentTypeList,  bindLabel: 'Name',  bindValue: 'Code' }"
+									[field]="{id:'TypeCreateInvoice', label: 'A/R content type', type : 'ng-select', form : formGroup,  dataSource: contentTypeList,  bindLabel: 'Name',  bindValue: 'Code', appendTo:'#order-detail-page'}"
 									(change)="TypeCreateInvoiceChange($event)"
 								></app-form-control>
 								<app-form-control
@@ -365,7 +367,7 @@
 									(change)="saveChange()"
 								></app-form-control>
 								<app-form-control
-									[field]="{id:'BuyerTaxCode', label: 'Invoice required', type : 'ng-select', dataSource: TaxCodeDataSource, bindLabel: 'CompanyName', bindValue: 'TaxCode', form : formGroup }"
+									[field]="{id:'BuyerTaxCode', label: 'Invoice required', type : 'ng-select', dataSource: TaxCodeDataSource, bindLabel: 'CompanyName', bindValue: 'TaxCode', form : formGroup, appendTo:'#order-detail-page' }"
 									(change)="onBuyerTaxCodeChange($event)"
 								></app-form-control>
 								<app-form-control [field]="{id:'BuyerName', label: 'Customer name', type : 'text', form : formGroup }" (change)="saveChange()"></app-form-control>
