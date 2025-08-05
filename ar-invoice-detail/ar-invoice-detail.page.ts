@@ -176,14 +176,7 @@ export class ARInvoiceDetailPage extends PageBase {
 
 		if (forceSave) {
 			this.saveChange();
-		}else {
-			this.formGroup.get('BuyerTaxCode').markAsPristine();
-			this.formGroup.get('BuyerUnitName').markAsPristine();
-			this.formGroup.get('BuyerAddress').markAsPristine();
-			this.formGroup.get('ReceiverEmail').markAsPristine();
-			this.formGroup.get('ReceiverMobile').markAsPristine();
 		}
-		
 	}
 
 	IDBusinessPartnerChange(i) {
@@ -194,10 +187,14 @@ export class ARInvoiceDetailPage extends PageBase {
 		if (this.item?._DefaultBusinessPartner?.Id != i?.Id) {
 			this.isShowAddContactBtn = false;
 		}
-		if(!this.item.Id && i) {
-			this.LoadTaxCodeDataSource(i, this.isBindingTaxCode)
-		}
-		this.saveChange();
+		this.LoadTaxCodeDataSource(i, this.isBindingTaxCode)
+		this.saveChange().then(() => {
+			this.formGroup.get('BuyerTaxCode').markAsPristine();
+			this.formGroup.get('BuyerUnitName').markAsPristine();
+			this.formGroup.get('BuyerAddress').markAsPristine();
+			this.formGroup.get('ReceiverEmail').markAsPristine();
+			this.formGroup.get('ReceiverMobile').markAsPristine();
+		});
 	}
 
 	TypeCreateInvoiceChange(i) {
