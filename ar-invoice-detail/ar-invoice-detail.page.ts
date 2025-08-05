@@ -92,7 +92,11 @@ export class ARInvoiceDetailPage extends PageBase {
 			// Allow multiple emails separated by ';'
 			ReceiverEmail: new FormControl(
 				'',
-				Validators.compose([Validators.pattern(/^(\s*[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+\s*;)*\s*[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+\s*$/)])
+				Validators.compose([
+					Validators.pattern(
+						/^(\s*[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+\s*;)*\s*[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+\s*$/
+					),
+				])
 			),
 
 			Status: new FormControl({ value: 'ARInvoiceNew', disabled: true }),
