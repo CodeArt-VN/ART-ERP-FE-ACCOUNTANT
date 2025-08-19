@@ -56,8 +56,7 @@ export class BankTransactionPage extends PageBase {
 			Term: term ? term : 'BP:' + this.item?.IDCustomer,
 		});
 	});
-	
-	
+
 	// {
 	// 	searchProvider: this.contactProvider,
 	// 	loading: false,
@@ -104,17 +103,30 @@ export class BankTransactionPage extends PageBase {
 		this.bankProvider
 			.read({ Take: 5000 })
 			.then((res) => {
-				this.groupControl.groupList = res['data'];
-				this.groupControl.groupList.forEach((g) => {
-					if (g.IDParent) g._query = g.Id;
-					else {
-						let childrentIds = this.groupControl.groupList.filter((x) => x.IDParent === g.Id).map((x) => x.Id);
-						g._query = JSON.stringify(childrentIds);
-					}
-				});
-			})
-			.catch((err) => {
-				this.env.showMessage(err, 'danger');
+				if (res['data'] && res['data'].length > 0) {
+					this.groupControl.groupList = res['data']
+						.filter((d) => d.IDParent === null)
+						.map((d) => ({
+							...d,
+							children: [], // thêm property mới
+						}));
+					res['data']
+						.filter((d) => d.IDParent)
+						.forEach((d) => {
+							let parent: any = this.groupControl.groupList.find((g) => g.Id === d.IDParent);
+							if (parent) {
+								d._query = d.Id;
+								parent.children.push(d);
+							}
+						});
+					// this.groupControl.groupList.forEach((g) => {
+					// 	if (g.IDParent) g._query = g.Id;
+					// 	else {
+					// 		let childrentIds = this.groupControl.groupList.filter((x) => x.IDParent === g.Id).map((x) => x.Id);
+					// 		g._query = JSON.stringify(childrentIds);
+					// 	}
+					// });
+				}
 			})
 			.finally(() => {
 				super.preLoadData(event);
@@ -158,7 +170,7 @@ export class BankTransactionPage extends PageBase {
 					this.submitAttempt = false;
 				})
 				.catch((err) => {
-					this.env.showMessage(err, 'danger');
+					// this.env.showMessage(err, 'danger');
 					this.submitAttempt = false;
 				})
 				.finally(() => {
@@ -194,7 +206,7 @@ export class BankTransactionPage extends PageBase {
 				this.submitAttempt = false;
 			})
 			.catch((err) => {
-				this.env.showMessage(err, 'danger');
+				// this.env.showMessage(err, 'danger');
 				this.submitAttempt = false;
 			})
 			.finally(() => {

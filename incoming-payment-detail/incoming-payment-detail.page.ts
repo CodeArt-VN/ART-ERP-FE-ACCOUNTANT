@@ -4,6 +4,7 @@ import { PageBase } from 'src/app/page-base';
 import { ActivatedRoute } from '@angular/router';
 import { EnvService } from 'src/app/services/core/env.service';
 import {
+	BANK_AccountProvider,
 	BANK_IncomingPaymentDetailProvider,
 	BANK_IncomingPaymentProvider,
 	BRA_BranchProvider,
@@ -28,9 +29,11 @@ export class IncomingPaymentDetailPage extends PageBase {
 	paymentReasonList = [];
 	SelectedOrderList: any;
 	SelectedInvoiceList: any;
+	bankAccountList = [];
 	constructor(
 		public pageProvider: BANK_IncomingPaymentProvider,
 		public IncomingPaymentDetailservice: BANK_IncomingPaymentDetailProvider,
+		public bankAccountProvider: BANK_AccountProvider,
 		public branchProvider: BRA_BranchProvider,
 		public staffProvider: HRM_StaffProvider,
 		public popoverCtrl: PopoverController,
@@ -52,6 +55,7 @@ export class IncomingPaymentDetailPage extends PageBase {
 			IDBranch: [this.env.selectedBranch],
 			Id: new FormControl({ value: '', disabled: true }),
 			IDTransaction: new FormControl({ value: '', disabled: true }),
+			IDAccount : [''],
 			Name: [''],
 			Code: [''],
 			DocumentDate: ['', Validators.required],
@@ -77,7 +81,7 @@ export class IncomingPaymentDetailPage extends PageBase {
 	}
 
 	preLoadData(event?: any): void {
-		Promise.all([this.env.getStatus('PaymentStatus'), this.env.getType('PaymentType'), this.env.getType('IncomingPaymentReason')]).then((values: any) => {
+		Promise.all([this.env.getStatus('PaymentStatus'), this.env.getType('PaymentType'), this.env.getType('IncomingPaymentReason'),this.bankAccountProvider.read()]).then((values: any) => {
 			if (values.length) {
 				this.statusList = values[0].filter((d) => d.Code != 'PaymentStatus');
 				this.typeDataSource = values[1].filter((d) => d.Code == 'Cash' || d.Code == 'Card' || d.Code == 'Transfer');
@@ -86,6 +90,7 @@ export class IncomingPaymentDetailPage extends PageBase {
 						{ Name: 'Payment of invoice', Code: 'PaymentOfInvoice' },
 						{ Name: 'Payment of sale order', Code: 'PaymentOfSO' },
 					];
+				this.bankAccountList = values[3].data;
 			}
 			super.preLoadData(event);
 		});
@@ -513,7 +518,7 @@ export class IncomingPaymentDetailPage extends PageBase {
 						if (publishEventCode) this.env.publishEvent({ Code: publishEventCode });
 					})
 					.catch((err) => {
-						this.env.showMessage('Cannot save, please try again', 'danger');
+						// this.env.showMessage('Cannot save, please try again', 'danger');
 						this.cdr.detectChanges();
 						this.submitAttempt = false;
 						reject(err);
