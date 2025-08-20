@@ -11,7 +11,7 @@
 				</ion-col>
 			</ion-row>
 		</ion-grid>
-
+		<div id="ng-select" style="position: absolute; z-index: 30005"></div>
 		<div class="row-full shadow full-screen" style="max-width: 1440px; margin: auto; width: 100%; position: relative; z-index: 0">
 			<div class="ion-padding" *ngIf="segmentView == 's1'">
 				<ion-grid fixed>
@@ -69,13 +69,13 @@
 
 							<ion-col size="12" size-sm size-xl="4">
 								<app-form-control
-									[field]="{id:'PaymentReason', label: 'Payment reason', type : 'ng-select',bindValue:'Code',bindLabel:'Name',dataSource:paymentReasonList, form : formGroup }"
+									[field]="{id:'PaymentReason', label: 'Payment reason', type : 'ng-select',bindValue:'Code',bindLabel:'Name',dataSource:paymentReasonList, form : formGroup , appendTo:'#ng-select' }"
 									(change)="saveChange()"
 								>
 								</app-form-control>
 
 								<app-form-control
-									[field]="{id:'Type', label: 'Type', type : 'ng-select', dataSource: typeDataSource, bindValue:'Code', bindLabel:'Name', form : formGroup }"
+									[field]="{id:'Type', label: 'Type', type : 'ng-select', dataSource: typeDataSource, bindValue:'Code', bindLabel:'Name', form : formGroup, appendTo:'#ng-select' }"
 									(change)="changeType($event)"
 								>
 								</app-form-control>
@@ -84,11 +84,16 @@
 								<app-form-control [field]="{id:'SubType', label: 'Sub type', type : 'text', form : formGroup }" (change)="saveChange()"> </app-form-control>
 
 								<app-form-control
-									[field]="{id:'Status', type : 'ng-select-status', form : formGroup,  dataSource: statusList,  bindValue: 'Code' }"
+									[field]="{id:'Status', type : 'ng-select-status', form : formGroup,  dataSource: statusList,  bindValue: 'Code' , appendTo:'#ng-select' }"
 									(change)="saveChange()"
 								>
 								</app-form-control>
 								<app-form-control [field]="{id:'Amount', label: 'Amount', type : 'number', form : formGroup }" (change)="saveChange()"> </app-form-control>
+								<app-form-control
+									[field]="{id:'IDAccount', label: 'Bank account', type : 'ng-select', form : formGroup,  dataSource: bankAccountList,  bindValue: 'Id',bindLabel:'Code' , appendTo:'#ng-select'}"
+									(change)="saveChange()"
+								>
+								</app-form-control>
 								<div class="c-control" *ngIf="item.IDTransaction">
 									<label class="c-label"> {{'Transaction' | translate }} </label>
 									<div class="col-name">
@@ -115,7 +120,7 @@
 								</app-form-control>
 								<app-form-control
 									[field]="{id:'IDStaff',label:'Onwer', type:'ng-select-staff',dataSource:_staffDataSource, bindLabel:'Name',
-                bindValue:'Id',form:formGroup}"
+                bindValue:'Id',form:formGroup , appendTo:'#ng-select'}"
 									(controlChange)="saveChange()"
 								></app-form-control>
 							</ion-col>
