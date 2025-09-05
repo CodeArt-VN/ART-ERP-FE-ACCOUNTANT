@@ -8,9 +8,9 @@ import { ApiSetting } from 'src/app/services/static/api-setting';
 
 import { ARInvoiceSplitModalPage } from '../arinvoice-split-modal/arinvoice-split-modal.page';
 import { ARInvoiceMergeModalPage } from '../arinvoice-merge-modal/arinvoice-merge-modal.page';
-import { EInvoiceService } from 'src/app/services/einvoice.service';
+import { EInvoiceService } from 'src/app/services/custom/einvoice.service';
 import { lib } from 'src/app/services/static/global-functions';
-import { SortConfig } from 'src/app/models/options-interface';
+import { SortConfig } from 'src/app/interfaces/options-interface';
 
 @Component({
 	selector: 'app-arinvoice',

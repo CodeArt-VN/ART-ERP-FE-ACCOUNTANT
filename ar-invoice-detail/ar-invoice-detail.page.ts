@@ -6,7 +6,7 @@ import { EnvService } from 'src/app/services/core/env.service';
 import { AC_ARInvoiceProvider, CRM_ContactProvider, WMS_ItemProvider } from 'src/app/services/static/services.service';
 import { FormBuilder, Validators, FormControl, FormGroup, FormArray } from '@angular/forms';
 import { CommonService } from 'src/app/services/core/common.service';
-import { EInvoiceService } from 'src/app/services/einvoice.service';
+import { EInvoiceService } from 'src/app/services/custom/einvoice.service';
 import { concat, of, Subject } from 'rxjs';
 import { catchError, distinctUntilChanged, switchMap, tap } from 'rxjs/operators';
 import { lib } from 'src/app/services/static/global-functions';
@@ -249,7 +249,7 @@ export class ARInvoiceDetailPage extends PageBase {
 				this.IDBusinessPartnerDataSource.selected.push(this.item?._BusinessPartner);
 			}
 		}
-		if (this.item?._DefaultBusinessPartner?.Id == this.item.IDBusinessPartner) {
+		if (this.item?._DefaultBusinessPartner?.Id == this.item?.IDBusinessPartner) {
 			this.isShowAddContactBtn = true;
 		}
 		super.loadedData(event, ignoredFromGroup);

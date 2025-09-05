@@ -4,7 +4,7 @@ import { EnvService } from 'src/app/services/core/env.service';
 import { PageBase } from 'src/app/page-base';
 import { AC_ARInvoiceProvider, SYS_ConfigProvider } from 'src/app/services/static/services.service';
 import { Location } from '@angular/common';
-import { EInvoiceService } from 'src/app/services/einvoice.service';
+import { EInvoiceService } from 'src/app/services/custom/einvoice.service';
 
 @Component({
 	selector: 'app-child-invoice',

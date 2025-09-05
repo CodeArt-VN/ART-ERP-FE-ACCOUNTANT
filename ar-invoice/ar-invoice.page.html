@@ -98,8 +98,8 @@
 			<datatable-column class="col-number bold" format="1.0-0" name="Total" property="TotalAfterTax"></datatable-column>
 			<datatable-column class="col-status" name="Status" property="Status" filterControlType="ng-select" [filterDataSource]="statusList">
 				<ng-template let-i="row" datatable-cell-template>
-					<ion-badge [color]="i._Status.Color" [title]="i._Status.Name">
-						{{i._Status.Name}}
+					<ion-badge [color]="i._Status?.Color" [title]="i._Status?.Name">
+						{{i._Status?.Name}}
 						<abbr class="clickable" (click)="query.Id=i.IDParent; refresh()" *ngIf="i.IDParent"> >{{i.IDParent}} </abbr>
 					</ion-badge>
 				</ng-template>
