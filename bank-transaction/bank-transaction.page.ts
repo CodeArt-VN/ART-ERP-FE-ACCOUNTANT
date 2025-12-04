@@ -148,6 +148,65 @@ export class BankTransactionPage extends PageBase {
 		//super.refresh(event);
 	}
 
+	@ViewChild('importfile') importfile: any;
+	onClickImport() {
+		this.importfile.nativeElement.value = '';
+		this.importfile.nativeElement.click();
+	}
+
+	importMBTransactions(fileToUpload: File) {
+		let apiPath = {
+			postImport: {
+				method: 'UPLOAD',
+				url: function () {
+					return 'BANK/Transaction/ImportMBTransaction/';
+				},
+			},
+		};
+		return this.pageProvider.commonService.import(apiPath, fileToUpload);
+	}
+
+	importMBTransaction(event) {
+		if (event.target.files.length == 0) return;
+		this.env
+			.showLoading('Please wait for a few moments', this.importMBTransactions(event.target.files[0]))
+			.then((resp: any) => {
+				this.refresh();
+				if (resp.ErrorList && resp.ErrorList.length) {
+					let message = '';
+					for (let i = 0; i < resp.ErrorList.length && i <= 5; i++)
+						if (i == 5) message += '<br> Còn nữa...';
+						else {
+							const e = resp.ErrorList[i];
+							message += '<br> ' + e.Id + '. Tại dòng ' + e.Line + ': ' + e.Message;
+						}
+					this.env
+						.showPrompt(
+							{
+								code: 'Có {{value}} lỗi khi import: {{value1}}',
+								value: { value: resp.ErrorList.length, value1: message },
+							},
+							'Bạn có muốn xem lại các mục bị lỗi?',
+							'Có lỗi import dữ liệu'
+						)
+						.then((_) => {
+							this.downloadURLContent(resp.FileUrl);
+						})
+						.catch((e) => {});
+				} else {
+					this.env.showMessage('Import completed!', 'success');
+				}
+			})
+			.catch((err) => {
+				if (err.statusText == 'Conflict') {
+					// var contentDispositionHeader = err.headers.get('Content-Disposition');
+					// var result = contentDispositionHeader.split(';')[1].trim().split('=')[1];
+					// this.downloadContent(result.replace(/"/g, ''),err._body);
+					this.downloadURLContent(err._body);
+				}
+			});
+	}
+
 	@ViewChild('popover') popover;
 	isOpenPopover = false;
 	dismissPopover(apply: boolean = false) {

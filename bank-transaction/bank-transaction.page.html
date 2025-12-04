@@ -11,6 +11,11 @@
 		<ion-button *ngIf="pageConfig.canEdit" (click)="FindMatchingCriteria()" title="{{'Find mactching criteria' | translate}}" color="danger">
 			<ion-icon name="git-compare-outline"></ion-icon>
 		</ion-button>
+
+		<ion-button *ngIf="pageConfig.canEdit" (click)="onClickImport()" title="{{'Import MB transaction' | translate}}" color="danger">
+			<ion-icon slot="start" name="cloud-upload-outline"></ion-icon>
+			<input class="hide-all" #importfile type="file" accept=".xlsx" (change)="importMBTransaction($event)" />
+		</ion-button>
 	</app-toolbar>
 </ion-header>
 <ion-content appScrollbarTheme class="left" [ngClass]="{withFeature: pageConfig.isShowFeature}" forceOverscroll="false">
