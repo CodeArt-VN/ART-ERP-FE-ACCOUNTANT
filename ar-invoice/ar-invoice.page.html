@@ -57,9 +57,9 @@
 					<div>
 						<span title="{{'View Invoice details' | translate}}">
 							<a
-								[href]="'#/'+'business-partner/'+i.IDBusinessPartner"
-								(click)="nav('business-partner/'+i.IDBusinessPartner,'forward')"
-								title="{{'View customers\' information' | translate}}"
+								[href]="'#/'+'business-partner/'+i._BusinessPartner.Id"
+								(click)="nav('business-partner/'+i._BusinessPartner.Id,'forward')"
+								title="{{'View customers' information' | translate}}"
 							>
 								{{i._BusinessPartner.Id}}
 								<ion-icon name="open-outline"></ion-icon>
