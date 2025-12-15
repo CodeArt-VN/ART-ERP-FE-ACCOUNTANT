@@ -195,7 +195,7 @@ export class ARInvoiceMergeModalPage extends PageBase {
 		let apiPath = {
 			method: 'POST',
 			url: function () {
-				return ApiSetting.apiDomain('AC/ARInvoice/MergeARInvoice/');
+				return ApiSetting.apiDomain('AC/ARInvoice/Merge/');
 			},
 		};
 

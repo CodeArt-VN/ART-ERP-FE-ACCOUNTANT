@@ -482,7 +482,7 @@ export class ARInvoiceSplitModalPage extends PageBase {
 		let apiPath = {
 			method: 'POST',
 			url: function () {
-				return ApiSetting.apiDomain('AC/ARInvoice/SplitARInvoice/');
+				return ApiSetting.apiDomain('AC/ARInvoice/Split/');
 			},
 		};
 
