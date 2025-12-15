@@ -53,12 +53,11 @@ export class ARInvoicePage extends PageBase {
 				dividerFn: (record, recordIndex, records) => {
 					let a: any = recordIndex == 0 ? new Date('2000-01-01') : new Date(records[recordIndex - 1].InvoiceDate);
 					let b: any = new Date(record.InvoiceDate);
-					let mins = Math.floor((b - a) / 1000 / 60);
 
-					if (Math.abs(mins) < 600) {
+					if (a.getDate() == b.getDate() && a.getMonth() == b.getMonth() && a.getFullYear() == b.getFullYear()) {
 						return null;
 					}
-					return lib.dateFormat(record.InvoiceDate, 'yyyy-mm-dd');
+					return  lib.dateFormat(record.InvoiceDate, 'dd/mm/yyyy') ;
 				},
 			},
 		];
@@ -73,7 +72,7 @@ export class ARInvoicePage extends PageBase {
 		this.pageConfig.sort = sorted;
 		this.query.IDOwner = this.pageConfig.canViewAllData ? 'all' : this.env.user.StaffID;
 
-		let sysConfigQuery = ['IsShowSOCode'];
+		let sysConfigQuery = ['IsShowSOCode', 'IsShowBillNo'];
 		Promise.all([
 			this.env.getStatus('ARInvoiceStatus'),
 			this.sysConfigProvider.read({
