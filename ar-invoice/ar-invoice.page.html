@@ -54,7 +54,7 @@
 			<datatable-column class="col-date" format="yyyy-MM-dd" name="Invoice date" property="InvoiceDate" filterControlType="date"></datatable-column>
 			<datatable-column class="col-name flex-break" name="Customer name" property="_BusinessPartner.Name">
 				<ng-template let-i="row" datatable-cell-template>
-					<div>
+					<div *ngIf="i._BusinessPartner">
 						<span title="{{'View Invoice details' | translate}}">
 							<a
 								[href]="'#/'+'business-partner/'+i._BusinessPartner.Id"

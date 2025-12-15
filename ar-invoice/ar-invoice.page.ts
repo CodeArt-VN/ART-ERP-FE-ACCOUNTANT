@@ -67,6 +67,7 @@ export class ARInvoicePage extends PageBase {
 		this.query.Status = "['ARInvoiceApproved','ARInvoiceRejected','ARInvoicePending']";
 		let sorted: SortConfig[] = [
 			{ Dimension: 'InvoiceDate', Order: 'DESC' },
+			{ Dimension: 'IDBranch', Order: 'DESC' },
 			{ Dimension: 'Id', Order: 'DESC' },
 		];
 		this.pageConfig.sort = sorted;
