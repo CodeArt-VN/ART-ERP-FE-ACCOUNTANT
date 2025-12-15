@@ -42,6 +42,7 @@ export class ARInvoicePage extends PageBase {
 
 		// this.pageConfig.isShowFeature = true;
 		this.pageConfig.isShowSearch = false;
+		this.pageConfig.IsRequiredDateRangeToExport = true;
 
 		let today = new Date();
 		today.setDate(today.getDate() + 1);
@@ -60,7 +61,6 @@ export class ARInvoicePage extends PageBase {
 				},
 			},
 		];
-
 	}
 
 	preLoadData(event) {
@@ -103,342 +103,7 @@ export class ARInvoicePage extends PageBase {
 		super.loadedData(event);
 	}
 
-	approveInvoices() {
-		if (!this.pageConfig.canApproveInvoice) {
-			return;
-		}
-
-		let itemsCanNotProcess = this.selectedItems.filter((i) => !(i.Status == 'ARInvoicePending'));
-		if (itemsCanNotProcess.length == this.selectedItems.length) {
-			this.env.showMessage('Your selected order cannot be approved. Please only select pending for approval order', 'warning');
-		} else {
-			itemsCanNotProcess.forEach((i) => {
-				i.checked = false;
-			});
-			this.selectedItems = this.selectedItems.filter((i) => i.Status == 'ARInvoicePending');
-
-			this.alertCtrl
-				.create({
-					header: 'Duyệt ' + this.selectedItems.length + ' hóa đơn',
-					//subHeader: '---',
-					message: 'Bạn có chắc muốn xác nhận ' + this.selectedItems.length + ' hóa đơn đang chọn?',
-					buttons: [
-						{
-							text: 'Không',
-							role: 'cancel',
-							handler: () => {
-								//console.log('Không xóa');
-							},
-						},
-						{
-							text: 'Duyệt',
-							cssClass: 'danger-btn',
-							handler: () => {
-								let publishEventCode = this.pageConfig.pageName;
-								let apiPath = {
-									method: 'POST',
-									url: function () {
-										return ApiSetting.apiDomain('AC/ARInvoice/ApproveInvoices/');
-									},
-								};
-
-								if (this.submitAttempt == false) {
-									this.submitAttempt = true;
-
-									let postDTO = { Ids: [] };
-									postDTO.Ids = this.selectedItems.map((e) => e.Id);
-
-									this.pageProvider.commonService
-										.connect(apiPath.method, apiPath.url(), postDTO)
-										.toPromise()
-										.then((savedItem: any) => {
-											if (publishEventCode) {
-												this.env.publishEvent({
-													Code: publishEventCode,
-												});
-											}
-											this.env.showMessage('Saving completed!', 'success');
-											this.submitAttempt = false;
-										})
-										.catch((err) => {
-											this.submitAttempt = false;
-											//console.log(err);
-										});
-								}
-							},
-						},
-					],
-				})
-				.then((alert) => {
-					alert.present();
-				});
-		}
-	}
-
-	disapproveInvoices() {
-		if (!this.pageConfig.canApproveInvoice) {
-			return;
-		}
-
-		let itemsCanNotProcess = this.selectedItems.filter((i) => !(i.Status == 'ARInvoicePending' || i.Status == 'ARInvoiceApproved'));
-		if (itemsCanNotProcess.length == this.selectedItems.length) {
-			this.env.showMessage('Your selected invoices cannot be disaaproved. Please select approved or pending for approval invoice', 'warning');
-		} else {
-			itemsCanNotProcess.forEach((i) => {
-				i.checked = false;
-			});
-			this.selectedItems = this.selectedItems.filter((i) => i.Status == 'ARInvoicePending' || i.Status == 'ARInvoiceApproved');
-
-			this.alertCtrl
-				.create({
-					header: 'Từ chối duyệt ' + this.selectedItems.length + ' hóa đơn',
-					//subHeader: '---',
-					message: 'Bạn có chắc muốn từ chối duyệt ' + this.selectedItems.length + ' hóa đơn đang chọn?',
-					buttons: [
-						{
-							text: 'Không',
-							role: 'cancel',
-							handler: () => {
-								//console.log('Không xóa');
-							},
-						},
-						{
-							text: 'Từ chối',
-							cssClass: 'danger-btn',
-							handler: () => {
-								let publishEventCode = this.pageConfig.pageName;
-								let apiPath = {
-									method: 'POST',
-									url: function () {
-										return ApiSetting.apiDomain('AC/ARInvoice/DisapproveInvoices/');
-									},
-								};
-
-								if (this.submitAttempt == false) {
-									this.submitAttempt = true;
-
-									let postDTO = { Ids: [] };
-									postDTO.Ids = this.selectedItems.map((e) => e.Id);
-
-									this.pageProvider.commonService
-										.connect(apiPath.method, apiPath.url(), postDTO)
-										.toPromise()
-										.then((savedItem: any) => {
-											if (publishEventCode) {
-												this.env.publishEvent({
-													Code: publishEventCode,
-												});
-											}
-											this.env.showMessage('Saving completed!', 'success');
-											this.submitAttempt = false;
-										})
-										.catch((err) => {
-											this.submitAttempt = false;
-											//console.log(err);
-										});
-								}
-							},
-						},
-					],
-				})
-				.then((alert) => {
-					alert.present();
-				});
-		}
-	}
-
-	cancelInvoices() {
-		if (!this.pageConfig.canCancelInvoice) {
-			return;
-		}
-
-		let itemsCanNotProcess = this.selectedItems.filter((i) => i.Status == 'ARInvoiceCanceled' || i.Status == 'ARInvoiceSplited' || i.Status == 'ARInvoiceMerged');
-		if (itemsCanNotProcess.length == this.selectedItems.length) {
-			this.env.showMessage('Your selected invoices cannot be canceled. Please select draft or pending for approval invoice', 'warning');
-		} else {
-			itemsCanNotProcess.forEach((i) => {
-				i.checked = false;
-			});
-			this.selectedItems = this.selectedItems.filter((i) => !(i.Status == 'ARInvoiceCanceled' || i.Status == 'ARInvoiceSplited' || i.Status == 'ARInvoiceMerged'));
-
-			this.alertCtrl
-				.create({
-					header: 'HỦY ' + this.selectedItems.length + ' hóa đơn',
-					//subHeader: '---',
-					message: 'Bạn có chắc muốn HỦY ' + this.selectedItems.length + ' hóa đơn đang chọn?',
-					buttons: [
-						{
-							text: 'Không',
-							role: 'cancel',
-							handler: () => {
-								//console.log('Không xóa');
-							},
-						},
-						{
-							text: 'Hủy',
-							cssClass: 'danger-btn',
-							handler: () => {
-								let publishEventCode = this.pageConfig.pageName;
-								let apiPath = {
-									method: 'POST',
-									url: function () {
-										return ApiSetting.apiDomain('AC/ARInvoice/CancelInvoices/');
-									},
-								};
-
-								if (this.submitAttempt == false) {
-									this.submitAttempt = true;
-
-									let postDTO = { Ids: [] };
-									postDTO.Ids = this.selectedItems.map((e) => e.Id);
-
-									this.pageProvider.commonService
-										.connect(apiPath.method, apiPath.url(), postDTO)
-										.toPromise()
-										.then((savedItem: any) => {
-											if (publishEventCode) {
-												this.env.publishEvent({
-													Code: publishEventCode,
-												});
-											}
-											this.env.showMessage('Saving completed!', 'success');
-											this.submitAttempt = false;
-										})
-										.catch((err) => {
-											this.submitAttempt = false;
-											//console.log(err);
-										});
-								}
-							},
-						},
-					],
-				})
-				.then((alert) => {
-					alert.present();
-				});
-		}
-	}
-
-	submitInvoicesForApproval() {
-		if (!this.pageConfig.canApproveInvoice) {
-			return;
-		}
-
-		let itemsCanNotProcess = this.selectedItems.filter((i) => !(i.Status == 'ARInvoiceDraft' || i.Status == 'ARInvoiceRejected' || i.Status == 'ARInvoiceNew'));
-		if (itemsCanNotProcess.length == this.selectedItems.length) {
-			this.env.showMessage('Your selected invoices cannot be approved. Please select new or draft or disapproved ones', 'warning');
-		} else {
-			itemsCanNotProcess.forEach((i) => {
-				i.checked = false;
-			});
-			this.selectedItems = this.selectedItems.filter((i) => i.Status == 'ARInvoiceDraft' || i.Status == 'ARInvoiceRejected' || i.Status == 'ARInvoiceNew');
-
-			this.alertCtrl
-				.create({
-					header: 'Gửi duyệt ' + this.selectedItems.length + ' hóa đơn',
-					//subHeader: '---',
-					message: 'Bạn có chắc muốn gửi duyệt ' + this.selectedItems.length + ' hóa đơn đang chọn?',
-					buttons: [
-						{
-							text: 'Không',
-							role: 'cancel',
-							handler: () => {
-								//console.log('Không xóa');
-							},
-						},
-						{
-							text: 'Gửi',
-							cssClass: 'danger-btn',
-							handler: () => {
-								let publishEventCode = this.pageConfig.pageName;
-								let apiPath = {
-									method: 'POST',
-									url: function () {
-										return ApiSetting.apiDomain('AC/ARInvoice/SubmitInvoicesForApproval/');
-									},
-								};
-
-								if (this.submitAttempt == false) {
-									this.submitAttempt = true;
-
-									let postDTO = { Ids: [] };
-									postDTO.Ids = this.selectedItems.map((e) => e.Id);
-
-									this.pageProvider.commonService
-										.connect(apiPath.method, apiPath.url(), postDTO)
-										.toPromise()
-										.then((savedItem: any) => {
-											if (publishEventCode) {
-												this.env.publishEvent({
-													Code: publishEventCode,
-												});
-											}
-											this.env.showMessage('Saving completed!', 'success');
-											this.submitAttempt = false;
-										})
-										.catch((err) => {
-											this.submitAttempt = false;
-											//console.log(err);
-										});
-								}
-							},
-						},
-					],
-				})
-				.then((alert) => {
-					alert.present();
-				});
-		}
-	}
-
-	delete() {
-		let itemsCanNotDelete = this.selectedItems.filter(
-			(i) =>
-				i.Status == 'ARInvoiceApproved' ||
-				i.Status == 'EInvoiceNew' ||
-				i.Status == 'EInvoiceRelease' ||
-				i.Status == 'ARInvoiceApproved' ||
-				i.Status == 'EInvoiceWaitForSign'
-		);
-		if (itemsCanNotDelete.length == this.selectedItems.length) {
-			this.env.showMessage('Your selected invoices cannot be deleted. Please only delete new or disapproved invoice', 'warning');
-		} else if (itemsCanNotDelete.length) {
-			this.alertCtrl
-				.create({
-					header: 'Có ' + itemsCanNotDelete.length + ' hóa đơn không thể xóa',
-					//subHeader: '---',
-					message: 'Bạn có muốn bỏ qua ' + this.selectedItems.length + ' hóa đơn này và tiếp tục xóa?',
-					buttons: [
-						{
-							text: 'Không',
-							role: 'cancel',
-							handler: () => {
-								//console.log('Không xóa');
-							},
-						},
-						{
-							text: 'Đồng ý tiếp tục',
-							cssClass: 'danger-btn',
-							handler: () => {
-								itemsCanNotDelete.forEach((i) => {
-									i.checked = false;
-								});
-								this.selectedItems = this.selectedItems.filter(
-									(i) => i.Status == 'ARInvoiceNew' || i.Status == 'ARInvoiceRejected' || i.Status == 'ARInvoiceDraft'
-								);
-								super.delete();
-							},
-						},
-					],
-				})
-				.then((alert) => {
-					alert.present();
-				});
-		} else {
-			super.delete();
-		}
-	}
-
+	
 	createEInvoice() {
 		if (!this.pageConfig.canCreateEInvoice) {
 			return;
@@ -597,7 +262,7 @@ export class ARInvoicePage extends PageBase {
 			});
 	}
 
-	async splitARInvoice() {
+	async split() {
 		let Status = this.selectedItems[0].Status;
 		if (
 			!(
@@ -626,7 +291,7 @@ export class ARInvoicePage extends PageBase {
 		this.refresh();
 	}
 
-	async mergeARInvoice() {
+	async merge() {
 		let itemsCanNotProcess = this.selectedItems.filter(
 			(i) =>
 				i.Status == 'EInvoiceRelease' ||
