@@ -1,30 +1,31 @@
 <ion-header>
-	<app-list-toolbar
-		selectedTitle="{{selectedItems.length}} {{'Order' | translate}}"
-		pageTitle="{{'Invoice' | translate}}"
-		[pageConfig]="pageConfig"
-		[selectedItems]="selectedItems"
-		[query]="query"
-		(add)="add()"
-		(refresh)="refresh()"
-		(export)="export()"
-		(import)="import($event)"
-		(help)="help()"
-		(unselect)="unselect()"
-		(archiveItems)="archiveItems()"
-		(deleteItems)="delete()"
-		(approveInvoices)="approveInvoices()"
-		(disapproveInvoices)="disapproveInvoices()"
-		(cancelInvoices)="cancelInvoices()"
-		(submitInvoicesForApproval)="submitInvoicesForApproval()"
-		(createEInvoice)="createEInvoice()"
-		(updateEInvoice)="updateEInvoice()"
-		(syncEInvoice)="syncEInvoice()"
-		(signEInvoice)="signARInvoice()"
-		(splitARInvoice)="splitARInvoice()"
-		(mergeARInvoice)="mergeARInvoice()"
-		(changeBranch)="changeBranch($event)"
-	></app-list-toolbar>
+	<app-toolbar [page]="this">
+		<ion-button
+			(click)="createEInvoice()"
+			*ngIf="pageConfig.canCreateEInvoice && pageConfig.ShowCreateEInvoice"
+			tollbarSelected
+			class="clickable"
+			title="{{'Create E-Invoice' | translate}}"
+		>
+			<ion-icon name="receipt-outline" color="primary" slot="icon-only"></ion-icon>
+		</ion-button>
+
+		<ion-button
+			(click)="updateEInvoice()"
+			*ngIf="pageConfig.canCreateEInvoice && pageConfig.ShowUpdateEInvoice"
+			tollbarSelected
+			class="clickable"
+			title="{{ 'Update EInvoice' | translate }}"
+		>
+			<ion-icon color="success" slot="icon-only" name="reload-outline"></ion-icon>
+		</ion-button>
+		<ion-button (click)="syncEInvoice()" tollbarSelected title="{{'Sync EInvoice' | translate}}" *ngIf="pageConfig.canCreateEInvoice && pageConfig.ShowUpdateEInvoice">
+			<ion-icon color="success" slot="icon-only" name="sync"></ion-icon>
+		</ion-button>
+		<ion-button (click)="signARInvoice()" tollbarSelected title="Ký hóa đơn" *ngIf="pageConfig.canSignEInvoice && pageConfig.ShowSignEInvoice">
+			<ion-icon color="danger" slot="icon-only" name="signature"></ion-icon>
+		</ion-button>
+	</app-toolbar>
 </ion-header>
 
 <ion-content appScrollbarTheme class="scrollx">
@@ -44,6 +45,7 @@
 			[(query)]="query"
 			(dataInfinite)="loadData($event)"
 			(filter)="onDatatableFilter($event)"
+			(activate)="changeSelection($event)"
 			(sort)="onSort($event)"
 			(selectedRowsChange)="showCommandBySelectedRows($event)"
 		>
@@ -58,7 +60,7 @@
 							<a
 								[href]="'#/'+'business-partner/'+i.IDBusinessPartner"
 								(click)="nav('business-partner/'+i.IDBusinessPartner,'forward')"
-								title="{{'View customers' information' | translate}}"
+								title="{{'View customers\' information' | translate}}"
 							>
 								<ion-icon name="open-outline"></ion-icon>
 							</a>
