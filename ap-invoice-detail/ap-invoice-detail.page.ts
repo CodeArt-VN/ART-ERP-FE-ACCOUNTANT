@@ -260,7 +260,7 @@ export class APInvoiceDetailPage extends PageBase {
 					SortBy: ['Id_desc'],
 					Take: 20,
 					Skip: 0,
-					Term: term,
+					Keyword: term,
 					IDBranch: this.formGroup.get('IDBranch').value,
 					IDVendor: this.formGroup.get('IDSeller').value,
 				})
