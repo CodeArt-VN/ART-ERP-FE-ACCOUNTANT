@@ -2,15 +2,15 @@ import { Component } from '@angular/core';
 import { NavController, ModalController, AlertController, LoadingController, PopoverController } from '@ionic/angular';
 import { EnvService } from 'src/app/services/core/env.service';
 import { PageBase } from 'src/app/page-base';
-import { BRA_BranchProvider, SALE_OrderProvider, AC_ARInvoiceProvider, CRM_ContactProvider, SYS_ConfigProvider } from 'src/app/services/static/services.service';
+import { BRA_BranchProvider, SALE_OrderProvider, AC_ARInvoiceProvider, CRM_ContactProvider } from 'src/app/services/static/services.service';
 import { Location } from '@angular/common';
-import { ApiSetting } from 'src/app/services/static/api-setting';
 
 import { ARInvoiceSplitModalPage } from '../arinvoice-split-modal/arinvoice-split-modal.page';
 import { ARInvoiceMergeModalPage } from '../arinvoice-merge-modal/arinvoice-merge-modal.page';
 import { EInvoiceService } from 'src/app/services/custom/einvoice.service';
 import { lib } from 'src/app/services/static/global-functions';
 import { SortConfig } from 'src/app/interfaces/options-interface';
+import { SYS_ConfigService } from 'src/app/services/custom/system-config.service';
 
 @Component({
 	selector: 'app-arinvoice',
@@ -33,7 +33,7 @@ export class ARInvoicePage extends PageBase {
 		public alertCtrl: AlertController,
 		public loadingController: LoadingController,
 		public env: EnvService,
-		public sysConfigProvider: SYS_ConfigProvider,
+		public sysConfigService: SYS_ConfigService,
 		public navCtrl: NavController,
 
 		public location: Location
@@ -73,13 +73,9 @@ export class ARInvoicePage extends PageBase {
 		this.pageConfig.sort = sorted;
 		this.query.IDOwner = this.pageConfig.canViewAllData ? 'all' : this.env.user.StaffID;
 
-		let sysConfigQuery = ['IsShowSOCode', 'IsShowBillNo'];
 		Promise.all([
 			this.env.getStatus('ARInvoiceStatus'),
-			this.sysConfigProvider.read({
-				Code_in: sysConfigQuery,
-				IDBranch: this.env.selectedBranch,
-			}),
+			this.sysConfigService.getConfig(this.env.selectedBranch, ['IsShowSOCode', 'IsShowBillNo'])
 		]).then((values: any) => {
 			this.statusList = values[0];
 			this.statusList.unshift({
@@ -87,12 +83,13 @@ export class ARInvoicePage extends PageBase {
 				Name: 'Cần xem',
 			});
 			this.statusList.unshift({ Code: '', Name: 'All' });
-			values[1]['data'].forEach((e) => {
-				if ((e.Value == null || e.Value == 'null') && e._InheritedConfig) {
-					e.Value = e._InheritedConfig.Value;
-				}
-				this.pageConfig[e.Code] = JSON.parse(e.Value);
-			});
+			if(values[1]){
+				this.pageConfig = {
+					...this.pageConfig,
+					...values[1]
+				};
+			}
+			
 			super.preLoadData(event);
 		});
 	}
