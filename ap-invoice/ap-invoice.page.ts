@@ -36,7 +36,7 @@ export class APInvoicePage extends PageBase {
 		public receiptProvider: WMS_ReceiptProvider
 	) {
 		super();
-
+		this.pageConfig.IsRequiredDateRangeToExport = true;
 		this.formGroup = formBuilder.group({
 			PaymentType: [''],
 			PaymentSubType: [''],
