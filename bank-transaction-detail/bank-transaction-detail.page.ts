@@ -89,7 +89,7 @@ export class BankTransactionDetailPage extends PageBase {
 			SortBy: ['Id_desc'],
 			Take: 20,
 			Skip: 0,
-			Term: term ? term : 'BP:' + this.item?.IDBusinessPartner,
+			Keyword: term
 		});
 	});
 	
