@@ -2,9 +2,10 @@ import { Component } from '@angular/core';
 import { NavController, ModalController, AlertController, LoadingController, PopoverController } from '@ionic/angular';
 import { EnvService } from 'src/app/services/core/env.service';
 import { PageBase } from 'src/app/page-base';
-import { BANK_OutgoingPaymentProvider, BRA_BranchProvider, SYS_ConfigProvider } from 'src/app/services/static/services.service';
+import { BANK_OutgoingPaymentProvider, BRA_BranchProvider } from 'src/app/services/static/services.service';
 import { Location } from '@angular/common';
 import { SortConfig } from 'src/app/interfaces/options-interface';
+import { SYS_ConfigService } from 'src/app/services/custom/system-config.service';
 
 @Component({
 	selector: 'app-outgoing-payment',
@@ -18,7 +19,7 @@ export class OutgoingPaymentPage extends PageBase {
 		public pageProvider: BANK_OutgoingPaymentProvider,
 		public branchProvider: BRA_BranchProvider,
 		public modalController: ModalController,
-		public sysConfigProvider: SYS_ConfigProvider,
+		public sysConfigService: SYS_ConfigService,
 		public popoverCtrl: PopoverController,
 		public alertCtrl: AlertController,
 		public loadingController: LoadingController,
@@ -32,18 +33,15 @@ export class OutgoingPaymentPage extends PageBase {
 	preLoadData(event?: any): void {
 		let sorted: SortConfig[] = [{ Dimension: 'Id', Order: 'DESC' }];
 		this.pageConfig.sort = sorted;
-		let sysConfigQuery = ['OutgoingPaymentUsedApprovalModule'];
-		Promise.all([this.env.getStatus('OutgoingPaymentStatus'), this.sysConfigProvider.read({ Code_in: sysConfigQuery, IDBranch: this.env.selectedBranch })]).then(
+		Promise.all([this.env.getStatus('OutgoingPaymentStatus'), this.sysConfigService.getConfig(this.env.selectedBranch, ['OutgoingPaymentUsedApprovalModule'])]).then(
 			(values: any) => {
 				if (values.length) {
 					this.statusList = values[0];
-					if (values[1]['data']) {
-						values[1]['data'].forEach((e) => {
-							if ((e.Value == null || e.Value == 'null') && e._InheritedConfig) {
-								e.Value = e._InheritedConfig.Value;
-							}
-							this.pageConfig[e.Code] = JSON.parse(e.Value);
-						});
+					if(values[1]){
+						this.pageConfig = {
+							...this.pageConfig,
+							...values[1]
+						};
 					}
 					if (this.pageConfig.OutgoingPaymentUsedApprovalModule) {
 						this.pageConfig.canApprove = false;

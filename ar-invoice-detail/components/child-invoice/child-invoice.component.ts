@@ -2,9 +2,10 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { NavController, ModalController, AlertController, LoadingController, PopoverController } from '@ionic/angular';
 import { EnvService } from 'src/app/services/core/env.service';
 import { PageBase } from 'src/app/page-base';
-import { AC_ARInvoiceProvider, SYS_ConfigProvider } from 'src/app/services/static/services.service';
+import { AC_ARInvoiceProvider } from 'src/app/services/static/services.service';
 import { Location } from '@angular/common';
 import { EInvoiceService } from 'src/app/services/custom/einvoice.service';
+import { SYS_ConfigService } from 'src/app/services/custom/system-config.service';
 
 @Component({
 	selector: 'app-child-invoice',
@@ -36,25 +37,21 @@ export class ChildInvoiceComponent extends PageBase {
 		public env: EnvService,
 		public navCtrl: NavController,
 		public location: Location,
-		public sysConfigProvider: SYS_ConfigProvider
+		public sysConfigService: SYS_ConfigService
 	) {
 		super();
 	}
 
 	loadData(event?: any): void {
-		let sysConfigQuery = ['IsShowSOCode'];
 		Promise.all([
-			this.sysConfigProvider.read({
-				Code_in: sysConfigQuery,
-				IDBranch: this.env.selectedBranch,
-			}),
+			this.sysConfigService.getConfig(this.env.selectedBranch, ['IsShowSOCode'])
 		]).then((values: any) => {
-			values[0]['data'].forEach((e) => {
-				if ((e.Value == null || e.Value == 'null') && e._InheritedConfig) {
-					e.Value = e._InheritedConfig.Value;
-				}
-				this.pageConfig[e.Code] = JSON.parse(e.Value);
-			});
+			if(values[0]){
+				this.pageConfig = {
+					...this.pageConfig,
+					...values[0]
+				};
+			}
 		});
 
 		this.pageConfig.canEdit = this.canEdit;
