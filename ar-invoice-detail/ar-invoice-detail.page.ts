@@ -78,6 +78,7 @@ export class ARInvoiceDetailPage extends PageBase {
 			ModifiedDate: new FormControl({ value: '', disabled: true }),
 
 			IDBusinessPartner: ['', Validators.required],
+			IDTaxInfo:[''],
 			BuyerName: new FormControl(),
 			BuyerIdentityNumber: new FormControl(),
 			ReceiveType: new FormControl({
@@ -305,7 +306,7 @@ export class ARInvoiceDetailPage extends PageBase {
 
 		let group = this.formBuilder.group({
 			_IDItemDataSource: this.buildSelectDataSource((term) => {
-				return this.itemProvider.search({ ARSearch: true, SortBy: ['Id_desc'], Take: 20, Skip: 0,Keyword: term });
+				return this.itemProvider.search({ ARSearch: true, SortBy: ['Id_desc'], Take: 20, Skip: 0, Term: term });
 			}),
 
 			_IDUoMDataSource: [selectedItem ? selectedItem.UoMs : ''],

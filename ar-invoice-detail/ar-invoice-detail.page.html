@@ -35,7 +35,7 @@
 							<small label *ngIf="item.IDSaleOrder"><a [routerLink]="['/sale-order/'+item.IDSaleOrder]">{{'From' | translate}} SO: {{item.IDSaleOrder}}</a></small>
 						</app-form-control>
 						<app-form-control
-							[field]="{id:'IDBusinessPartner', label: 'Customer', type : 'ng-select-bp', form : formGroup,  dataSource: IDBusinessPartnerDataSource,  bindValue: 'Id', appendTo:'#order-detail-page' }"	
+							[field]="{id:'IDBusinessPartner', label: 'Customer', type : 'ng-select-bp', form : formGroup,  dataSource: IDBusinessPartnerDataSource,  bindValue: 'Id', appendTo:'#order-detail-page' }"
 							(change)="IDBusinessPartnerChange($event);"
 							(nav)="nav($event)"
 						>
@@ -367,9 +367,20 @@
 									(change)="saveChange()"
 								></app-form-control>
 								<app-form-control
-									[field]="{id:'BuyerTaxCode', label: 'Invoice required', type : 'ng-select', dataSource: TaxCodeDataSource, bindLabel: 'CompanyName', bindValue: 'TaxCode', form : formGroup, appendTo:'#order-detail-page' }"
+									[field]="{id:'IDTaxInfo', label: 'Invoice required', type : 'ng-select', dataSource: TaxCodeDataSource, bindLabel: 'CompanyName', bindValue: 'Id', form : formGroup, appendTo:'#order-detail-page' }"
 									(change)="onBuyerTaxCodeChange($event)"
-								></app-form-control>
+								>
+									<ng-template input-control-template ng-label-tmp let-i="item">
+										<span *ngIf="i.CompanyName">{{i.CompanyName}}</span>
+										<span *ngIf="!i.CompanyName">{{i.Name}}</span>
+									</ng-template>
+									<ng-template input-control-template ng-option-tmp let-i="item" let-search="searchTerm">
+										<div *ngIf="i">
+											<span *ngIf="i.CompanyName">{{i.CompanyName}}</span>
+											<span *ngIf="!i.CompanyName">{{i.Name}}</span>
+										</div>
+									</ng-template>
+								</app-form-control>
 								<app-form-control [field]="{id:'BuyerName', label: 'Customer name', type : 'text', form : formGroup }" (change)="saveChange()"></app-form-control>
 								<app-form-control [field]="{id:'BuyerTaxCode', label: 'Tax code', type : 'text', form : formGroup }" (change)="saveChange()"></app-form-control>
 								<app-form-control
