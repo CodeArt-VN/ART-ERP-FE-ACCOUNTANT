@@ -13,7 +13,7 @@
 			<ion-icon class="min-btn" *ngIf="sort.IDSaleOrder" [name]="sort.IDSaleOrder == 'IDSaleOrder' ? 'arrow-down' : 'arrow-up'"></ion-icon>
 			<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.IDSaleOrder" name="search" color="primary"></ion-icon>
 		</div>
-		<div class="col-code cell" (click)="sortToggle('SaleOrderCode')" *ngIf="pageConfig.IsShowSOCode">
+		<div class="col-code cell" (click)="sortToggle('SaleOrderCode')" *ngIf="pageConfig.ARIsShowSOCode">
 			{{ 'SO Code' | translate }}
 			<ion-icon class="min-btn" *ngIf="sort.SaleOrderCode" [name]="sort.SaleOrderCode == 'SaleOrderCode' ? 'arrow-down' : 'arrow-up'"></ion-icon>
 			<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.SaleOrderCode" name="search" color="primary"></ion-icon>
@@ -71,7 +71,7 @@
 				/>
 				<ion-icon class="min-btn" (click)="query.IDSaleOrder = ''; refresh()" *ngIf="query.IDSaleOrder" name="close-circle-outline"></ion-icon>
 			</div>
-			<div class="col-code cell" *ngIf="pageConfig.IsShowSOCode">
+			<div class="col-code cell" *ngIf="pageConfig.ARIsShowSOCode">
 				<input
 					placeholder="{{ 'SO Code' | translate }}"
 					[ngModelOptions]="{ standalone: true }"
@@ -134,7 +134,7 @@
 				><span class="show-small-inline">SO: </span> {{ i.IDSaleOrder }}</a
 			>
 		</div>
-		<div class="col-code cell" *ngIf="pageConfig.IsShowSOCode">
+		<div class="col-code cell" *ngIf="pageConfig.ARIsShowSOCode">
 			{{ i.SaleOrderCode }}
 		</div>
 		<div class="col-date cell" (click)="query.InvoiceDate = i.Query; pageConfig.isShowSearch = true; refresh()">

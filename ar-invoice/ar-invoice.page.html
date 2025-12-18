@@ -68,6 +68,11 @@
 							<small class="taxid" *ngIf="i.BuyerTaxCode"> {{i.BuyerTaxCode}} </small>
 							<small class="taxid" *ngIf="i.BuyerIdentityNumber"> {{i.BuyerIdentityNumber}} </small>
 						</span>
+						<!-- <div *ngIf="pageConfig.ARIsShowBranch && i._Branch">
+							<ion-text color="medium">
+								<small [innerHtml]="i._Branch.Name"></small>
+							</ion-text>
+						</div> -->
 						<div *ngIf="i.Remark">
 							<ion-text color="warning">
 								<i [innerHtml]="i.Remark"></i>
@@ -76,6 +81,39 @@
 					</div>
 				</ng-template>
 			</datatable-column>
+
+			<datatable-column *ngIf="pageConfig.ARIsShowBranch" class="col-code" name="Branch" property="_Branch.Name">
+				<ng-template let-i="row" datatable-cell-template>
+					<span title="{{i._Branch?.Name}}">{{i._Branch?.ShortName || i._Branch?.Name}}</span>
+				</ng-template>
+			</datatable-column>
+
+			
+
+			<datatable-column class="col-id" name="SO Id" property="_SaleOrder.Id">
+				<ng-template let-i="row" datatable-cell-template>
+					<a *ngIf="i._SaleOrder?.Id" [routerLink]="['/sale-order-mobile/viewer/'+i._SaleOrder.Id]">
+						<span class="show-small-inline">{{'SO:' | translate}} </span> {{i._SaleOrder.Id}}
+					</a>
+				</ng-template>
+			</datatable-column>
+
+			<datatable-column *ngIf="pageConfig.ARIsShowBillNo" class="col-id" name="Bill no" property="_SaleOrder.DailyBillNo">
+				<ng-template let-i="row" datatable-cell-template>
+					<a *ngIf="i._SaleOrder?.DailyBillNo" [routerLink]="['/sale-order-mobile/viewer/'+i._SaleOrder.Id]">
+						<span class="show-small-inline">{{'Bill number:' | translate}} </span> {{i._SaleOrder.DailyBillNo}}
+					</a>
+				</ng-template>
+			</datatable-column>
+
+			<datatable-column *ngIf="pageConfig.ARIsShowSOCode" class="col-code" name="SO Code" property="_SaleOrder.Code">
+				<ng-template let-i="row" datatable-cell-template>
+					<a *ngIf="i._SaleOrder?.Code" [routerLink]="['/sale-order-mobile/viewer/'+i._SaleOrder.Id]">
+						<span class="show-small-inline">{{'SO Code:' | translate}} </span> {{i._SaleOrder.Code}}
+					</a>
+				</ng-template>
+			</datatable-column>
+
 			<datatable-column class="col-code" name="Invoice No." property="InvoiceNo">
 				<ng-template let-i="row" datatable-cell-template>
 					<span *ngIf="i.InvoiceNo">
@@ -86,30 +124,6 @@
 							{{i.InvoiceForm}}{{i.InvoiceSerial}}-{{i.InvoiceNo}}
 						</a>
 					</span>
-				</ng-template>
-			</datatable-column>
-
-			<datatable-column class="col-id" name="SO Id" property="_SaleOrder.Id">
-				<ng-template let-i="row" datatable-cell-template>
-					<a *ngIf="i._SaleOrder?.Id" [routerLink]="['/sale-order-mobile/viewer/'+i._SaleOrder.Id]">
-						<span class="show-small-inline">{{'SO:' | translate}} </span> {{i._SaleOrder.Id}}
-					</a>
-				</ng-template>
-			</datatable-column>
-
-			<datatable-column *ngIf="pageConfig.IsShowBillNo" class="col-id" name="Bill no" property="_SaleOrder.DailyBillNo">
-				<ng-template let-i="row" datatable-cell-template>
-					<a *ngIf="i._SaleOrder?.DailyBillNo" [routerLink]="['/sale-order-mobile/viewer/'+i._SaleOrder.Id]">
-						<span class="show-small-inline">{{'Bill number:' | translate}} </span> {{i._SaleOrder.DailyBillNo}}
-					</a>
-				</ng-template>
-			</datatable-column>
-
-			<datatable-column *ngIf="pageConfig.IsShowSOCode" class="col-code" name="SO Code" property="_SaleOrder.Code">
-				<ng-template let-i="row" datatable-cell-template>
-					<a *ngIf="i._SaleOrder?.Code" [routerLink]="['/sale-order-mobile/viewer/'+i._SaleOrder.Id]">
-						<span class="show-small-inline">{{'SO Code:' | translate}} </span> {{i._SaleOrder.Code}}
-					</a>
 				</ng-template>
 			</datatable-column>
 

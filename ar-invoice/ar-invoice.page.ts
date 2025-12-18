@@ -19,7 +19,6 @@ import { SYS_ConfigService } from 'src/app/services/custom/system-config.service
 	standalone: false,
 })
 export class ARInvoicePage extends PageBase {
-	branchList = [];
 	statusList = [];
 
 	constructor(
@@ -44,9 +43,6 @@ export class ARInvoicePage extends PageBase {
 		this.pageConfig.isShowSearch = false;
 		this.pageConfig.IsRequiredDateRangeToExport = true;
 
-		let today = new Date();
-		today.setDate(today.getDate() + 1);
-
 		this.pageConfig.dividers = [
 			{
 				field: 'InvoiceDate',
@@ -68,14 +64,14 @@ export class ARInvoicePage extends PageBase {
 		let sorted: SortConfig[] = [
 			{ Dimension: 'InvoiceDate', Order: 'DESC' },
 			{ Dimension: 'IDBranch', Order: 'DESC' },
-			{ Dimension: 'Id', Order: 'DESC' },
+			{ Dimension: '_SaleOrder.Id', Order: 'DESC' },
 		];
 		this.pageConfig.sort = sorted;
 		this.query.IDOwner = this.pageConfig.canViewAllData ? 'all' : this.env.user.StaffID;
 
 		Promise.all([
 			this.env.getStatus('ARInvoiceStatus'),
-			this.sysConfigService.getConfig(this.env.selectedBranch, ['IsShowSOCode', 'IsShowBillNo'])
+			this.sysConfigService.getConfig(this.env.selectedBranch, ['ARIsShowSOCode', 'ARIsShowBillNo','ARIsShowBranch'])
 		]).then((values: any) => {
 			this.statusList = values[0];
 			this.statusList.unshift({
@@ -97,6 +93,9 @@ export class ARInvoicePage extends PageBase {
 	loadedData(event) {
 		this.items.forEach((i) => {
 			i._Status = this.statusList.find((d) => d.Code == i.Status);
+			if(this.pageConfig.ARIsShowBranch){
+				i._Branch = this.env.branchList.find((b) => b.Id == i.IDBranch);
+			}
 		});
 		super.loadedData(event);
 	}

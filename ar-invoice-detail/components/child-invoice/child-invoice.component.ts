@@ -44,7 +44,7 @@ export class ChildInvoiceComponent extends PageBase {
 
 	loadData(event?: any): void {
 		Promise.all([
-			this.sysConfigService.getConfig(this.env.selectedBranch, ['IsShowSOCode'])
+			this.sysConfigService.getConfig(this.env.selectedBranch, ['ARIsShowSOCode', 'ARIsShowBillNo','ARIsShowBranch'])
 		]).then((values: any) => {
 			if(values[0]){
 				this.pageConfig = {
