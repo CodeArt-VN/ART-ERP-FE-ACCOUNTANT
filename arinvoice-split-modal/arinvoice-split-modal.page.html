@@ -1,5 +1,5 @@
-<ion-header>
-	<ion-toolbar color="primary">
+<ion-header collapse="fade">
+	<ion-toolbar>
 		<ion-segment scrollable="true" (ionChange)="segmentChanged($event)" [value]="segmentView">
 			<ion-segment-button value="s1">
 				<ion-label>{{'splitARInvoice' | translate}}</ion-label>
@@ -17,11 +17,11 @@
                 <ion-icon class="min-btn" title="{{'add' | translate}}" name="add-circle-outline"></ion-icon>
             </ion-button> -->
 
-			<ion-button title="{{'Help' | translate}}" (click)="help()">
+            <ion-button title="{{'Help' | translate}}" (click)="help()">
 				<ion-icon slot="icon-only" name="help-circle-outline"></ion-icon>
 			</ion-button>
 
-			<ion-button title="{{'Close' | translate}}" (click)="closeModal()">
+			<ion-button title="{{'Close' | translate}}" (click)="closeModal()" fill="clear">
 				<ion-icon slot="icon-only" name="close"></ion-icon>
 			</ion-button>
 		</ion-buttons>
@@ -82,14 +82,6 @@
                         <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
                     </ion-button>
                 </ion-col> -->
-			</ion-row>
-
-			<ion-row class="hr-group">
-				<ion-col size="11">
-					<div class="c-control ion-text-right">
-						<ion-button (click)="splitARInvoice()"> {{'splitARInvoice' | translate}} </ion-button>
-					</div>
-				</ion-col>
 			</ion-row>
 		</ion-grid>
 	</div>
@@ -170,3 +162,18 @@
         </div>
     </div> -->
 </ion-content>
+<ion-footer collapse="fade">
+	<ion-toolbar>
+        <div slot="start">
+        </div>
+		
+		<div slot="end">
+            <ion-button [strong]="true" (click)="splitARInvoice()">
+                {{'splitARInvoice' | translate}}
+            </ion-button>
+            <ion-button fill="outline" color="warning" (click)="closeModal()" >
+                {{'Cancel' | translate}}
+            </ion-button>
+        </div>
+	</ion-toolbar>
+</ion-footer>
