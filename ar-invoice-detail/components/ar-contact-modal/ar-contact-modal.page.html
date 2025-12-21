@@ -37,9 +37,9 @@
              [field]="{id :'WorkPhone' , label:'Work phone number',form:formGroup}" (blur)="checkPhoneNumber()"
               ></app-input-control> -->
 						<ion-text color="success" *ngIf="formGroup.controls.WorkPhone.valid && formGroup.controls.WorkPhone.dirty">
-							{{'Số điện thoại hợp lệ' | translate}}
+							{{'Valid phone number' | translate}}
 						</ion-text>
-						<ion-text color="danger" *ngIf="!formGroup.controls.WorkPhone.valid"> {{'Số điện thoại không hợp lệ hoặc đã được sử dụng' | translate}} </ion-text>
+						<ion-text color="danger" *ngIf="!formGroup.controls.WorkPhone.valid"> {{'Invalid phone number or already in use' | translate}} </ion-text>
 					</div>
 
 					<!-- <div class="c-control">
