@@ -1,26 +1,8 @@
 <ion-header collapse="fade">
 	<ion-toolbar>
-		<ion-segment scrollable="true" (ionChange)="segmentChanged($event)" [value]="segmentView">
-			<ion-segment-button value="s1">
-				<ion-label>{{'splitARInvoice' | translate}}</ion-label>
-			</ion-segment-button>
-			<!-- <ion-segment-button value="s2">
-                <ion-label>Chi tiết</ion-label>
-            </ion-segment-button> -->
+		<ion-title>{{'splitARInvoice' | translate}}</ion-title>
 
-			<!-- <ion-segment-button [value]="idx" *ngFor="let o of item.SplitedInvoices; let idx = index;">
-                <ion-label>#{{idx+1}}</ion-label>
-            </ion-segment-button> -->
-		</ion-segment>
 		<ion-buttons slot="end">
-			<!-- <ion-button (click)="addSplitedInvoice()">
-                <ion-icon class="min-btn" title="{{'add' | translate}}" name="add-circle-outline"></ion-icon>
-            </ion-button> -->
-
-            <ion-button title="{{'Help' | translate}}" (click)="help()">
-				<ion-icon slot="icon-only" name="help-circle-outline"></ion-icon>
-			</ion-button>
-
 			<ion-button title="{{'Close' | translate}}" (click)="closeModal()" fill="clear">
 				<ion-icon slot="icon-only" name="close"></ion-icon>
 			</ion-button>
@@ -75,105 +57,17 @@
 						</ng-select>
 					</div>
 				</ion-col>
-
-				<!-- <ion-col size="1">
-                    <ion-button *ngIf="!o.isFirst" class="ion-float-right" style="margin-top: 2.8rem;" size="small"
-                        fill="clear" color="danger" (click)="removeSplitedInvoice(o)">
-                        <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
-                    </ion-button>
-                </ion-col> -->
 			</ion-row>
 		</ion-grid>
 	</div>
-
-	<!-- <div class="main-view" *ngIf="segmentView != 's1'">
-
-
-        <div class="row-full shadow full-screen">
-            <div style="min-height: calc(90vh - 80px);">
-
-                <div class="table-contain">
-                    <section class="table">
-                        <ng-container>
-                            <div class="row" *ngFor="let i of items; let idx = index;">
-                                <div class="col-id cell">{{idx+1}}</div>
-                                <div class="col-name cell">
-                                    <div style=" min-width: 100%; max-width: 100%;">
-                                        <div style="max-width: 100%;">
-                                            <ng-select [disabled]="true" [id]="'drl'+idx" class="c-input"
-                                                appendTo="#arinvoice-page" [(ngModel)]="i.IDItem"
-                                                [labelForId]="'IDItem'+idx" [items]="itemList$ | async"
-                                                [typeahead]="itemListInput$" [virtualScroll]="true" bindLabel="Name"
-                                                bindValue="Id" placeholder="{{'item-placeholder' | translate}}">
-                                                <ng-template ng-option-tmp let-i="item" let-search="searchTerm">
-                                                    <div *ngIf="i">
-                                                        <div><span>{{i.Name}}</span></div>
-                                                        <small>#<b><span class="important">{{i.Id}} -
-                                                                    {{i.Code}}</span></b></small>
-                                                    </div>
-                                                </ng-template>
-                                            </ng-select>
-                                        </div>
-
-                                        <table style="max-width: 100%; min-width: 100%;">
-                                            <tr *ngIf="i._itemData && i._itemData.UoMs.length">
-                                                <td class="label">{{'unit' | translate}}</td>
-                                                <td class="UoM col-total c-control"
-                                                    *ngFor="let o of i.splitDetail; let jdx = index;">
-                                                    <span class="c-input c-dropdown">{{o.UoMName}}</span>
-                                                    
-                                                </td>
-                                            </tr>
-                                            <tr *ngIf="i._itemData && i._itemData.UoMs.length && i.IDUoM">
-                                                <td class="label">{{'quantity' | translate}}</td>
-                                                <td *ngFor="let o of i.splitDetail; let jdx = index;">
-                                                    <input type="tel"
-                                                        (focus)="$event.target.select()"
-                                                        (blur)="changedCalc(i, o, 'Quantity')" class="c-input"
-                                                        [min]="i._UoM?i._UoM.MinQuantity:1"
-                                                        [max]="i._UoM?i._UoM.MaxQuantity:999" mask="separator.0"
-                                                        thousandSeparator="," [(ngModel)]="o.Quantity"
-                                                        onkeydown="return event.keyCode !== 190">
-                                                </td>
-                                            </tr>
-
-                                        </table>
-
-                                    </div>
-
-                                </div>
-                            </div>
-                        </ng-container>
-                    </section>
-                </div>
-
-                <div class="table-contain">
-                    <div class="row">
-                        <div class="cell">
-                            <ion-button (click)="splitARInvoice()" [disabled]="!isCanSplit || submitAttempt"
-                                style="max-width: 300px" class="ion-margin ion-float-right" size="block">
-                                {{'split-arinvoice-button' | translate}}
-                            </ion-button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-    </div> -->
 </ion-content>
 <ion-footer collapse="fade">
 	<ion-toolbar>
-        <div slot="start">
-        </div>
-		
+		<div slot="start"></div>
+
 		<div slot="end">
-            <ion-button [strong]="true" (click)="splitARInvoice()">
-                {{'splitARInvoice' | translate}}
-            </ion-button>
-            <ion-button fill="outline" color="warning" (click)="closeModal()" >
-                {{'Cancel' | translate}}
-            </ion-button>
-        </div>
+			<ion-button fill="outline" color="warning" (click)="closeModal()"> {{'Cancel' | translate}} </ion-button>
+			<ion-button [strong]="true" (click)="splitARInvoice()"> {{'splitARInvoice' | translate}} </ion-button>
+		</div>
 	</ion-toolbar>
 </ion-footer>

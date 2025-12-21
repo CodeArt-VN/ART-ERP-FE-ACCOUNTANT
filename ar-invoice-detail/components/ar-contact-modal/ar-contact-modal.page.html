@@ -2,9 +2,6 @@
 	<ion-toolbar>
 		<ion-title>{{'Add new customer' | translate}}</ion-title>
 		<ion-buttons slot="primary">
-			<ion-button title="{{'Close' | translate}}" color="primary" (click)="reset()">
-				<ion-icon slot="icon-only" name="refresh-outline"></ion-icon>
-			</ion-button>
 			<ion-button title="{{'Close' | translate}}" color="secondary" (click)="Apply()">
 				<ion-icon slot="icon-only" name="close"></ion-icon>
 			</ion-button>
@@ -36,9 +33,7 @@
 						<!-- <app-input-control
              [field]="{id :'WorkPhone' , label:'Work phone number',form:formGroup}" (blur)="checkPhoneNumber()"
               ></app-input-control> -->
-						<ion-text color="success" *ngIf="formGroup.controls.WorkPhone.valid && formGroup.controls.WorkPhone.dirty">
-							{{'Valid phone number' | translate}}
-						</ion-text>
+						<ion-text color="success" *ngIf="formGroup.controls.WorkPhone.valid && formGroup.controls.WorkPhone.dirty"> {{'Valid phone number' | translate}} </ion-text>
 						<ion-text color="danger" *ngIf="!formGroup.controls.WorkPhone.valid"> {{'Invalid phone number or already in use' | translate}} </ion-text>
 					</div>
 
@@ -128,20 +123,12 @@
 </ion-content>
 <ion-footer collapse="fade">
 	<ion-toolbar>
-		<div slot="start">
-			<ion-button [strong]="true" *ngIf="!item.Id" (click)="saveChange()">
-				{{'Save and apply' | translate}}
-			</ion-button>
-        </div>
-		
+		<div slot="start"></div>
+
 		<div slot="end">
-			<ion-button [strong]="true" *ngIf="this.formGroup.get('Id').value" (click)="Apply(true)">
-				{{'Apply' | translate}}
-			</ion-button>
-            <ion-button fill="outline" color="warning" (click)="closeModal()" >
-                {{'Cancel' | translate}}
-            </ion-button>
-        </div>
-		
+			<ion-button fill="outline" color="warning" (click)="closeModal()"> {{'Cancel' | translate}} </ion-button>
+			<ion-button [strong]="true" *ngIf="!item.Id" (click)="saveChange()"> {{'Save and apply' | translate}} </ion-button>
+			<ion-button [strong]="true" *ngIf="this.formGroup.get('Id').value" (click)="Apply(true)"> {{'Apply' | translate}} </ion-button>
+		</div>
 	</ion-toolbar>
 </ion-footer>

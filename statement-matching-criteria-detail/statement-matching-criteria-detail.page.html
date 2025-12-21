@@ -55,30 +55,20 @@
 					<app-form-control [field]="{ id: 'Code', label: 'Code', type: 'text', form: formGroup}"></app-form-control>
 
 					<app-form-control [field]="{ id: 'Remark', label: 'Remark', type: 'textarea', form: formGroup }"></app-form-control>
-
 				</ion-col>
 			</ion-row>
 		</ion-grid>
 	</form>
 </ion-content>
 <ion-footer collapse="fade">
-  <ion-toolbar>
-	<div slot="start">
-	</div>
-	<div slot="end">
-		<ion-button [strong]="true" *ngIf="item.Id==0" (click)="saveChange()">
-			{{'Add' | translate}}
-		</ion-button>
-		<ion-button [strong]="true" *ngIf="item.Id!=0" (click)="saveChange()" [disabled]="!formGroup.dirty">
-			{{'Save' | translate}}
-		</ion-button>
-		<ion-button fill="outline" *ngIf="item.Id && pageConfig.canDelete" (click)="delete()" color="danger">
-			{{'Delete' | translate}}
-		</ion-button>
-		<ion-button fill="outline" color="warning" (click)="closeModal()">
-			{{'Cancel' | translate}}
-		</ion-button>
-	</div>
-	
-  </ion-toolbar>
+	<ion-toolbar>
+		<div slot="start">
+			<ion-button fill="outline" *ngIf="item.Id && pageConfig.canDelete" (click)="delete()" color="danger"> {{'Delete' | translate}} </ion-button>
+		</div>
+		<div slot="end">
+			<ion-button fill="outline" color="warning" (click)="closeModal()"> {{'Cancel' | translate}} </ion-button>
+			<ion-button [strong]="true" *ngIf="item.Id==0" (click)="saveChange()"> {{'Add' | translate}} </ion-button>
+			<ion-button [strong]="true" *ngIf="item.Id!=0" (click)="saveChange()" [disabled]="!formGroup.dirty"> {{'Save' | translate}} </ion-button>
+		</div>
+	</ion-toolbar>
 </ion-footer>

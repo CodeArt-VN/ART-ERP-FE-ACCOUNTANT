@@ -5,10 +5,6 @@
 		</ion-buttons>
 
 		<ion-buttons slot="primary">
-			<ion-button title="{{'Help' | translate}}" (click)="help()">
-				<ion-icon slot="icon-only" name="help-circle-outline"></ion-icon>
-			</ion-button>
-
 			<ion-button title="{{'Close' | translate}}" color="secondary" (click)="closeModal()">
 				<ion-icon slot="icon-only" name="close"></ion-icon>
 			</ion-button>
@@ -21,32 +17,6 @@
 		<ion-grid fixed style="max-width: 500px">
 			<ion-row class="hr-group">
 				<ion-col size="12">
-					<!-- <div class="c-control">     
-                        <label class="c-label" for="MergeType">
-                            {{'Merge type' | translate}}
-                        </label>
-                        <select #mergeType (change)="changeMergeType(mergeType.value)" class="c-input c-dropdown">
-                            <option value="normal" selected>{{'Merge only' | translate}}</option>
-                            <option value="createEInvoice">{{'Issue E-invoice after merged' | translate}}</option>
-                            <option value="mergeToExistedEInvoice">{{'Merge to existing A/R having E-Invoice' | translate}}</option>
-                        </select>
-                    </div> -->
-					<!-- <div class="c-control" *ngIf="isMergeToEInvoice">
-                        <label class="c-label" for="IDARInvoice">
-                            {{'Select A/R having E-Invoice' | translate}}
-                        </label>
-                        <ng-select [(ngModel)]="item.IDARInvoice" appendTo="#order-detail-page" class="c-input" (change)="changedIDARInvoice($event)" #IDARInvoice labelForId="IDARInvoice" [items]="arInvoiceList$ | async" [typeahead]="arInvoiceListInput$" [loading]='arInvoiceListLoading' [virtualScroll]="true" bindLabel="CustomerName" bindValue="Id" placeholder="{{'Find by E-Invoice number...' | translate}}">
-                            <ng-template ng-option-tmp let-i="item" let-search="searchTermAR">
-                                <div *ngIf="i">
-                                    <div>
-                                        <span >
-                                            <small>#<b><span class="important" >{{i.Id}}</span></b></small><span> | <small> <b >{{i.InvoiceNo}}</b></small></span> | {{i.CustomerName}}</span>
-                                        
-                                    </div>
-                                </div>
-                            </ng-template>
-                        </ng-select>
-                    </div> -->
 					<div class="c-control">
 						<label class="c-label" for="IDBusinessPartner"> {{'Customer' | translate}} </label>
 
@@ -93,7 +63,6 @@
 							name="newInvoiceDate"
 						/>
 					</div>
-
 				</ion-col>
 			</ion-row>
 		</ion-grid>
@@ -101,15 +70,10 @@
 </ion-content>
 <ion-footer collapse="fade">
 	<ion-toolbar>
-		<div slot="start">
-        </div>
+		<div slot="start"></div>
 		<div slot="end">
-			<ion-button [strong]="true" [disabled]="submitAttempt" (click)="mergeARInvoice()">
-				{{'Merge Invoice' | translate}}
-			</ion-button>
-			 <ion-button fill="outline" color="warning" (click)="closeModal()" >
-                {{'Cancel' | translate}}
-            </ion-button>
-        </div>
+			<ion-button fill="outline" color="warning" (click)="closeModal()"> {{'Cancel' | translate}} </ion-button>
+			<ion-button [strong]="true" [disabled]="submitAttempt" (click)="mergeARInvoice()"> {{'Merge Invoice' | translate}} </ion-button>
+		</div>
 	</ion-toolbar>
 </ion-footer>
