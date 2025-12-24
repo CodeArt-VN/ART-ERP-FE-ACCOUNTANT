@@ -78,7 +78,7 @@ export class ARInvoiceDetailPage extends PageBase {
 			ModifiedDate: new FormControl({ value: '', disabled: true }),
 
 			IDBusinessPartner: ['', Validators.required],
-			IDTaxInfo:[''],
+			IDTaxInfo: [''],
 			BuyerName: new FormControl(),
 			BuyerIdentityNumber: new FormControl(),
 			ReceiveType: new FormControl({
@@ -93,11 +93,7 @@ export class ARInvoiceDetailPage extends PageBase {
 			// Allow multiple emails separated by ';'
 			ReceiverEmail: new FormControl(
 				'',
-				Validators.compose([
-					Validators.pattern(
-						/^(\s*[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+\s*;)*\s*[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+\s*$/
-					),
-				])
+				Validators.compose([Validators.pattern(/^(\s*[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+\s*;)*\s*[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+\s*$/)])
 			),
 
 			Status: new FormControl({ value: 'ARInvoiceNew', disabled: true }),
@@ -146,12 +142,21 @@ export class ARInvoiceDetailPage extends PageBase {
 			this.TaxCodeDataSource = i.TaxAddresses;
 		}
 
+		// Add option for walk-in customer (-1) - always available
 		this.TaxCodeDataSource.push({
+			Id: -1,
 			TaxCode: '',
-			CompanyName: 'Khách vãng lai',
+			CompanyName: 'Walk-in customer',
+			_label: 'Walk-in customer',
 			Email: '',
 			BillingAddress: '',
 			WorkPhone: '',
+		});
+		// Set _label for all items in datasource
+		this.TaxCodeDataSource.forEach((item) => {
+			if (!item._label) {
+				item._label = item.CompanyName || item.Name;
+			}
 		});
 		if (!this.item?.BuyerTaxCode) this.item.BuyerTaxCode = '';
 		this.formGroup.get('BuyerTaxCode').setValue(this.item?.BuyerTaxCode);
@@ -163,11 +168,11 @@ export class ARInvoiceDetailPage extends PageBase {
 	}
 
 	onBuyerTaxCodeChange(event, forceSave = true) {
-		this.formGroup.get('BuyerTaxCode').setValue(event.TaxCode);
-		this.formGroup.get('BuyerUnitName').setValue(event.CompanyName);
-		this.formGroup.get('BuyerAddress').setValue(event.BillingAddress);
-		this.formGroup.get('ReceiverEmail').setValue(event.Email);
-		this.formGroup.get('ReceiverMobile').setValue(event.BillingPhone || event.WorkPhone);
+			this.formGroup.get('BuyerTaxCode').setValue(event.TaxCode);
+			this.formGroup.get('BuyerUnitName').setValue(event.CompanyName);
+			this.formGroup.get('BuyerAddress').setValue(event.BillingAddress);
+			this.formGroup.get('ReceiverEmail').setValue(event.Email);
+			this.formGroup.get('ReceiverMobile').setValue(event.BillingPhone || event.WorkPhone);
 
 		this.formGroup.get('BuyerTaxCode').markAsDirty();
 		this.formGroup.get('BuyerUnitName').markAsDirty();
@@ -188,7 +193,7 @@ export class ARInvoiceDetailPage extends PageBase {
 		if (this.item?._DefaultBusinessPartner?.Id != i?.Id) {
 			this.isShowAddContactBtn = false;
 		}
-		this.LoadTaxCodeDataSource(i, this.isBindingTaxCode)
+		this.LoadTaxCodeDataSource(i, this.isBindingTaxCode);
 		this.saveChange().then(() => {
 			this.formGroup.get('BuyerTaxCode').markAsPristine();
 			this.formGroup.get('BuyerUnitName').markAsPristine();
