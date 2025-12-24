@@ -29,4 +29,5 @@ export const ACCOUNTTANTRoutes: Routes = [
    { path: 'bank-transaction', loadChildren: () => import('./bank-transaction/bank-transaction.module').then(m => m.BankTransactionPageModule), canActivate: [AuthGuard] },
    { path: 'bank-transaction/:id', loadChildren: () => import('./bank-transaction-detail/bank-transaction-detail.module').then(m => m.BankTransactionDetailPageModule), canActivate: [AuthGuard] },
 
+   { path: 'currency', loadChildren: () => import('./currency/currency.module').then(m => m.CurrencyPageModule), canActivate: [AuthGuard] },
 ];
