@@ -136,6 +136,20 @@
 					</ion-badge>
 				</ng-template>
 			</datatable-column>
+			<datatable-column class="col-name" name="Unit" property="IDBranch">
+				<ng-template let-i="row" datatable-cell-template>
+					<app-branch-breadcrumbs
+						[maxItems]="1"
+						[itemsBeforeCollapse]="0"
+						[itemsAfterCollapse]="1"
+						[Id]="i.IDBranch"
+						[Items]="env.branchList"
+						[ngClass]="{'no-check-dirty': noCheckDirty}"
+						class="c-input disable breadcrumbs"
+					>
+					</app-branch-breadcrumbs>
+				</ng-template>
+			</datatable-column>
 		</app-data-table>
 	</div>
 	<div class="ion-padding"></div>
