@@ -1,0 +1,16 @@
+span.header-name {
+	margin-right: 10px;
+}
+::ng-deep {
+	.col-code,
+	.col-remark {
+		min-width: unset !important;
+		width: 100px !important;
+		max-width: unset !important;
+	}
+	.col-icon {
+		max-width: 60px !important;
+		min-width: 60px !important;
+		padding: 0 !important;
+	}
+}
