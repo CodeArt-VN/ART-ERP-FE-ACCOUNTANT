@@ -30,4 +30,8 @@ export const ACCOUNTTANTRoutes: Routes = [
    { path: 'bank-transaction/:id', loadChildren: () => import('./bank-transaction-detail/bank-transaction-detail.module').then(m => m.BankTransactionDetailPageModule), canActivate: [AuthGuard] },
 
    { path: 'currency', loadChildren: () => import('./currency/currency.module').then(m => m.CurrencyPageModule), canActivate: [AuthGuard] },
+   { path: 'currency/:id', loadChildren: () => import('./currency-detail/currency-detail.module').then(m => m.CurrencyDetailPageModule), canActivate: [AuthGuard] },
+   
+   { path: 'exchange-rate', loadChildren: () => import('./exchange-rate/exchange-rate.module').then(m => m.ExchangeRatePageModule), canActivate: [AuthGuard] },
+   { path: 'exchange-rate/:id', loadChildren: () => import('./exchange-rate-detail/exchange-rate-detail.module').then(m => m.ExchangeRateDetailPageModule), canActivate: [AuthGuard] },
 ];

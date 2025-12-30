@@ -2,20 +2,19 @@ import { Component } from '@angular/core';
 import { NavController, ModalController, AlertController, LoadingController, PopoverController } from '@ionic/angular';
 import { EnvService } from 'src/app/services/core/env.service';
 import { PageBase } from 'src/app/page-base';
-import { BRA_BranchProvider, SYS_CurrencyProvider } from 'src/app/services/static/services.service';
+import { SYS_ExchangeRateProvider } from 'src/app/services/static/services.service';
 import { Location } from '@angular/common';
-import { CurrencyDetailPage } from '../currency-detail/currency-detail.page';
+import { ExchangeRateDetailPage } from '../exchange-rate-detail/exchange-rate-detail.page';
 
 @Component({
-	selector: 'app-currency',
-	templateUrl: 'currency.page.html',
-	styleUrls: ['currency.page.scss'],
+	selector: 'app-exchange-rate',
+	templateUrl: 'exchange-rate.page.html',
+	styleUrls: ['exchange-rate.page.scss'],
 	standalone: false,
 })
-export class CurrencyPage extends PageBase {
+export class ExchangeRatePage extends PageBase {
 	constructor(
-		public pageProvider: SYS_CurrencyProvider,
-		public branchProvider: BRA_BranchProvider,
+		public pageProvider: SYS_ExchangeRateProvider,
 		public modalController: ModalController,
 		public popoverCtrl: PopoverController,
 		public alertCtrl: AlertController,
@@ -42,7 +41,7 @@ export class CurrencyPage extends PageBase {
 
 	async showModal(i) {
 		const modal = await this.modalController.create({
-			component: CurrencyDetailPage,
+			component: ExchangeRateDetailPage,
 			componentProps: {
 				id: i.Id,
 				item: i,
