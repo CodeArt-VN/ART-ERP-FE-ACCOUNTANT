@@ -168,11 +168,12 @@ export class ARInvoiceDetailPage extends PageBase {
 	}
 
 	onBuyerTaxCodeChange(event, forceSave = true) {
-			this.formGroup.get('BuyerTaxCode').setValue(event.TaxCode);
-			this.formGroup.get('BuyerUnitName').setValue(event.CompanyName);
-			this.formGroup.get('BuyerAddress').setValue(event.BillingAddress);
-			this.formGroup.get('ReceiverEmail').setValue(event.Email);
-			this.formGroup.get('ReceiverMobile').setValue(event.BillingPhone || event.WorkPhone);
+		const selectedTaxInfo = this.getSelectedTaxInfoFromChange(event);
+		this.formGroup.get('BuyerTaxCode').setValue(selectedTaxInfo?.TaxCode || '');
+		this.formGroup.get('BuyerUnitName').setValue(selectedTaxInfo?.CompanyName || selectedTaxInfo?.Name || '');
+		this.formGroup.get('BuyerAddress').setValue(selectedTaxInfo?.BillingAddress || '');
+		this.formGroup.get('ReceiverEmail').setValue(selectedTaxInfo?.Email || '');
+		this.formGroup.get('ReceiverMobile').setValue(selectedTaxInfo?.BillingPhone || selectedTaxInfo?.WorkPhone || '');
 
 		this.formGroup.get('BuyerTaxCode').markAsDirty();
 		this.formGroup.get('BuyerUnitName').markAsDirty();
@@ -183,6 +184,22 @@ export class ARInvoiceDetailPage extends PageBase {
 		if (forceSave) {
 			this.saveChange();
 		}
+	}
+
+	private getSelectedTaxInfoFromChange(event) {
+		if (event && typeof event === 'object' && !('target' in event)) {
+			return event;
+		}
+
+		let selectedId = this.formGroup.get('IDTaxInfo')?.value;
+		if (event !== undefined && event !== null && (typeof event !== 'object' || !('target' in event))) {
+			selectedId = event;
+		}
+
+		if (selectedId === 'null') selectedId = null;
+		if (selectedId === '' || selectedId === undefined) return null;
+
+		return this.TaxCodeDataSource.find((item) => item.Id == selectedId) || null;
 	}
 
 	IDBusinessPartnerChange(i) {
