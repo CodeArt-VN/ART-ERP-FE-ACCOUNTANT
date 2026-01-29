@@ -150,7 +150,7 @@ export class ARInvoiceMergeModalPage extends PageBase {
 						.search({
 							Take: 20,
 							Skip: 0,
-							Term: term ? term : this.item.IDBusinessPartner,
+							Keyword: term ? term : this.item.IDBusinessPartner,
 						})
 						.pipe(
 							catchError(() => of([])), // empty list on error

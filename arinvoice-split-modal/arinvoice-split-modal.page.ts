@@ -294,7 +294,7 @@ export class ARInvoiceSplitModalPage extends PageBase {
 							Take: 20,
 							Skip: 0,
 							SkipMCP: true,
-							Term: term ? term : 'BP:' + this.item.IDContact,
+							Keyword: term ? term : this.item.IDContact,
 						})
 						.pipe(
 							catchError(() => of([])), // empty list on error
@@ -318,7 +318,7 @@ export class ARInvoiceSplitModalPage extends PageBase {
 				distinctUntilChanged(),
 				tap(() => (this.itemListLoading = true)),
 				switchMap((term) =>
-					this.itemProvider.search({ Take: 20, Skip: 0, Term: term }).pipe(
+					this.itemProvider.search({ Take: 20, Skip: 0, Keyword: term }).pipe(
 						catchError(() => of([])), // empty list on error
 						tap(() => (this.itemListLoading = false))
 					)
