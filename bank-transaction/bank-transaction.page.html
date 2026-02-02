@@ -20,7 +20,7 @@
 </ion-header>
 <ion-content appScrollbarTheme class="left" [ngClass]="{withFeature: pageConfig.isShowFeature}" forceOverscroll="false">
 	<ion-fab
-		*ngIf="pageConfig.isShowFeature && groupControl.groupList.length>1"
+		*ngIf="pageConfig.isShowFeature && groupControl.groupList.length > 0"
 		[ngClass]="{'ion-hide-md-down' : pageConfig.isSubActive}"
 		class="feature no-print"
 		vertical="bottom"

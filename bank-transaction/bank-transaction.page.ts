@@ -53,7 +53,7 @@ export class BankTransactionPage extends PageBase {
 			SortBy: ['Id_desc'],
 			Take: 20,
 			Skip: 0,
-			Keyword: term
+			Keyword: term,
 		});
 	});
 
@@ -90,6 +90,8 @@ export class BankTransactionPage extends PageBase {
 	// 	},
 	// };
 	preLoadData(event?: any): void {
+		this.groupControl.groupList = [];
+		this.query.IDAccount = 0;
 		this.query.SortBy = 'TransactionDate_desc';
 		this.selectedItems = [];
 		this.statusList = [
@@ -101,7 +103,7 @@ export class BankTransactionPage extends PageBase {
 		this.pageConfig.pageIcon = 'flash-outline';
 		this.branchList = lib.cloneObject(this.env.branchList);
 		this.bankProvider
-			.read({ Take: 5000 })
+			.read({ Take: 5000, AllParent: true })
 			.then((res) => {
 				if (res['data'] && res['data'].length > 0) {
 					this.groupControl.groupList = res['data']
@@ -126,6 +128,11 @@ export class BankTransactionPage extends PageBase {
 					// 		g._query = JSON.stringify(childrentIds);
 					// 	}
 					// });
+				}
+				const firstGroup = this.groupControl.groupList?.find((g) => g.children?.length > 0);
+
+				if (firstGroup?.children?.[0]) {
+					this.onGroupChange(firstGroup.children[0]);
 				}
 			})
 			.finally(() => {
