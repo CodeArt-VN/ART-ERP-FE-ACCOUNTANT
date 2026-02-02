@@ -61,7 +61,7 @@ export class ARContactModalPage extends PageBase {
 			Take: 20,
 			Skip: 0,
 			SkipMCP: true,
-			Term: this.item?.IDSeller,
+			Keyword: this.item?.IDSeller,
 			IDOwner: '',
 		});
 	});
