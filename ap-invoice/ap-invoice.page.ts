@@ -75,6 +75,16 @@ export class APInvoicePage extends PageBase {
 		});
 	}
 
+	loadedData(event) {
+		this.items.forEach((i) => {
+			i._Status = this.statusList.find((d) => d.Code == i.Status);
+			if(this.pageConfig.ARIsShowBranch){
+				i._Branch = this.env.branchList.find((b) => b.Id == i.IDBranch);
+			}
+		});
+		super.loadedData(event);
+	}
+
 	ngOnDestroy() {
 		this.dismissPopover();
 	}

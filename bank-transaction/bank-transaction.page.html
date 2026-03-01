@@ -87,7 +87,7 @@
 
 	<div class="safe-max-width">
 		<app-data-table
-			class="box-shadow responsive small-width"
+			class="box-shadow responsive small-width  padding-number-right"
 			[rows]="items"
 			[trackBy]="'Id'"
 			[(selectedRows)]="selectedItems"
@@ -106,7 +106,7 @@
 				</ng-template>
 			</datatable-column>
 			<datatable-column class="col-date" format="yyyy-MM-dd HH:mm" name="Transaction date" property="TransactionDate" filterControlType="time-frame"></datatable-column>
-			<datatable-column class="col-name flex-break" name="Remark" property="Remark">
+			<datatable-column class="col-remark flex-break" name="Remark" property="Remark">
 				<ng-template let-i="row" datatable-cell-template>
 					<div>
 						<a *ngIf="!query.IDAccount && i._BankAccount" class="bold" [routerLink]="['/bank-account/'+i._BankAccount.Id]">

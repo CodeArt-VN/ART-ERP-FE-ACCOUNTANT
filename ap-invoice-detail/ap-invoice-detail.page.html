@@ -193,8 +193,7 @@
 								<app-form-control [field]="{id:'CalcBalance',label:'Remaining', type:'span-number',form:formGroup}"></app-form-control>
 								<app-form-control [field]="{id:'DueDate',label:'Payment due date', type:'date',form:formGroup}" (controlChange)="saveChange()"></app-form-control>
 								<app-form-control
-									[field]="{id:'IDOwner',label:'Buyer', type:'ng-select-staff',dataSource:IDOwnerDataSource, bindLabel:'Name',
-                bindValue:'Id',form:formGroup}"
+									[field]="{id:'IDOwner',label:'Buyer', type:'ng-select-staff',dataSource:IDOwnerDataSource, bindLabel:'Name', bindValue:'Id',form:formGroup}"
 									(controlChange)="saveChange()"
 								></app-form-control>
 
@@ -393,9 +392,9 @@
 					</ng-container>
 				</form>
 			</div>
-			<div class="table responsive" *ngIf="segmentView == 's3'">
+			<div class="table responsive padding-number-right" *ngIf="segmentView == 's3'">
 				<app-data-table
-					class="box-shadow responsive"
+					class="box-shadow responsive padding-number-right"
 					*ngIf="paymentDetailList"
 					[rows]="paymentDetailList"
 					[(selectedRows)]="selectedItems"

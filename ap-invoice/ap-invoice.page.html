@@ -10,56 +10,47 @@
 		</ion-button>
 
 		<ion-button
-		class="clickable"
-		title="{{'Add' | translate}}"
-		(click)="presentAddNewPopover($event)"
-		*ngIf="
+			class="clickable"
+			title="{{'Add' | translate}}"
+			(click)="presentAddNewPopover($event)"
+			*ngIf="
 	(pageConfig.canAdd && pageConfig.ShowAddNew && selectedItems.length == 0) "
-	>
-		<!-- && selectedItems?.length  == 1 -->
-		<!-- && selectedItems?.length == 1 -->
-		<ion-icon name="duplicate-outline" color="success" slot="icon-only"></ion-icon>
-	</ion-button>
+		>
+			<!-- && selectedItems?.length  == 1 -->
+			<!-- && selectedItems?.length == 1 -->
+			<ion-icon name="duplicate-outline" color="success" slot="icon-only"></ion-icon>
+		</ion-button>
 
-	<ion-popover #addNewPopover [isOpen]="isOpenAddNewPopover" (didDismiss)="isOpenAddNewPopover = false">
-		<ng-template>
-			<ion-content scroll-y="false">
-				<ion-list lines="none">
-					<ion-item [button]="true" [detail]="false" (click)="addNewPopover.dismiss() ; add()" title="{{'Add' | translate}}">
-						<!-- && selectedItems?.length  == 1 -->
-						<ion-icon name="add" color="success" slot="start"></ion-icon>
-						<ion-label> {{'Add' | translate}}</ion-label>
-					</ion-item>
+		<ion-popover #addNewPopover [isOpen]="isOpenAddNewPopover" (didDismiss)="isOpenAddNewPopover = false">
+			<ng-template>
+				<ion-content scroll-y="false">
+					<ion-list lines="none">
+						<ion-item [button]="true" [detail]="false" (click)="addNewPopover.dismiss() ; add()" title="{{'Add' | translate}}">
+							<!-- && selectedItems?.length  == 1 -->
+							<ion-icon name="add" color="success" slot="start"></ion-icon>
+							<ion-label> {{'Add' | translate}}</ion-label>
+						</ion-item>
 
-					<ion-item
-						[button]="true"
-						[detail]="false"
-						(click)="openPurchaseOrderPopover() ; isOpenAddNewPopover = false"
-						title="{{'CopyFromPurchaseOrder' | translate}}"
-					>
-						<!-- && selectedItems?.length  == 1 -->
-						<ion-icon name="clipboard-list" color="success" slot="start"></ion-icon>
-						<ion-label> {{'Copy from purchase order' | translate}}</ion-label>
-					</ion-item>
+						<ion-item
+							[button]="true"
+							[detail]="false"
+							(click)="openPurchaseOrderPopover() ; isOpenAddNewPopover = false"
+							title="{{'CopyFromPurchaseOrder' | translate}}"
+						>
+							<!-- && selectedItems?.length  == 1 -->
+							<ion-icon name="clipboard-list" color="success" slot="start"></ion-icon>
+							<ion-label> {{'Copy from purchase order' | translate}}</ion-label>
+						</ion-item>
 
-					<ion-item
-						[button]="true"
-						[detail]="false"
-						(click)="openGoodsReceiptPopover() ; isOpenAddNewPopover = false"
-						title="{{'CopyFromGoodsReceipt' | translate}}"
-					>
-						<!-- && selectedItems?.length  == 1 -->
-						<ion-icon name="clipboard-list" color="success" slot="start"></ion-icon>
-						<ion-label> {{'Copy from goods receipt' | translate}}</ion-label>
-					</ion-item>
-				</ion-list>
-			</ion-content>
-		</ng-template>
-	</ion-popover>
-
-
-
-
+						<ion-item [button]="true" [detail]="false" (click)="openGoodsReceiptPopover() ; isOpenAddNewPopover = false" title="{{'CopyFromGoodsReceipt' | translate}}">
+							<!-- && selectedItems?.length  == 1 -->
+							<ion-icon name="clipboard-list" color="success" slot="start"></ion-icon>
+							<ion-label> {{'Copy from goods receipt' | translate}}</ion-label>
+						</ion-item>
+					</ion-list>
+				</ion-content>
+			</ng-template>
+		</ion-popover>
 	</app-toolbar>
 </ion-header>
 <ion-content appScrollbarTheme class="scrollx">
@@ -69,9 +60,9 @@
 	<ion-fab *ngIf="pageConfig.isShowFeature" class="feature" vertical="top" horizontal="end" slot="fixed">
 		<div class="ion-padding"></div>
 	</ion-fab>
-	<section class="table responsive">
+	<section class="table responsive padding-number-right">
 		<app-data-table
-			class="box-shadow responsive"
+			class="box-shadow responsive padding-number-right"
 			[rows]="items"
 			[(selectedRows)]="selectedItems"
 			(filter)="onDatatableFilter($event)"
@@ -88,19 +79,25 @@
 					<a [routerLink]="['/'+pageConfig.pageName+'/'+i.Id]"> {{i.Id}} </a>
 				</ng-template>
 			</datatable-column>
-			<datatable-column class="col-id" name="PO" property="IDPurchaseOrder">
+			<datatable-column class="col-code" name="PO" property="IDPurchaseOrder">
 				<ng-template let-i="row" datatable-cell-template>
-					<a [routerLink]="['/'+pageConfig.pageName+'/'+i.Id]"> <span class="show-small-inline">PO: </span>{{i.IDPurchaseOrder}} </a>
+					<span *ngIf="i.IDPurchaseOrder">
+						<a [routerLink]="['/'+pageConfig.pageName+'/'+i.Id]"> <span class="show-small-inline">PO: </span>{{i.IDPurchaseOrder}} </a>
+					</span>
 				</ng-template>
 			</datatable-column>
-			<datatable-column class="col-id" name="Receipt" property="IDReceipt">
+			<datatable-column class="col-code" name="Receipt" property="IDReceipt">
 				<ng-template let-i="row" datatable-cell-template>
-					<a [routerLink]="['/'+pageConfig.pageName+'/'+i.Id]"> <span class="show-small-inline">Receipt: </span>{{i.IDReceipt}} </a>
+					<span *ngIf="i.IDReceipt">
+						<a [routerLink]="['/'+pageConfig.pageName+'/'+i.Id]"> <span class="show-small-inline">Receipt: </span>{{i.IDReceipt}} </a>
+					</span>
 				</ng-template>
 			</datatable-column>
-			<datatable-column class="col-id" name="Số HĐ" property="InvoiceNo">
+			<datatable-column class="col-code" name="Số HĐ" property="InvoiceNo">
 				<ng-template let-i="row" datatable-cell-template>
-					<a [routerLink]="['/'+pageConfig.pageName+'/'+i.Id]"> <span class="show-small-inline">PO: </span>{{i.Id}} </a>
+					<span *ngIf="i.InvoiceNo">
+						<a [routerLink]="['/'+pageConfig.pageName+'/'+i.Id]"> <span class="show-small-inline">Invoice: </span>{{i.InvoiceNo}} </a>
+					</span>
 				</ng-template>
 			</datatable-column>
 
@@ -109,14 +106,14 @@
 			</datatable-column>
 			<datatable-column class="col-code" name="Payment status" property="PaymentStatus">
 				<ng-template let-i="row" datatable-cell-template>
-					<span class="bar-holder">
+					<span class="bar-holder" *ngIf="i.PaymentStatus">
 						<ng-container *ngFor="let s of paymentStatusList">
 							<ion-text *ngIf="s.Code==i.PaymentStatus" class="bar-title" [color]="s.Color">{{s.Name}}</ion-text>
 						</ng-container>
 					</span>
 				</ng-template>
 			</datatable-column>
-			<datatable-column class="col-name" filterControlType="text" name="Bên bán" property="SellerName">
+			<datatable-column class="col-name flex-break" filterControlType="text" name="Bên bán" property="SellerName">
 				<ng-template let-i="row" datatable-cell-template> {{i.SellerName}} </ng-template>
 			</datatable-column>
 
@@ -124,42 +121,14 @@
 				<ng-template let-i="row" datatable-cell-template> {{i.CalcTotalAfterTax | number:'1.0-0'}} </ng-template>
 			</datatable-column>
 
-			<datatable-column class="col-status" name="Status" property="Status">
+			<datatable-column class="col-status" name="Status" property="Status" filterControlType="ng-select" [filterDataSource]="statusList">
 				<ng-template let-i="row" datatable-cell-template>
-					<span class="bar-holder">
-						<ng-container *ngFor="let s of statusList">
-							<ion-text *ngIf="s.Code==i.Status" class="bar-title" [color]="s.Color">{{s.Name}}</ion-text>
-						</ng-container>
-						<span
-							class="bar"
-							[ngClass]="{active: s.Code==i.Status}"
-							[ngStyle]="{'background-color': 'var(--ion-color-'+s.Color+')'}"
-							*ngFor="let s of statusList"
-							[title]="s.Name"
-						></span>
-					</span>
-					<!-- <ion-badge [color]="i._Status?.Color" [title]="i._Status?.Name">
-          {{i._Status?.Name}}
-        </ion-badge> -->
+					<ion-badge [color]="i._Status?.Color" [title]="i._Status?.Name"> {{i._Status?.Name | translate}} </ion-badge>
 				</ng-template>
 			</datatable-column>
 		</app-data-table>
 	</section>
 
-	<!-- <div class="col-status cell">
-      <ion-text>{{'Status' | translate}}</ion-text>
-      <select
-        (change)="refresh()"
-        class="c-input c-dropdown no-check-dirty"
-        [ngModelOptions]="{standalone: true}"
-        [(ngModel)]="query.Status"
-        [ngClass]="{active: query.Status}"
-      >
-        <option value="">{{'Status' | translate}}</option>
-        <option *ngFor="let t of statusList" [value]="t.Code">{{t.Name}}</option>
-      </select>
-      <ion-icon class="min-btn" (click)="query.Status=''; refresh()" name="close-circle-outline"></ion-icon>
-    </div> -->
 	<ion-popover class="w300" #popover [isOpen]="isOpenPopover" (didDismiss)="dismissPopover()">
 		<ng-template>
 			<ion-content appScrollbarTheme>
