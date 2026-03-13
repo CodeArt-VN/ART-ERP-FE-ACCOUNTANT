@@ -15,6 +15,7 @@ import { lib } from 'src/app/services/static/global-functions';
 	standalone: false,
 })
 export class BankAccountDetailPage extends PageBase {
+	noCheckDirty = false;
 	ChartOfAccount = [];
 	collectionSchedule: any = [];
 	accountList = [];

@@ -7,7 +7,7 @@
 		<ion-grid fixed>
 			<ion-row>
 				<ion-col size="12" size-sm>
-					<app-page-title [icon]="person-outline" [color]="warning" [title]="'Incoming payment'"></app-page-title>
+					<app-page-title [icon]="'person-outline'" [color]="'warning'" [title]="'Incoming payment'"></app-page-title>
 				</ion-col>
 			</ion-row>
 		</ion-grid>
@@ -170,7 +170,7 @@
 									</section>
 								</div>
 								<div class="c-control" *ngIf="formGroup.controls.IDCustomer.value">
-									<ion-button (click)="showOrderModal(i)" size="small" fill="outline">
+									<ion-button (click)="showOrderModal()" size="small" fill="outline">
 										<ion-icon slot="start" name="add-outline"></ion-icon>
 										{{ 'Add sale order' | translate }}
 									</ion-button>
@@ -220,7 +220,7 @@
 									</section>
 								</div>
 								<div class="c-control" *ngIf="formGroup.controls.IDCustomer.value">
-									<ion-button (click)="showInvoiceModal(i)" size="small" fill="outline">
+									<ion-button (click)="showInvoiceModal()" size="small" fill="outline">
 										<ion-icon slot="start" name="add-outline"></ion-icon>
 										{{ 'Add invoice' | translate }}
 									</ion-button>

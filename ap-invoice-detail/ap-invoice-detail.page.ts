@@ -247,7 +247,7 @@ export class APInvoiceDetailPage extends PageBase {
 		}
 	}
 
-	private addLine(line, markAsDirty = false) {
+	addLine(line, markAsDirty = false) {
 		let groups = <FormArray>this.formGroup.controls.InvoiceDetails;
 
 		let preLoadItems = this.item._Items;
@@ -801,7 +801,7 @@ export class APInvoiceDetailPage extends PageBase {
 		this.saveChange();
 	}
 
-	removeLine(fg) {
+	removeLine(fg, _idx = null) {
 		let groups = this.formGroup.controls.InvoiceDetails as FormArray;
 		if (fg.controls.Id.value) {
 			this.env.showPrompt({ code: 'Do you want to delete?' }).then((_) => {
@@ -935,7 +935,7 @@ export class APInvoiceDetailPage extends PageBase {
 		}
 		this.isOpenPopover = false;
 	}
-	presentPopover(event) {
+	presentPopover(event = null) {
 		this.isOpenPopover = true;
 	}
 }

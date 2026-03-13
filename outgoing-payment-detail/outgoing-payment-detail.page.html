@@ -17,7 +17,7 @@
 		<ion-grid fixed>
 			<ion-row>
 				<ion-col size="12" size-sm>
-					<app-page-title [icon]="person-outline" [color]="warning" [title]="'Outgoing payment'"></app-page-title>
+					<app-page-title [icon]="'person-outline'" [color]="'warning'" [title]="'Outgoing payment'"></app-page-title>
 				</ion-col>
 			</ion-row>
 		</ion-grid>
@@ -249,7 +249,7 @@
 									</section>
 								</div>
 								<div class="c-control" *ngIf="formGroup.controls.IDBusinessPartner.value">
-									<ion-button *ngIf="pageConfig.canEdit" (click)="showInvoiceModal(i)" size="small" fill="outline">
+									<ion-button *ngIf="pageConfig.canEdit" (click)="showInvoiceModal()" size="small" fill="outline">
 										<ion-icon slot="start" name="add-outline"></ion-icon>
 										<ng-container>{{'Add invoice' | translate }}</ng-container>
 									</ion-button>

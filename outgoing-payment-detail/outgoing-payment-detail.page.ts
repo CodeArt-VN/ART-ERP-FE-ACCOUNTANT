@@ -17,7 +17,7 @@ import { OutgoingPaymentInvoiceModalPage } from '../outgoing-payment-invoice-mod
 	standalone: false,
 })
 export class OutgoingPaymentDetailPage extends PageBase {
-	statusList: [];
+	statusList: any[] = [];
 	paymentReasonList = [];
 	SelectedOrderList: any;
 	SelectedInvoiceList: any;

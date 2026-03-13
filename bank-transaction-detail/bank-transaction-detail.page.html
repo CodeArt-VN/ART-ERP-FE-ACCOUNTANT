@@ -22,7 +22,7 @@
 		<ion-grid fixed>
 			<ion-row>
 				<ion-col size="12" size-sm>
-					<app-page-title [icon]="person-outline" [color]="warning" [title]="'Bank transaction'"></app-page-title>
+					<app-page-title [icon]="'person-outline'" [color]="'warning'" [title]="'Bank transaction'"></app-page-title>
 				</ion-col>
 			</ion-row>
 		</ion-grid>
@@ -86,7 +86,7 @@
 										[items]="accountList"
 										bindValue="Id"
 										bindLabel="Code"
-										clearable="true"
+										[clearable]="true"
 										(change)="saveChange()"
 										appendTo="#ng-select-holder"
 									>
@@ -205,11 +205,11 @@
 									</section>
 								</div>
 								<div class="c-control" *ngIf="pageConfig.canEdit && formGroup.controls.IDBusinessPartner.value && canDeletePaymentDetail">
-									<ion-button *ngIf="formGroup.controls.Amount.value>=0" (click)="showSaleOrderModal(i)" size="small" fill="outline">
+									<ion-button *ngIf="formGroup.controls.Amount.value>=0" (click)="showSaleOrderModal()" size="small" fill="outline">
 										<ion-icon slot="start" name="add-outline"></ion-icon>
 										<ion-label color="primary">{{ 'Add sale orders' | translate }}</ion-label>
 									</ion-button>
-									<ion-button *ngIf="formGroup.controls.Amount.value<0" (click)="showPurchaseOrderModal(i)" size="small" fill="outline">
+									<ion-button *ngIf="formGroup.controls.Amount.value<0" (click)="showPurchaseOrderModal()" size="small" fill="outline">
 										<ion-icon slot="start" name="add-outline"></ion-icon>
 										<ion-label color="primary">{{ 'Add purchase orders' | translate }}</ion-label>
 									</ion-button>
@@ -278,11 +278,11 @@
 									</section>
 								</div>
 								<div class="c-control" *ngIf="pageConfig.canEdit && formGroup.controls.IDBusinessPartner.value && canDeletePaymentDetail">
-									<ion-button (click)="showARInvoiceModal(i)" *ngIf="formGroup.controls.Amount.value>=0" size="small" fill="outline">
+									<ion-button (click)="showARInvoiceModal()" *ngIf="formGroup.controls.Amount.value>=0" size="small" fill="outline">
 										<ion-icon slot="start" name="add-outline"></ion-icon>
 										<span>{{ 'Add AR invoices' | translate }}</span>
 									</ion-button>
-									<ion-button (click)="showAPInvoiceModal(i)" *ngIf="formGroup.controls.Amount.value<0" size="small" fill="outline">
+									<ion-button (click)="showAPInvoiceModal()" *ngIf="formGroup.controls.Amount.value<0" size="small" fill="outline">
 										<ion-icon slot="start" name="add-outline"></ion-icon>
 										<span>{{ 'Add AP invoices' | translate }}</span>
 									</ion-button>

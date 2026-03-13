@@ -14,7 +14,7 @@ import { SYS_ConfigService } from 'src/app/services/custom/system-config.service
 	standalone: false,
 })
 export class OutgoingPaymentPage extends PageBase {
-	statusList: [];
+	statusList: { Code?: string; Color?: string; Name?: string }[] = [];
 	constructor(
 		public pageProvider: BANK_OutgoingPaymentProvider,
 		public branchProvider: BRA_BranchProvider,

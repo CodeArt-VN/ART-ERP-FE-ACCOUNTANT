@@ -133,7 +133,7 @@ export class APInvoicePage extends PageBase {
 		}
 		this.isOpenPopover = false;
 	}
-	presentPopover(event) {
+	presentPopover(event = null) {
 		this.isOpenPopover = true;
 	}
 	IDBusinessPartner;
@@ -173,7 +173,7 @@ export class APInvoicePage extends PageBase {
 	initPODatasource = [];
 	initGRDatasource = [];
 
-	async openPurchaseOrderPopover(ev: any) {
+	async openPurchaseOrderPopover(ev: any = null) {
 		let queryPO = {
 			IDBranch: this.env.selectedBranchAndChildren,
 			Take: 20,
@@ -250,7 +250,7 @@ export class APInvoicePage extends PageBase {
 		});
 	}
 
-	async openGoodsReceiptPopover(ev: any) {
+	async openGoodsReceiptPopover(ev: any = null) {
 		let queryGR = {
 			IDBranch: this.env.selectedBranchAndChildren,
 			Take: 20,

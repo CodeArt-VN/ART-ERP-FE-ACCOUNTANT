@@ -13,7 +13,7 @@ import { SortConfig } from 'src/app/interfaces/options-interface';
 	standalone: false,
 })
 export class IncomingPaymentPage extends PageBase {
-	statusList: [];
+	statusList: { Code?: string; Color?: string; Name?: string }[] = [];
 	constructor(
 		public pageProvider: BANK_IncomingPaymentProvider,
 		public branchProvider: BRA_BranchProvider,

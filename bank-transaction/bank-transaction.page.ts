@@ -245,7 +245,7 @@ export class BankTransactionPage extends PageBase {
 		}
 		this.isOpenPopover = false;
 	}
-	presentPopover(event) {
+	presentPopover(event = null) {
 		this.isOpenPopover = true;
 	}
 	ShowAssignBranchAndBP = false;
