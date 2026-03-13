@@ -335,9 +335,11 @@ export class APInvoiceDetailPage extends PageBase {
 		if (markAsDirty) {
 			group.get('IDAPInvoice').markAsDirty();
 		}
-		group.valueChanges.subscribe((changes) => {
-			this.calcTotal();
-		});
+		this.subscriptions.push(
+			group.valueChanges.subscribe((changes) => {
+				this.calcTotal();
+			})
+		);
 	}
 
 	getPaymentHistory() {

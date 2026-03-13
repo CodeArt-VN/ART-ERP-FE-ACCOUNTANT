@@ -169,11 +169,13 @@ export class BankTransactionDetailPage extends PageBase {
 		super.loadedData(event);
 		let groups = <FormArray>this.formGroup.controls.PaymentDetails;
 		groups.clear();
-		groups.valueChanges.subscribe((value) => {
-			this.invoicePaymentCount = groups.value.filter((d) => d.Invoice).length;
-			this.orderPaymentCount = groups.value.filter((d) => d.IDOrder).length;
-			this.calcDifferenceAmount();
-		});
+		this.subscriptions.push(
+			groups.valueChanges.subscribe((value) => {
+				this.invoicePaymentCount = groups.value.filter((d) => d.Invoice).length;
+				this.orderPaymentCount = groups.value.filter((d) => d.IDOrder).length;
+				this.calcDifferenceAmount();
+			})
+		);
 		this.item.PaymentDetails?.forEach((i) => {
 			this.addField(i);
 		});
