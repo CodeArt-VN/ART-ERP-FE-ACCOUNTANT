@@ -1,4 +1,4 @@
-<ion-header>
+<ion-header [translucent]="true">
 	<app-toolbar [page]="this">
 		<ion-button
 			(click)="createEInvoice()"
@@ -28,7 +28,7 @@
 	</app-toolbar>
 </ion-header>
 
-<ion-content appScrollbarTheme class="scrollx">
+<ion-content appScrollbarTheme class="scrollx" [fullscreen]="true">
 	<ion-fab *ngIf="pageConfig.isShowFeature" class="feature" vertical="top" horizontal="end" slot="fixed">
 		<div class="ion-padding"></div>
 	</ion-fab>

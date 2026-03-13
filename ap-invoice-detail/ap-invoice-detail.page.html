@@ -1,4 +1,4 @@
-<ion-header>
+<ion-header [translucent]="true">
 	<app-toolbar [page]="this">
 		<ion-toolbar>
 			<ion-button
@@ -12,7 +12,7 @@
 		</ion-toolbar>
 	</app-toolbar>
 </ion-header>
-<ion-content appScrollbarTheme class="ion-padding">
+<ion-content [fullscreen]="true" appScrollbarTheme class="ion-padding">
 	<div class="main-view" *ngIf="item ">
 		<div class="row-full shadow full-screen">
 			<ion-toolbar color="primary">
@@ -444,7 +444,7 @@
 	<app-page-message [itemsLength]="item? 1: 0" [showSpinner]="pageConfig.showSpinner"></app-page-message>
 	<ion-popover class="w300" #popover [isOpen]="isOpenPopover" (didDismiss)="dismissPopover()">
 		<ng-template>
-			<ion-content appScrollbarTheme>
+			<ion-content [fullscreen]="true" appScrollbarTheme>
 				<ion-grid>
 					<form [formGroup]="paymentFormGroup" (submit)="dismissPopover(true)">
 						<ion-row>

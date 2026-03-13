@@ -1,4 +1,4 @@
-<ion-header>
+<ion-header [translucent]="true">
 	<app-toolbar [page]="this">
 		<ion-button
 			*ngIf="ShowAssignBranchAndBP && selectedItems.length>0 && pageConfig.canEdit"
@@ -18,7 +18,7 @@
 		</ion-button>
 	</app-toolbar>
 </ion-header>
-<ion-content appScrollbarTheme class="left" [ngClass]="{withFeature: pageConfig.isShowFeature}" forceOverscroll="false">
+<ion-content [fullscreen]="true" appScrollbarTheme class="left" [ngClass]="{withFeature: pageConfig.isShowFeature}" forceOverscroll="false">
 	<ion-fab
 		*ngIf="pageConfig.isShowFeature && groupControl.groupList.length > 0"
 		[ngClass]="{'ion-hide-md-down' : pageConfig.isSubActive}"
@@ -137,7 +137,7 @@
 	</div>
 	<ion-popover class="w300" #popover [isOpen]="isOpenPopover" (didDismiss)="dismissPopover()">
 		<ng-template>
-			<ion-content appScrollbarTheme>
+			<ion-content [fullscreen]="true" appScrollbarTheme>
 				<ion-grid>
 					<form [formGroup]="formGroup" (submit)="dismissPopover(true)">
 						<ion-row>

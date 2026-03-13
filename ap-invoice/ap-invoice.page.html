@@ -1,4 +1,4 @@
-<ion-header>
+<ion-header [translucent]="true">
 	<app-toolbar [page]="this">
 		<ion-button
 			*ngIf="selectedItems?.length>0 && ShowRequestOutgoingPayment && pageConfig.canRequestOutgoingPayment"
@@ -53,7 +53,7 @@
 		</ion-popover>
 	</app-toolbar>
 </ion-header>
-<ion-content appScrollbarTheme class="scrollx">
+<ion-content [fullscreen]="true" appScrollbarTheme class="scrollx">
 	<ion-refresher [disabled]="!pageConfig.refresher" [disabled]="!pageConfig.refresher" slot="fixed" (ionRefresh)="refresh($event)">
 		<ion-refresher-content></ion-refresher-content>
 	</ion-refresher>
@@ -131,7 +131,7 @@
 
 	<ion-popover class="w300" #popover [isOpen]="isOpenPopover" (didDismiss)="dismissPopover()">
 		<ng-template>
-			<ion-content appScrollbarTheme>
+			<ion-content [fullscreen]="true" appScrollbarTheme>
 				<ion-grid>
 					<form [formGroup]="formGroup" (submit)="dismissPopover(true)">
 						<ion-row>
