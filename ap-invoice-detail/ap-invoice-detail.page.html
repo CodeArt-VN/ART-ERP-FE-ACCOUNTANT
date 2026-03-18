@@ -1,15 +1,13 @@
 <ion-header [translucent]="true">
 	<app-toolbar [page]="this">
-		<ion-toolbar>
-			<ion-button
-				*ngIf="pageConfig.ShowRequestOutgoingPayment && pageConfig.canRequestOutgoingPayment"
-				tollbarSelected
-				title="{{'Create outgoing payment' | translate}}"
-				(click)="presentPopover()"
-			>
-				<ion-icon color="success" name="money-check"></ion-icon>
-			</ion-button>
-		</ion-toolbar>
+		<ion-button
+			*ngIf="pageConfig.ShowRequestOutgoingPayment && pageConfig.canRequestOutgoingPayment"
+			tollbarSelected
+			title="{{'Create outgoing payment' | translate}}"
+			(click)="presentPopover()"
+		>
+			<ion-icon color="success" name="money-check"></ion-icon>
+		</ion-button>
 	</app-toolbar>
 </ion-header>
 <ion-content [fullscreen]="true" appScrollbarTheme class="ion-padding">
