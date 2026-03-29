@@ -77,7 +77,7 @@ export class ARContactModalPage extends PageBase {
 	// 		Take: 20,
 	// 		Skip: 0,
 	// 		SkipMCP: true,
-	// 		Term: '', // term ? term : this.item?.IDSeller,
+	// 		Keyword: '', // term ? term : this.item?.IDSeller,
 	// 		IDOwner: '',
 	// 	},
 	// 	items$: null,
@@ -89,7 +89,7 @@ export class ARContactModalPage extends PageBase {
 	// 				distinctUntilChanged(),
 	// 				tap(() => (this.loading = true)),
 	// 				switchMap(
-	// 					(term) => (this.searchQuery.Term = term ? term : this.item?.IDSeller),
+	// 					(term) => (this.searchQuery.Keyword = term ? term : this.item?.IDSeller),
 	// 					this.searchProvider.search(this.searchQuery).pipe(
 	// 						catchError(() => of([])), // empty list on error
 	// 						tap(() => (this.loading = false))

@@ -447,7 +447,7 @@ export class OutgoingPaymentDetailPage extends PageBase {
 	// 							SortBy: ['Id_desc'],
 	// 							Take: 20,
 	// 							Skip: 0,
-	// 							Term: term ? term : 'BP:' + this.item?.IDCustomer,
+	// 							Keyword: term ? term : 'BP:' + this.item?.IDCustomer,
 	// 							SkipAddress: true,
 	// 						})
 	// 						.pipe(
@@ -479,7 +479,7 @@ export class OutgoingPaymentDetailPage extends PageBase {
 	// 				distinctUntilChanged(),
 	// 				tap(() => (this.loading = true)),
 	// 				switchMap((term) =>
-	// 					this.searchProvider.search({ Take: 20, Skip: 0, Term: term }).pipe(
+	// 					this.searchProvider.search({ Take: 20, Skip: 0, Keyword: term }).pipe(
 	// 						catchError(() => of([])), // empty list on error
 	// 						tap(() => (this.loading = false))
 	// 					)

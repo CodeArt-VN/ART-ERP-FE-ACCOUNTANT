@@ -288,7 +288,7 @@ export class APInvoiceDetailPage extends PageBase {
 			// 								SortBy: ['Id_desc'],
 			// 								Take: 20,
 			// 								Skip: 0,
-			// 								Term: term,
+			// 								Keyword: term,
 			// 								IDBranch: this.that.formGroup.get('IDBranch').value,
 			// 								IDVendor: this.that.formGroup.get('IDSeller').value,
 			// 							})
@@ -387,7 +387,7 @@ export class APInvoiceDetailPage extends PageBase {
 			SortBy: ['Id_desc'],
 			Take: 20,
 			Skip: 0,
-			Term: term,
+			Keyword: term,
 		};
 		const formGroup = this.formGroup;
 		if (this.formGroup.get('IDSeller')?.value && this.formGroup.get('IDPurchaseOrder').value) query.IDVendor =this. formGroup.get('IDSeller').value;
@@ -415,7 +415,7 @@ export class APInvoiceDetailPage extends PageBase {
 	// 						SortBy: ['Id_desc'],
 	// 						Take: 20,
 	// 						Skip: 0,
-	// 						Term: term,
+	// 						Keyword: term,
 	// 					};
 	// 					const formGroup = this.that.formGroup;
 	// 					if (formGroup.get('IDSeller')?.value && formGroup.get('IDPurchaseOrder').value) query.IDVendor = formGroup.get('IDSeller').value;
@@ -642,7 +642,7 @@ export class APInvoiceDetailPage extends PageBase {
 			SortBy: ['Id_desc'],
 			Take: 20,
 			Skip: 0,
-			Term: term,
+			Keyword: term,
 		};
 		if (this.formGroup.get('IDSeller')?.value &&this. formGroup.get('IDReceipt').value) query.IDVendor = this.formGroup.get('IDSeller').value;
 		if (this.formGroup.get('IDBuyer')?.value && this.formGroup.get('IDReceipt').value) query.IDStorer = this.formGroup.get('IDBuyer').value;
@@ -670,7 +670,7 @@ export class APInvoiceDetailPage extends PageBase {
 	// 						SortBy: ['Id_desc'],
 	// 						Take: 20,
 	// 						Skip: 0,
-	// 						Term: term,
+	// 						Keyword: term,
 	// 					};
 	// 					const formGroup = this.that.formGroup;
 	// 					if (formGroup.get('IDSeller')?.value && formGroup.get('IDReceipt').value) query.IDVendor = formGroup.get('IDSeller').value;
@@ -706,7 +706,7 @@ export class APInvoiceDetailPage extends PageBase {
 	// 				distinctUntilChanged(),
 	// 				tap(() => (this.loading = true)),
 	// 				switchMap((term) =>
-	// 					this.searchProvider.search({ Take: 20, Skip: 0, Term: term }).pipe(
+	// 					this.searchProvider.search({ Take: 20, Skip: 0, Keyword: term }).pipe(
 	// 						catchError(() => of([])), // empty list on error
 	// 						tap(() => (this.loading = false))
 	// 					)

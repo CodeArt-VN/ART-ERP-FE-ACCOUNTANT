@@ -45,15 +45,16 @@ export class ARInvoicePage extends PageBase {
 
 		this.pageConfig.dividers = [
 			{
-				field: 'InvoiceDate',
+				fields: ['InvoiceDate'],
 				dividerFn: (record, recordIndex, records) => {
-					let a: any = recordIndex == 0 ? new Date('2000-01-01') : new Date(records[recordIndex - 1].InvoiceDate);
-					let b: any = new Date(record.InvoiceDate);
-
-					if (a.getDate() == b.getDate() && a.getMonth() == b.getMonth() && a.getFullYear() == b.getFullYear()) {
+					const a = recordIndex == 0 ? new Date('2000-01-01') : new Date(records[recordIndex - 1].InvoiceDate);
+					const b = new Date(record.InvoiceDate);
+					const sameDay =
+						a.getDate() == b.getDate() && a.getMonth() == b.getMonth() && a.getFullYear() == b.getFullYear();
+					if (sameDay) {
 						return null;
 					}
-					return  lib.dateFormat(record.InvoiceDate, 'dd/mm/yyyy') ;
+					return lib.dateFormat(record.InvoiceDate, 'dd/mm/yyyy');
 				},
 			},
 		];

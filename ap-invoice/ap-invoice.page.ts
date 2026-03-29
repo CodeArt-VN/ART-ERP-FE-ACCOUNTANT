@@ -181,7 +181,7 @@ export class APInvoicePage extends PageBase {
 			Status: '["Approved"]',
 		};
 		let searchFn = this.buildSelectDataSource((term) => {
-			return this.purchaseOrderProvider.search({ ...queryPO, Term: term });
+			return this.purchaseOrderProvider.search({ ...queryPO, Keyword: term });
 		}, false);
 
 		if (this.initPODatasource.length == 0) {
@@ -258,7 +258,7 @@ export class APInvoicePage extends PageBase {
 			Status: '["Received"]',
 		};
 		let searchFn = this.buildSelectDataSource((term) => {
-			return this.receiptProvider.search({ ...queryGR, Term: term });
+			return this.receiptProvider.search({ ...queryGR, Keyword: term });
 		}, false);
 
 		if (this.initGRDatasource.length == 0) {
