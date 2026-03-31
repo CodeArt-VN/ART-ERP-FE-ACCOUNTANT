@@ -29,43 +29,12 @@
 </ion-header>
 
 <ion-content appScrollbarTheme class="scrollx" [fullscreen]="true">
-	<ion-header collapse="condense" class="safe-max-width">
-		<app-toolbar [page]="this" pageTitle="app-page-title">
-			<app-page-title startTitle class="ion-padding " [pageConfig]="pageConfig"></app-page-title>
-
-			<ion-button
-				(click)="createEInvoice()"
-				*ngIf="pageConfig.canCreateEInvoice && pageConfig.ShowCreateEInvoice"
-				tollbarSelected
-				class="clickable"
-				title="{{'Create E-Invoice' | translate}}"
-			>
-				<ion-icon name="receipt-outline" color="primary" slot="icon-only"></ion-icon>
-			</ion-button>
-
-			<ion-button
-				(click)="updateEInvoice()"
-				*ngIf="pageConfig.canCreateEInvoice && pageConfig.ShowUpdateEInvoice"
-				tollbarSelected
-				class="clickable"
-				title="{{ 'Update EInvoice' | translate }}"
-			>
-				<ion-icon color="success" slot="icon-only" name="reload-outline"></ion-icon>
-			</ion-button>
-			<ion-button (click)="syncEInvoice()" tollbarSelected title="{{'Sync EInvoice' | translate}}" *ngIf="pageConfig.canCreateEInvoice && pageConfig.ShowUpdateEInvoice">
-				<ion-icon color="success" slot="icon-only" name="sync"></ion-icon>
-			</ion-button>
-			<ion-button (click)="signARInvoice()" tollbarSelected title="Ký hóa đơn" *ngIf="pageConfig.canSignEInvoice && pageConfig.ShowSignEInvoice">
-				<ion-icon color="danger" slot="icon-only" name="signature"></ion-icon>
-			</ion-button>
-		</app-toolbar>
-	</ion-header>
 
 	<ion-fab *ngIf="pageConfig.isShowFeature" class="feature" vertical="top" horizontal="end" slot="fixed">
 		<div class="ion-padding"></div>
 	</ion-fab>
 
-	<!-- <app-page-title class="ion-padding safe-max-width" [pageConfig]="pageConfig"></app-page-title> -->
+	<app-page-title class="ion-padding safe-max-width" [pageConfig]="pageConfig"></app-page-title>
 	<div class="safe-max-width">
 		<app-data-table
 			class="box-shadow responsive padding-number-right"

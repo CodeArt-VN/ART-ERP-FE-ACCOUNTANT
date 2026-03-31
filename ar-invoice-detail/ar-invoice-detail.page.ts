@@ -146,8 +146,8 @@ export class ARInvoiceDetailPage extends PageBase {
 		this.TaxCodeDataSource.push({
 			Id: -1,
 			TaxCode: '',
-			CompanyName: 'Walk-in customer',
-			_label: 'Walk-in customer',
+			CompanyName: '',
+			_label: 'Walk-in customer', 
 			Email: '',
 			BillingAddress: '',
 			WorkPhone: '',
