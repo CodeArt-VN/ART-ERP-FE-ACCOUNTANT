@@ -310,8 +310,8 @@ export class APInvoiceDetailPage extends PageBase {
 			Id: new FormControl({ value: line?.Id, disabled: true }),
 
 			ItemType: [line?.ItemType],
-			ItemName: [line?.ItemName],
-			UnitName: [line?.UnitName],
+			ItemName: new FormControl({ value: line?.ItemName || selectedItem?.Name || '', disabled: true }),
+			UnitName: new FormControl({ value: line?.UnitName || selectedItem?.UoMs?.find((u) => u.Id == line?.IDUoM)?.Name || '', disabled: true }),
 			IDUoM: [line.IDUoM, Validators.required],
 			Quantity: [line?.Quantity, Validators.required],
 			UoMPrice: [line?.UoMPrice],

@@ -1,0 +1,63 @@
+<ion-header [translucent]="true">
+	<ion-toolbar class="no-padding">
+		<ion-buttons slot="start" class="ion-hide-sm-down_">
+			<ion-button color="dark">
+				{{ 'Add from BKAV' | translate }}
+			</ion-button>
+		</ion-buttons>
+
+		<ion-buttons slot="primary">
+			<ion-button title="{{ 'Search' | translate }}" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch">
+				<ion-icon slot="icon-only" name="search-outline"></ion-icon>
+			</ion-button>
+
+			<ion-button [disabled]="totalSelected == 0 || submitAttempt" fill="solid" size="small" color="primary" (click)="addSelected()">
+				&nbsp;{{ 'Add' | translate }} {{ totalSelected }} {{ 'Invoice' | translate }}&nbsp;
+			</ion-button>
+
+			<ion-button title="{{ 'Close' | translate }}" color="secondary" (click)="dismiss()">
+				<ion-icon slot="icon-only" name="close"></ion-icon>
+			</ion-button>
+		</ion-buttons>
+	</ion-toolbar>
+</ion-header>
+
+<ion-content appScrollbarTheme class="header-table bkav-content" [fullscreen]="true">
+	<section class="table bkav-table">
+		<app-data-table
+			class="box-shadow responsive padding-number-right"
+			[rows]="invoices"
+			[trackBy]="'Guid'"
+			[(selectedRows)]="selectedItems"
+			[showSpinner]="submitAttempt"
+			[showFilter]="pageConfig.isShowSearch"
+			[(query)]="query"
+			[isQueryLocalOnly]="true"
+			(selectedRowsChange)="onSelectedRowsChange($event)"
+		>
+			<datatable-column class="col-checkbox" name="" property="checked" [canFilter]="false" [canSort]="false">
+				<ng-template datatable-header-template>
+					<input class="c-checkbox" type="checkbox" [checked]="isCheckedAll" (change)="toggleAll($any($event.target).checked)" />
+				</ng-template>
+				<ng-template let-i="row" datatable-cell-template>
+					<input
+						class="c-checkbox"
+						type="checkbox"
+						[checked]="selectedItems.includes(i)"
+						[disabled]="!canSelect(i)"
+						(change)="toggleRow(i, $any($event.target).checked)"
+					/>
+				</ng-template>
+			</datatable-column>
+
+			<datatable-column class="col-code" name="Invoice serial" property="InvoiceSerial"></datatable-column>
+			<datatable-column class="col-code" name="Invoice code" property="InvoiceCode"></datatable-column>
+			<datatable-column class="col-date" name="Invoice date" property="InvoiceDate" format="dd/MM/yyyy"></datatable-column>
+			<datatable-column class="col-date" name="Signed date" property="SignedDate" format="dd/MM/yyyy HH:mm"></datatable-column>
+			<datatable-column class="col-code" name="Currency" property="CurrencyID"></datatable-column>
+			<datatable-column class="col-code" name="Seller tax code" property="SellerTaxCode"></datatable-column>
+			<datatable-column class="col-name flex-break" name="SellerUnitName" property="SellerUnitName"></datatable-column>
+			<datatable-column class="col-number" name="Amount" property="SumPaymentAmount" format="1.0-0"></datatable-column>
+		</app-data-table>
+	</section>
+</ion-content>

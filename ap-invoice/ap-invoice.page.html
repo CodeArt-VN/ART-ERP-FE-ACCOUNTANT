@@ -47,8 +47,33 @@
 							<ion-icon name="clipboard-list" color="success" slot="start"></ion-icon>
 							<ion-label> {{'Copy from goods receipt' | translate}}</ion-label>
 						</ion-item>
+
+						<ion-item [button]="true" [detail]="false" (click)="openBKAVImportModal()" title="{{'Add from BKAV' | translate}}">
+							<ion-icon name="clipboard-list" color="success" slot="start"></ion-icon>
+							<ion-label> {{'Add from BKAV' | translate}}</ion-label>
+						</ion-item>
 					</ion-list>
 				</ion-content>
+			</ng-template>
+		</ion-popover>
+
+		<ion-popover class="w300" #bkavDatePopover [isOpen]="isOpenBKAVDatePopover" (didDismiss)="isOpenBKAVDatePopover = false">
+			<ng-template>
+				<ion-content [fullscreen]="true" appScrollbarTheme>
+					<ion-grid>
+						<form [formGroup]="bkavFormGroup" (submit)="dismissBKAVDatePopover(true)">
+							<ion-row>
+								<ion-col size="12" size-sm size-xl="12">
+									<app-form-control [field]="{ id: 'FromDate', label: 'From date', type: 'date', form: bkavFormGroup }"></app-form-control>
+									<app-form-control [field]="{ id: 'ToDate', label: 'To date', type: 'date', form: bkavFormGroup }"></app-form-control>
+								</ion-col>
+							</ion-row>
+						</form>
+					</ion-grid>
+				</ion-content>
+				<ion-button class="ion-margin" size="small" expand="block" [disabled]="bkavFormGroup.invalid || submitAttempt" (click)="dismissBKAVDatePopover(true)">
+					{{'Apply' | translate}}
+				</ion-button>
 			</ng-template>
 		</ion-popover>
 	</app-toolbar>

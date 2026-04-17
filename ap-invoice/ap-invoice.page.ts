@@ -1,12 +1,14 @@
 import { Component, ViewChild } from '@angular/core';
 import { NavController, ModalController, AlertController, LoadingController, PopoverController } from '@ionic/angular';
+import { HttpClient } from '@angular/common/http';
 import { EnvService } from 'src/app/services/core/env.service';
 import { PageBase } from 'src/app/page-base';
 import { AC_APInvoiceProvider, BANK_OutgoingPaymentProvider, WMS_ReceiptProvider } from 'src/app/services/static/services.service';
 import { Location } from '@angular/common';
-import { FormBuilder } from '@angular/forms';
+import { FormBuilder, Validators } from '@angular/forms';
 import { PURCHASE_OrderService } from '../../PURCHASE/purchase-order-service';
 import { SearchAsyncPopoverPage } from '../../PURCHASE/search-async-popover/search-async-popover.page';
+import { APInvoiceBKAVModalPage } from '../ap-invoice-bkav-modal/ap-invoice-bkav-modal.page';
 
 @Component({
 	selector: 'app-ap-invoice',
@@ -20,10 +22,12 @@ export class APInvoicePage extends PageBase {
 	paymentTypeList = [];
 	paymentReasonList = [];
 	paymentSubTypeList = [];
+	bkavFormGroup;
 
 	constructor(
 		public pageProvider: AC_APInvoiceProvider,
 		public outgoingPaymentProvider: BANK_OutgoingPaymentProvider,
+		public http: HttpClient,
 		public modalController: ModalController,
 		public popoverCtrl: PopoverController,
 		public alertCtrl: AlertController,
@@ -41,6 +45,11 @@ export class APInvoicePage extends PageBase {
 			PaymentType: [''],
 			PaymentSubType: [''],
 			PaymentReason: [''],
+		});
+		const today = new Date().toISOString().slice(0, 10);
+		this.bkavFormGroup = formBuilder.group({
+			FromDate: [today, Validators.required],
+			ToDate: [today, Validators.required],
 		});
 		this.pageConfig.ShowAdd = false;
 		this.pageConfig.ShowAddNew = true;
@@ -166,9 +175,127 @@ export class APInvoicePage extends PageBase {
 
 	isOpenAddNewPopover = false;
 	@ViewChild('addNewPopover') addNewPopover!: HTMLIonPopoverElement;
+	isOpenBKAVDatePopover = false;
+	@ViewChild('bkavDatePopover') bkavDatePopover!: HTMLIonPopoverElement;
 	presentAddNewPopover(e) {
 		this.addNewPopover.event = e;
 		this.isOpenAddNewPopover = !this.isOpenAddNewPopover;
+	}
+
+	openBKAVImportModal() {
+		this.isOpenAddNewPopover = false;
+		if (this.bkavDatePopover) this.bkavDatePopover.event = null;
+		this.isOpenBKAVDatePopover = true;
+	}
+
+	dismissBKAVDatePopover(apply: boolean = false) {
+		if (apply) {
+			this.getBKAVDataAndOpenModal();
+			return;
+		}
+		this.isOpenBKAVDatePopover = false;
+	}
+
+	// async getBKAVDataAndOpenModal() {
+	// 	if (this.bkavFormGroup.invalid || this.submitAttempt) return;
+	// 	this.submitAttempt = true;
+	// 	this.env
+	// 		.showLoading('Please wait for a few moments', this.pageProvider.commonService.connect('POST', 'AC/APInvoice/BKAV/Preview', this.bkavFormGroup.value).toPromise())
+	// 		.then(async (resp: any) => {
+	// 			const invoices = resp || [];
+	// 			if (!invoices.length) {
+	// 				this.env.showMessage('No data available', 'warning');
+	// 				return;
+	// 			}
+	// 			this.isOpenBKAVDatePopover = false;
+	// 			const modal = await this.modalController.create({
+	// 				component: APInvoiceBKAVModalPage,
+	// 				componentProps: { invoices },
+	// 				cssClass: 'modal90',
+	// 			});
+	// 			await modal.present();
+	// 			const { role } = await modal.onWillDismiss();
+	// 			if (role == 'imported') {
+	// 				this.refresh();
+	// 				this.env.publishEvent({ Code: this.pageConfig.pageName });
+	// 			}
+	// 		})
+	// 		.catch((err) => {
+	// 			this.env.showMessage(err.error?.Message || err.error || err.message || err, 'danger');
+	// 		})
+	// 		.finally(() => {
+	// 			this.submitAttempt = false;
+	// 		});
+	// }
+	async getBKAVDataAndOpenModal() {
+		if (this.bkavFormGroup.invalid || this.submitAttempt) return;
+		this.submitAttempt = true;
+		try {
+			const response: any = await this.http.get('assets/mock/ap-invoice-bkav-response.json').toPromise();
+			const sourceInvoices = response?.data || [];
+			const fromDate = this.toDateOnlyValue(this.bkavFormGroup.get('FromDate')?.value);
+			const toDate = this.toDateOnlyValue(this.bkavFormGroup.get('ToDate')?.value);
+			const filteredInvoices = sourceInvoices.filter((invoice) => this.isInvoiceInDateRange(invoice, fromDate, toDate));
+			const invoices: any = await this.pageProvider.commonService.connect('POST', 'AC/APInvoice/BKAV/Preview', { Invoices: filteredInvoices }).toPromise();
+
+			if (!invoices.length) {
+				this.env.showMessage('No data available', 'warning');
+				return;
+			}
+
+			this.isOpenBKAVDatePopover = false;
+			await this.openBKAVModal(invoices);
+		} catch (err) {
+			this.env.showMessage(err?.error?.Message || err?.message || 'Can not load BKAV mock data', 'danger');
+		} finally {
+			this.submitAttempt = false;
+		}
+	}
+
+	private isInvoiceInDateRange(invoice, fromDate, toDate) {
+		const invoiceDate = this.toDateOnlyValue(invoice?.SignedDate || invoice?.InvoiceDate);
+		if (!invoiceDate) return false;
+
+		if (!fromDate || !toDate) return true;
+
+		return invoiceDate >= fromDate && invoiceDate <= toDate;
+	}
+
+	private toDateOnlyValue(value) {
+		if (!value) return null;
+
+		if (value instanceof Date) {
+			return new Date(value.getFullYear(), value.getMonth(), value.getDate()).getTime();
+		}
+
+		if (typeof value === 'string') {
+			const text = value.trim();
+			const isoMatch = text.match(/^(\d{4})-(\d{2})-(\d{2})/);
+			if (isoMatch) {
+				return new Date(Number(isoMatch[1]), Number(isoMatch[2]) - 1, Number(isoMatch[3])).getTime();
+			}
+
+			const slashMatch = text.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+			if (slashMatch) {
+				return new Date(Number(slashMatch[3]), Number(slashMatch[2]) - 1, Number(slashMatch[1])).getTime();
+			}
+		}
+
+		return null;
+	}
+
+	async openBKAVModal(invoices) {
+		const modal = await this.modalController.create({
+			component: APInvoiceBKAVModalPage,
+			componentProps: { invoices },
+			cssClass: 'modal90',
+		});
+		await modal.present();
+		const { role } = await modal.onWillDismiss();
+		if (role == 'added') {
+			this.refresh();
+			this.env.publishEvent({ Code: this.pageConfig.pageName });
+		}
 	}
 	initPODatasource = [];
 	initGRDatasource = [];
@@ -330,3 +457,4 @@ export class APInvoicePage extends PageBase {
 		});
 	}
 }
+

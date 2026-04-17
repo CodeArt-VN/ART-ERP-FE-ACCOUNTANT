@@ -266,22 +266,24 @@
 				</ion-grid>
 			</div>
 			<!-- Items list -->
-			<div *ngIf="segmentView == 's2'" class="table-contain" style="max-width: 1250px">
+			<div *ngIf="segmentView == 's2'" class="table-contain" style="max-width: 1600px">
 				<form [formGroup]="formGroup">
 					<ng-container formArrayName="InvoiceDetails">
-						<section class="table" style="min-width: 1100px">
+						<section class="table" style="min-width: 1500px">
 							<header class="bold">
 								<div class="col-checkbox cell" *ngIf="pageConfig.canEdit">
 									<app-input-control [field]="{id:'IsAllChecked', type : 'checkbox', form : formGroup, }" (change)="toggleSelectAll()"></app-input-control>
 									<!-- <input (change)="toggleSelectAll()" [(ngModel)]="isAllChecked" class="c-checkbox" type="checkbox"> -->
 								</div>
 								<div class="col-id cell">{{'No.' | translate}}</div>
-								<div class="col-name cell">{{'Name' | translate}}</div>
-								<div class="col-number cell">{{'Unit' | translate}}</div>
+								<div class="col-name item-name cell">{{'Invoice item' | translate}}</div>
+								<div class="col-number cell">{{'Invoice unit' | translate}}</div>
+								<div class="col-name item-name cell">{{'Item' | translate}}</div>
+								<div class="col-number cell">{{'UoM' | translate}}</div>
 								<div class="col-number cell">{{'Quantity' | translate}}</div>
-								<div class="col-checkbox cell">{{'Promotion' | translate}}</div>
 								<div class="col-money cell">{{'Unit price' | translate}}</div>
 								<div class="col-money cell">{{'Discount' | translate}}</div>
+								<div class="col-checkbox col-checkbox-custom cell">{{'Promotion' | translate}}</div>
 								<div class="col-number cell">{{'Tax rate' | translate}}</div>
 								<div class="col-money cell">{{'Total' | translate}}</div>
 								<a class="col-icon cell clickable">
@@ -299,10 +301,16 @@
 							</header>
 							<div class="row" *ngFor="let g of formGroup.get('InvoiceDetails')['controls']; let idx = index;">
 								<ng-container [formGroup]="g">
-									<div class="col-checkbox cell" style="text-align: center" *ngIf="pageConfig.canEdit">
+									<div class="col-checkbox  cell" style="text-align: center" *ngIf="pageConfig.canEdit">
 										<app-input-control [field]="{id:'IsChecked', type : 'checkbox', form : g, }" (change)="changeSelection(g, $event)"></app-input-control>
 									</div>
 									<div class="col-id cell">{{idx+1}}</div>
+									<div class="col-name item-name cell">
+										<span class="c-input disable">{{ g.get('ItemName')?.value }}</span>
+									</div>
+									<div class="col-number cell">
+										<span class="c-input disable">{{ g.get('UnitName')?.value }}</span>
+									</div>
 									<div class="col-name item-name cell">
 										<app-input-control
 											[field]="{id:'IDItem', label: 'Item', type : 'ng-select-item', form : g,  dataSource: g.get('_IDItemDataSource').value,  bindValue: 'Id', clearable: true, placeholder: 'Type to search...' }"
@@ -325,9 +333,6 @@
 											thousandSeparator=","
 										/>
 									</div>
-									<div class="col-checkbox cell">
-										<input formControlName="IsPromotionItem" class="c-checkbox" (change)="IsPromotionItemChange(g)" type="checkbox" />
-									</div>
 									<div class="col-money cell">
 										<input
 											formControlName="UoMPrice"
@@ -347,6 +352,9 @@
 											mask="separator.2"
 											thousandSeparator=","
 										/>
+									</div>
+									<div class="col-checkbox col-checkbox-custom cell">
+										<input formControlName="IsPromotionItem" class="c-checkbox" (change)="IsPromotionItemChange(g)" type="checkbox" />
 									</div>
 									<div class="col-number cell">
 										<select class="c-input c-dropdown" (change)="saveChange()" formControlName="TaxRate">
@@ -370,13 +378,21 @@
 								</ng-container>
 							</div>
 							<div class="row" *ngIf="formGroup.get('CalcTotalAfterTax').value != 0">
-								<div class="col-name cell text-right bold">{{'Total' | translate}}</div>
+								<div class="col-checkbox cell" *ngIf="pageConfig.canEdit"></div>
+								<div class="col-id cell"></div>
+								<div class="col-name item-name cell"></div>
+								<div class="col-number cell"></div>
+								<div class="col-name item-name cell"></div>
+								<div class="col-number cell"></div>
+								<div class="col-number cell"></div>
+								<div class="col-money cell"></div>
+								<div class="col-money cell"></div>
+								<div class="col-checkbox col-checkbox-custom cell"></div>
+								<div class="col-number cell text-right bold">{{'Total' | translate}}</div>
 								<div class="col-money cell">
 									<span class="c-input disable bold">{{ formGroup.get('CalcTotalAfterTax').value | number: '1.0-0'}}</span>
 								</div>
-								<div class="col-checkbox cell" *ngIf="pageConfig.canEdit">
-									<!-- nút xóa ảo -->
-								</div>
+								<div class="col-icon cell">&nbsp;</div>
 							</div>
 							<div class="row" *ngIf="pageConfig.canEdit && formGroup.get('IDSeller').value">
 								<div class="cell">

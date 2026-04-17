@@ -1,0 +1,58 @@
+:host {
+	--bkav-border: var(--ion-color-step-150, #d7d8da);
+}
+
+ion-toolbar.no-padding {
+	--padding-start: 0;
+	--padding-end: 6px;
+}
+
+.bkav-table {
+	min-width: 1160px;
+
+	.col-checkbox {
+		flex: 0 0 44px;
+		max-width: 44px;
+		justify-content: center;
+	}
+
+	.col-code {
+		flex: 0 0 220px;
+		max-width: 220px;
+	}
+
+	.col-date {
+		flex: 0 0 170px;
+		max-width: 170px;
+	}
+
+	.col-number {
+		flex: 0 0 130px;
+		max-width: 130px;
+		text-align: right;
+		justify-content: flex-end;
+	}
+
+	.col-status {
+		flex: 0 0 150px;
+		max-width: 150px;
+	}
+
+	.row.selected {
+		background: rgba(var(--ion-color-primary-rgb), 0.08);
+	}
+}
+
+.bkav-content {
+	--background: var(--ion-color-step-50, #f7f8fa);
+}
+
+.disabled {
+	opacity: 0.65;
+}
+
+@media (max-width: 768px) {
+	.bkav-table {
+		min-width: 920px;
+	}
+}
