@@ -65,7 +65,7 @@ export class ARInvoicePage extends PageBase {
 		let sorted: SortConfig[] = [
 			{ Dimension: 'InvoiceDate', Order: 'DESC' },
 			{ Dimension: 'IDBranch', Order: 'DESC' },
-			{ Dimension: '_SaleOrder.Id', Order: 'DESC' },
+			{ Dimension: 'IDSaleOrder', Order: 'DESC' },
 		];
 		this.pageConfig.sort = sorted;
 		this.query.IDOwner = this.pageConfig.canViewAllData ? 'all' : this.env.user.StaffID;

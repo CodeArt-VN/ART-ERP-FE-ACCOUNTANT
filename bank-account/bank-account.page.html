@@ -50,11 +50,7 @@
 	</div>
 
 	<div class="ion-padding"></div>
-	<ion-infinite-scroll color="primary" threshold="30%" (ionInfinite)="loadData($event)" [disabled]="!pageConfig.infiniteScroll || pageConfig.isEndOfData">
-		<ion-infinite-scroll-content loadingSpinner="dots"></ion-infinite-scroll-content>
-	</ion-infinite-scroll>
-
-	<!-- <div *ngIf="items.length && pageConfig.showSpinner==false">
+<!-- <div *ngIf="items.length && pageConfig.showSpinner==false">
 		<section class="table">
 			<ng-container *ngFor="let i of itemsState; let j = index;">
 				<div class="row" *ngIf="i.show" [ngClass]="{odd: j % 2 != 0}" [ngClass]="{selected: i.checked}">
