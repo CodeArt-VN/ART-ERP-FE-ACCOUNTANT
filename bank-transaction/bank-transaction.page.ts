@@ -190,11 +190,11 @@ export class BankTransactionPage extends PageBase {
 					this.env
 						.showPrompt(
 							{
-								code: 'Có {{value}} lỗi khi import: {{value1}}',
+								code: '{{value}} error(s) during import: {{value1}}',
 								value: { value: resp.ErrorList.length, value1: message },
 							},
-							'Bạn có muốn xem lại các mục bị lỗi?',
-							'Có lỗi import dữ liệu'
+							'Do you want to review the items with errors?',
+							'Data import error'
 						)
 						.then((_) => {
 							this.downloadURLContent(resp.FileUrl);
@@ -232,7 +232,7 @@ export class BankTransactionPage extends PageBase {
 				.connect('PUT', 'BANK/Transaction/AssignBranchAndContact', obj)
 				.toPromise()
 				.then((res) => {
-					if (res) this.env.showMessage('saved', 'success');
+					if (res) this.env.showMessage('Saved', 'success');
 					this.submitAttempt = false;
 				})
 				.catch((err) => {
@@ -268,7 +268,7 @@ export class BankTransactionPage extends PageBase {
 			.connect('PUT', 'BANK/Transaction/FindMatchingCriteria', obj)
 			.toPromise()
 			.then((res) => {
-				if (res) this.env.showMessage('saved', 'success');
+				if (res) this.env.showMessage('Saved', 'success');
 				this.submitAttempt = false;
 			})
 			.catch((err) => {

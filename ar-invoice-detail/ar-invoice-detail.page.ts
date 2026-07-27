@@ -385,7 +385,7 @@ export class ARInvoiceDetailPage extends PageBase {
 			groups.removeAt(index);
 		} else {
 			this.env
-				.showPrompt('Bạn có chắc muốn xóa sản phẩm?', null, 'Xóa sản phẩm')
+				.showPrompt('Are you sure you want to delete the product?', null, 'Delete the product')
 				.then((_) => {
 					this.formGroup.get('DeletedLines').setValue([g.get('Id').value]);
 					this.formGroup.get('DeletedLines').markAsDirty();
@@ -745,18 +745,18 @@ export class ARInvoiceDetailPage extends PageBase {
 											if (message != '') {
 												this.env.showAlert(
 													message,
-													{ code: 'Có {{value}} hóa đơn lỗi, vui lòng kiểm tra lại ghi chú của các hóa đơn không được duyệt.', value: errors.length },
-													'Xuất hóa đơn'
+													{ code: 'There are {{value}} invoice(s) with errors. Please check the notes of the unapproved invoices', value: errors.length },
+													'Issue the invoice'
 												);
 												this.refresh();
 											} else {
-												this.env.showMessage('Đã xuất hóa đơn điện tử!', 'success');
+												this.env.showMessage('Issued the e-invoice', 'success');
 												this.submitAttempt = false;
 												this.refresh();
 											}
 										})
 										.catch((err: any) => {
-											this.env.showMessage('Không xuất hóa đơn được, xin vui lòng kiểm tra lại! \n' + err?.error?.ExceptionMessage, 'danger');
+											this.env.showMessage('Unable to issue invoice. Please check again!' + '\n' + (err?.error?.ExceptionMessage || ''), 'danger');
 											console.log(err);
 											this.submitAttempt = false;
 											if (loading) loading.dismiss();

@@ -84,22 +84,22 @@ export class ChildInvoiceComponent extends PageBase {
 		if (this.selectedItems.length > 0) {
 			this.env
 				.showPrompt(
-					'Bạn có chắc muốn gở bỏ các hóa đơn này khỏi hóa đơn gộp không? (Thao tác này không thể khôi phục, các hóa đơn gở bỏ sẽ được chuyển về trạng thái đã duyệt)',
+					'Are you sure you want to remove these invoices from the merged invoice? (This cannot be undone; removed invoices will return to Approved status)',
 					null,
-					{ code: 'Gỡ bỏ {{value}} hóa đơn đã chọn', value: { value: this.selectedItems.length } }
+					{ code: 'Remove {{value}} selected invoice?', value: { value: this.selectedItems.length } }
 				)
 				.then((_) => {
 					let ids = this.selectedItems.map((m) => m.Id);
 
 					this.arInvoiceProvider.RollbackMergedARInvoice({ Ids: ids }).then((resp: any) => {
 						if (resp == 'empty') {
-							this.env.showMessage('Không tìn thấy thông tin hóa đơn cần gở bỏ. Vui lòng kiểm tra lại.', 'warning');
+							this.env.showMessage('Invoice to remove was not found. Please check again', 'warning');
 						} else if (resp == 'parent_empty') {
-							this.env.showMessage('Không tìn thấy thông tin hóa đơn gộp để thực hiện việc gỡ bỏ hóa đơn. Vui lòng kiểm tra lại.', 'warning');
+							this.env.showMessage('Merged invoice not found for removal. Please check again', 'warning');
 						} else if (resp == '') {
-							this.env.showMessage('Đã gỡ bỏ hóa đơn thành công!', 'success');
+							this.env.showMessage('Invoice removed successfully!', 'success');
 						} else {
-							this.env.showMessage(resp + 'Xin vui lòng thông báo với quản trị viên!', 'danger');
+							this.env.showMessage(resp + 'Please notify the administrator!', 'danger');
 						}
 
 						this.submitAttempt = false;

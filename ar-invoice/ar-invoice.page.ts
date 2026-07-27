@@ -124,7 +124,7 @@ export class ARInvoicePage extends PageBase {
 
 		this.selectedItems = this.selectedItems.filter((i) => i.Status == 'EInvoiceNew');
 		if (!this.selectedItems.length) {
-			this.env.showMessage('Vui lòng chọn hóa đơn cần cập nhật dữ liệu');
+			this.env.showMessage('Please choose the invoice for updating the data');
 			return;
 		}
 		this.submitAttempt = true;
@@ -133,7 +133,7 @@ export class ARInvoicePage extends PageBase {
 			.showLoading('Please wait for a few moments', this.EInvoiceService.UpdateEInvoice(this.selectedItems.map((i) => i.Id)).toPromise())
 			.then((resp: any) => {
 				this.submitAttempt = false;
-				this.env.showMessage('Đã cập nhật hóa đơn điện tử thành công!', 'success');
+				this.env.showMessage('Sucessfully updated the e-invoice', 'success');
 				this.refresh();
 			})
 			.catch((err) => {
@@ -142,7 +142,7 @@ export class ARInvoicePage extends PageBase {
 				} else if (err.message) {
 					this.env.showMessage(err.message, 'danger');
 				} else {
-					this.env.showMessage('Có lỗi khi cập nhật, xin vui lòng thử lại sau', 'danger');
+					this.env.showMessage('Update failed. Please try again later', 'danger');
 				}
 
 				this.submitAttempt = false;
@@ -153,7 +153,7 @@ export class ARInvoicePage extends PageBase {
 		if (this.submitAttempt) return;
 		this.selectedItems = this.selectedItems.filter((i) => i.Status == 'EInvoiceNew');
 		if (!this.selectedItems.length) {
-			this.env.showMessage('Vui lòng chọn hóa đơn cần ký');
+			this.env.showMessage('Please choose the invoice for signing');
 			return;
 		}
 		this.submitAttempt = true;
@@ -175,7 +175,7 @@ export class ARInvoicePage extends PageBase {
 
 		this.selectedItems = this.selectedItems.filter((i) => i.Status == 'EInvoiceNew');
 		if (!this.selectedItems.length) {
-			this.env.showMessage('Vui lòng chọn hóa đơn cần đồng bộ dữ liệu');
+			this.env.showMessage('Please choose the invoice for Synchronizing');
 			return;
 		}
 		this.submitAttempt = true;
@@ -234,18 +234,18 @@ export class ARInvoicePage extends PageBase {
 											if (message != '') {
 												this.env.showAlert(
 													message,
-													{ code: 'Có {{value}} hóa đơn lỗi, vui lòng kiểm tra lại ghi chú của các hóa đơn không được duyệt.', value: errors.length },
-													'Xuất hóa đơn'
+													{ code: 'There are {{value}} invoice(s) with errors. Please check the notes of the unapproved invoices', value: errors.length },
+													'Issue the invoice'
 												);
 												this.refresh();
 											} else {
-												this.env.showMessage('Đã xuất hóa đơn điện tử!', 'success');
+												this.env.showMessage('Issued the e-invoice', 'success');
 												this.submitAttempt = false;
 												this.refresh();
 											}
 										})
 										.catch((err: any) => {
-											this.env.showMessage('Không xuất hóa đơn được, xin vui lòng kiểm tra lại! \n' + err?.error?.ExceptionMessage, 'danger');
+											this.env.showMessage('Unable to issue invoice. Please check again!' + '\n' + (err?.error?.ExceptionMessage || ''), 'danger');
 											console.log(err);
 											this.submitAttempt = false;
 											if (loading) loading.dismiss();

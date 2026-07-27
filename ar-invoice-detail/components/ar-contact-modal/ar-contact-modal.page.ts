@@ -259,7 +259,7 @@ export class ARContactModalPage extends PageBase {
 					}
 				})
 				.catch((err) => {
-					this.env.showMessage('Mã số thuế không hợp lệ!', 'danger');
+					this.env.showMessage('Invalid tax code!', 'danger');
 				});
 		}
 	}

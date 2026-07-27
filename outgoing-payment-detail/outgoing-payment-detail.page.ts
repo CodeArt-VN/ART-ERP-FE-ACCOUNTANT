@@ -509,7 +509,7 @@ export class OutgoingPaymentDetailPage extends PageBase {
 		let groups = <FormArray>this.formGroup.controls.OutgoingPaymentDetails;
 		let id = groups.controls[index].value.Id;
 		if (id != 0) {
-			this.env.showPrompt('Bạn có chắc muốn xóa không?', null, 'Xóa 1 dòng').then((_) => {
+			this.env.showPrompt('Are you sure you want to delete?', null, 'Delete 1 row').then((_) => {
 				this.formGroup.get('DeletedFields').setValue([id]);
 				this.formGroup.get('DeletedFields').markAsDirty();
 				this.saveChange().then((rs) => {
@@ -524,7 +524,7 @@ export class OutgoingPaymentDetailPage extends PageBase {
 	IDCustomerChange() {
 		if (this.item.Id != 0) {
 			this.env
-				.showPrompt('Khi thay đổi khách hàng sẽ xóa toàn bộ hóa đơn trước đó', null, 'Bạn có muốn thay đổi không?')
+				.showPrompt('Changing the customer will delete all previous invoices', null, 'Do you want to change?')
 				.then((_) => {
 					this.formGroup.get('DeletedFields').setValue(this.formGroup.controls.OutgoingPaymentDetails['controls'].map((s) => s.get('Id').value));
 					this.formGroup.get('DeletedFields').markAsDirty();

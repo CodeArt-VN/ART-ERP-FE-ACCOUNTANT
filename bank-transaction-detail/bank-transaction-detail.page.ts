@@ -217,7 +217,7 @@ export class BankTransactionDetailPage extends PageBase {
 		let groups = <FormArray>this.formGroup.controls.PaymentDetails;
 		if (groups.controls.length > 0) {
 			this.env
-				.showPrompt('Thay đổi Contact sẽ mất thông tin đơn hàng và hoá đơn, bạn có muốn tiếp tục', null, 'Thay đổi')
+				.showPrompt('Changing the contact will clear order and invoice data. Do you want to continue?', null, 'Change')
 				.then((_) => {
 					groups.clear();
 					this.formGroup.get('_IDBusinessPartner').setValue(this.formGroup.get('IDBusinessPartner').value);
@@ -594,7 +594,7 @@ export class BankTransactionDetailPage extends PageBase {
 			.connect('PUT', 'BANK/Transaction/FindMatchingCriteria', obj)
 			.toPromise()
 			.then((res) => {
-				if (res) this.env.showMessage('saved', 'success');
+				if (res) this.env.showMessage('Saved', 'success');
 				this.submitAttempt = false;
 			})
 			.catch((err) => {

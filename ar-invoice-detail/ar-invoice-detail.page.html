@@ -32,7 +32,7 @@
 					</ion-col>
 					<ion-col size="12" size-sm size-xl="4">
 						<app-form-control [field]="{id:'Id', type : 'number', form : formGroup }" (change)="saveChange()">
-							<small label *ngIf="item.IDSaleOrder"><a [routerLink]="['/sale-order/'+item.IDSaleOrder]">{{'From' | translate}} SO: {{item.IDSaleOrder}}</a></small>
+							<small label *ngIf="item.IDSaleOrder"><a [routerLink]="['/sale-order/'+item.IDSaleOrder]">{{'FROM' | translate}} SO: {{item.IDSaleOrder}}</a></small>
 						</app-form-control>
 						<app-form-control
 							[field]="{id:'IDBusinessPartner', label: 'Customer', type : 'ng-select-bp', form : formGroup,  dataSource: IDBusinessPartnerDataSource,  bindValue: 'Id', appendTo:'#order-detail-page' }"
@@ -200,8 +200,8 @@
 											<option [value]="5">5%</option>
 											<option [value]="8">8%</option>
 											<option [value]="10">10%</option>
-											<option [value]="-1">{{'Không chịu thuế' | translate}}</option>
-											<option [value]="-2">{{'Không kê khai thuế' | translate}}</option>
+											<option [value]="-1">{{'tax free' | translate}}</option>
+											<option [value]="-2">{{'non- tax declaration' | translate}}</option>
 										</select>
 									</div>
 									<div class="col-money cell">
@@ -279,8 +279,8 @@
 											<option [value]="5">5%</option>
 											<option [value]="8">8%</option>
 											<option [value]="10">10%</option>
-											<option [value]="-1">{{'Không chịu thuế' | translate}}</option>
-											<option [value]="-2">{{'Không kê khai thuế' | translate}}</option>
+											<option [value]="-1">{{'tax free' | translate}}</option>
+											<option [value]="-2">{{'non- tax declaration' | translate}}</option>
 										</select>
 									</div>
 
