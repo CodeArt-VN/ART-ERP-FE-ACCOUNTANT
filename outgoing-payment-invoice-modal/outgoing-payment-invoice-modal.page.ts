@@ -169,7 +169,7 @@ export class OutgoingPaymentInvoiceModalPage extends PageBase {
 			if (!(validAmount > 0)) {
 				i.checked = false;
 				e?.preventDefault();
-				this.env.showMessage('Số tiền thanh toán khả dụng không đủ', 'danger');
+				this.env.showMessage('Insufficient available payment amount', 'danger');
 				return;
 			}
 		}

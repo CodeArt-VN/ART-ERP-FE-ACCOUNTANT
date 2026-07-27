@@ -98,7 +98,7 @@ export class IncomingPaymentSaleOrderModalPage extends PageBase {
 				parseFloat(this.selectedItems.map((x) => x.DebtAmount).reduce((a, b) => +a + +b, 0) || 0);
 			if (amount > this.amount) {
 				i.checked = false;
-				this.env.showMessage('Số tiền của hóa đơn thanh toán đã vượt số tiền thanh toán', 'danger');
+				this.env.showMessage('The amount of payment invoice exceeds the payable amount', 'danger');
 				e?.preventDefault();
 				return;
 			}
