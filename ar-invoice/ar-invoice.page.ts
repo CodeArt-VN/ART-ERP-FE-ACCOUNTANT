@@ -61,7 +61,13 @@ export class ARInvoicePage extends PageBase {
 	}
 
 	preLoadData(event) {
-		this.query.Status = "['ARInvoiceApproved','ARInvoiceRejected','ARInvoicePending']";
+		//this.query.Status = "['ARInvoiceApproved','ARInvoiceRejected','ARInvoicePending']";
+		
+		this.query.InvoiceDateTimeFrame = {
+			From: { Type: 'Relative', IsPastDate: true, Period: 'Week', Amount: 1, IsNull: false },
+			To: { Type: 'Relative', IsPastDate: true, Period: 'Day', Amount: 0, IsNull: false },
+		};
+		
 		let sorted: SortConfig[] = [
 			{ Dimension: 'InvoiceDate', Order: 'DESC' },
 			{ Dimension: 'IDBranch', Order: 'DESC' },
