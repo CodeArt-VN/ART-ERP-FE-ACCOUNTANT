@@ -559,8 +559,8 @@ export class OutgoingPaymentDetailPage extends PageBase {
 							try {
 								let messageObj = JSON.parse(err.error?.Message);
 								if (messageObj && messageObj.Message1 && messageObj.Message2) {
-									this.env.showPrompt({ code: messageObj.Message2 + '{{value}}', value: messageObj.DocumentEntry.toString() }, null, {
-										code: messageObj.Message1 + '{{value}}',
+									this.env.showPrompt({ code: messageObj.Message2 + '{value}', value: messageObj.DocumentEntry.toString() }, null, {
+										code: messageObj.Message1 + '{value}',
 										value: '[' + messageObj.payments.join(',') + ']',
 									});
 								} else this.env.showMessage(err.error?.Message ?? err, 'danger');

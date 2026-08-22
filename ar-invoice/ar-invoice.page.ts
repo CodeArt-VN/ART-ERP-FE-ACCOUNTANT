@@ -240,7 +240,7 @@ export class ARInvoicePage extends PageBase {
 											if (message != '') {
 												this.env.showAlert(
 													message,
-													{ code: 'There are {{value}} invoice(s) with errors. Please check the notes of the unapproved invoices', value: errors.length },
+													{ code: 'There are {value} invoice(s) with errors. Please check the notes of the unapproved invoices', value: errors.length },
 													'Issue the invoice'
 												);
 												this.refresh();

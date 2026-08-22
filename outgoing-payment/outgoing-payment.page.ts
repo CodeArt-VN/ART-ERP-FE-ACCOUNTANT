@@ -83,7 +83,7 @@ export class OutgoingPaymentPage extends PageBase {
 	submitForApproval() {
 		if (!this.pageConfig.canSubmit) return;
 		let ids = this.selectedItems.map((i) => i.Id);
-		this.env.showPrompt({ code: 'Are you sure you want to submit {{value}} selected item(s)?', value: this.selectedItems.length }).then(() => {
+		this.env.showPrompt({ code: 'Are you sure you want to submit {value} selected item(s)?', value: this.selectedItems.length }).then(() => {
 			this.env
 				.showLoading('Please wait for a few moments', this.pageProvider.commonService.connect('POST', 'BANK/OutgoingPayment/Submit', ids).toPromise())
 				.then((rs) => {
@@ -95,8 +95,8 @@ export class OutgoingPaymentPage extends PageBase {
 						try {
 							let messageObj = JSON.parse(err.error?.Message);
 							if (messageObj && messageObj.Message1 && messageObj.Message2) {
-								this.env.showPrompt({ code: messageObj.Message2 + '{{value}}', value: messageObj.DocumentEntry.toString() }, null, {
-									code: messageObj.Message1 + '{{value}}',
+								this.env.showPrompt({ code: messageObj.Message2 + '{value}', value: messageObj.DocumentEntry.toString() }, null, {
+									code: messageObj.Message1 + '{value}',
 									value: '[' + messageObj.payments.join(',') + ']',
 								});
 							} else this.env.showMessage(err.error?.Message ?? err, 'danger');
@@ -110,7 +110,7 @@ export class OutgoingPaymentPage extends PageBase {
 	approve() {
 		if (!this.pageConfig.canApprove) return;
 		let ids = this.selectedItems.map((i) => i.Id);
-		this.env.showPrompt({ code: 'Are you sure you want to approve {{value}} selected item(s)?', value: this.selectedItems.length }).then(() => {
+		this.env.showPrompt({ code: 'Are you sure you want to approve {value} selected item(s)?', value: this.selectedItems.length }).then(() => {
 			this.env
 				.showLoading('Please wait for a few moments', this.pageProvider.commonService.connect('POST', 'BANK/OutgoingPayment/approve', ids).toPromise())
 				.then((rs) => {
@@ -122,8 +122,8 @@ export class OutgoingPaymentPage extends PageBase {
 						try {
 							let messageObj = JSON.parse(err.error?.Message);
 							if (messageObj && messageObj.Message1 && messageObj.Message2) {
-								this.env.showPrompt({ code: messageObj.Message2 + '{{value}}', value: messageObj.DocumentEntry.toString() }, null, {
-									code: messageObj.Message1 + '{{value}}',
+								this.env.showPrompt({ code: messageObj.Message2 + '{value}', value: messageObj.DocumentEntry.toString() }, null, {
+									code: messageObj.Message1 + '{value}',
 									value: '[' + messageObj.payments.join(',') + ']',
 								});
 							} else this.env.showMessage(err.error?.Message ?? err, 'danger');
@@ -138,7 +138,7 @@ export class OutgoingPaymentPage extends PageBase {
 	disapprove() {
 		if (!this.pageConfig.canApprove) return;
 		let ids = this.selectedItems.map((i) => i.Id);
-		this.env.showPrompt({ code: 'Are you sure you want to disapprove {{value}} selected item(s)?', value: this.selectedItems.length }).then(() => {
+		this.env.showPrompt({ code: 'Are you sure you want to disapprove {value} selected item(s)?', value: this.selectedItems.length }).then(() => {
 			this.env
 				.showLoading('Please wait for a few moments', this.pageProvider.commonService.connect('POST', 'BANK/OutgoingPayment/disapprove', ids).toPromise())
 				.then((rs) => {
@@ -150,8 +150,8 @@ export class OutgoingPaymentPage extends PageBase {
 						try {
 							let messageObj = JSON.parse(err.error?.Message);
 							if (messageObj && messageObj.Message1 && messageObj.Message2) {
-								this.env.showPrompt({ code: messageObj.Message2 + '{{value}}', value: messageObj.DocumentEntry.toString() }, null, {
-									code: messageObj.Message1 + '{{value}}',
+								this.env.showPrompt({ code: messageObj.Message2 + '{value}', value: messageObj.DocumentEntry.toString() }, null, {
+									code: messageObj.Message1 + '{value}',
 									value: '[' + messageObj.payments.join(',') + ']',
 								});
 							} else this.env.showMessage(err.error?.Message ?? err, 'danger');
@@ -165,7 +165,7 @@ export class OutgoingPaymentPage extends PageBase {
 	// cancel() {
 	// 	if (!this.pageConfig.canCancel) return;
 	// 	let ids = this.selectedItems.map((i) => i.Id);
-	// 	this.env.showPrompt({ code: 'Are you sure you want to cancel {{value}} selected item(s)?', value: this.selectedItems.length }).then(() => {
+	// 	this.env.showPrompt({ code: 'Are you sure you want to cancel {value} selected item(s)?', value: this.selectedItems.length }).then(() => {
 	// 		this.env
 	// 			.showLoading('Please wait for a few moments', this.pageProvider.commonService.connect('POST', 'BANK/OutgoingPayment/Cancel', ids).toPromise())
 	// 			.then((rs) => {
@@ -177,8 +177,8 @@ export class OutgoingPaymentPage extends PageBase {
 	// 					try {
 	// 						let messageObj = JSON.parse(err.error?.Message);
 	// 						if (messageObj && messageObj.Message1 && messageObj.Message2) {
-	// 							this.env.showPrompt({ code: messageObj.Message2 + '{{value}}', value: messageObj.DocumentEntry.toString() }, null, {
-	// 								code: messageObj.Message1 + '{{value}}',
+	// 							this.env.showPrompt({ code: messageObj.Message2 + '{value}', value: messageObj.DocumentEntry.toString() }, null, {
+	// 								code: messageObj.Message1 + '{value}',
 	// 								value: '[' + messageObj.payments.join(',') + ']',
 	// 							});
 	// 						} else this.env.showMessage(err.error?.Message ?? err, 'danger');
@@ -193,7 +193,7 @@ export class OutgoingPaymentPage extends PageBase {
 	markAsPaid() {
 		if (!this.pageConfig.canMarkAsPaid) return;
 		let ids = this.selectedItems.map((i) => i.Id);
-		this.env.showPrompt({ code: 'Are you sure you want to mark as paid {{value}} selected item(s)?', value: this.selectedItems.length }).then(() => {
+		this.env.showPrompt({ code: 'Are you sure you want to mark as paid {value} selected item(s)?', value: this.selectedItems.length }).then(() => {
 			this.env
 				.showLoading('Please wait for a few moments', this.pageProvider.commonService.connect('POST', 'BANK/OutgoingPayment/MarkAsPaid', ids).toPromise())
 				.then((rs) => {
@@ -205,8 +205,8 @@ export class OutgoingPaymentPage extends PageBase {
 						try {
 							let messageObj = JSON.parse(err.error?.Message);
 							if (messageObj && messageObj.Message1 && messageObj.Message2) {
-								this.env.showPrompt({ code: messageObj.Message2 + '{{value}}', value: messageObj.DocumentEntry.toString() }, null, {
-									code: messageObj.Message1 + '{{value}}',
+								this.env.showPrompt({ code: messageObj.Message2 + '{value}', value: messageObj.DocumentEntry.toString() }, null, {
+									code: messageObj.Message1 + '{value}',
 									value: '[' + messageObj.payments.join(',') + ']',
 								});
 							} else this.env.showMessage(err.error?.Message ?? err, 'danger');

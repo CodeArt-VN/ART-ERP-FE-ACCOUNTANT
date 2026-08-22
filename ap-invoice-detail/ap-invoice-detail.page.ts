@@ -841,8 +841,8 @@ export class APInvoiceDetailPage extends PageBase {
 		if (this.pageConfig.canEdit) {
 			let itemsToDelete = this.selectedInvoiceDetails.getRawValue();
 			this.env
-				.showPrompt({ code: 'Are you sure you want to delete the selected {{value}}?', value: { value: itemsToDelete.length } }, null, {
-					code: 'Delete selected {{{value1}}?',
+				.showPrompt({ code: 'Are you sure you want to delete the selected {value}?', value: { value: itemsToDelete.length } }, null, {
+					code: 'Delete selected {value1}?',
 					value: { value1: itemsToDelete.length },
 				})
 				.then((_) => {

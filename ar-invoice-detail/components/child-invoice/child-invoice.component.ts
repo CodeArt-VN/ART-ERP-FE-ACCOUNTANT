@@ -86,7 +86,7 @@ export class ChildInvoiceComponent extends PageBase {
 				.showPrompt(
 					'Are you sure you want to remove these invoices from the merged invoice? (This cannot be undone; removed invoices will return to Approved status)',
 					null,
-					{ code: 'Remove {{value}} selected invoice?', value: { value: this.selectedItems.length } }
+					{ code: 'Remove {value} selected invoice?', value: { value: this.selectedItems.length } }
 				)
 				.then((_) => {
 					let ids = this.selectedItems.map((m) => m.Id);
